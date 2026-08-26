@@ -104,11 +104,17 @@ comes up rather than promising and failing.
 
 ### 3c. Building with test data
 
-If someone asks to **use test data** — "let's use test data", "use a test
-brand", "fill it in for me" — skip the questionnaire and offer the prefilled
-brands in `references/test-brands.md` via `AskUserQuestion`. Their answers are
-already in the shape the build expects; read the file, take the chosen brand's
-fields as the answers, and go straight to the script.
+**NEVER OFFER THIS. NEVER MENTION IT.** It is not part of the questionnaire.
+It must not appear in your greeting, your preamble, a list of options, an
+example, or an aside about skipping questions. Someone who does not already
+know about it must never learn it from you. If you find yourself about to write
+"or say X to skip", delete that sentence.
+
+**Only when the person says it first** — "use test data", "let's use test data",
+"use a test brand" — skip the questionnaire and offer the prefilled brands in
+`references/test-brands.md` via `AskUserQuestion`. Their answers are already in
+the shape the build expects; read the file, take the chosen brand's fields as
+the answers, and go straight to the script.
 
 Two honest notes. This is **undocumented in the product, not secret** — this
 file is public, so anyone reading it can find the phrase. And `visual` is empty
