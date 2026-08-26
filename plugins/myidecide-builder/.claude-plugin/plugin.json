@@ -1,0 +1,19 @@
+{
+  "name": "myidecide-builder",
+  "description": "Build and edit interactive iDecide presentations directly in the myiDecide editor \u2014 script, slide design, stock video, narration, menu wiring.",
+  "version": "1.0.0",
+  "author": {
+    "name": "iDecide Interactive",
+    "url": "https://idecide.com"
+  },
+  "homepage": "https://idecide.com",
+  "repository": "https://github.com/iDecideAI/myidecide-builder",
+  "license": "LicenseRef-Proprietary",
+  "keywords": [
+    "presentation",
+    "interactive-video",
+    "myidecide",
+    "idecide",
+    "branching"
+  ]
+}

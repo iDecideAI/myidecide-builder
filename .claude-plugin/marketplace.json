@@ -1,0 +1,14 @@
+{
+  "name": "idecide",
+  "owner": {
+    "name": "iDecide Interactive",
+    "url": "https://idecide.com"
+  },
+  "plugins": [
+    {
+      "name": "myidecide-builder",
+      "source": "./plugins/myidecide-builder",
+      "description": "Build and edit interactive iDecide presentations directly in the myiDecide editor."
+    }
+  ]
+}
