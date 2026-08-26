@@ -1,6 +1,6 @@
 ---
 name: idecide-presentation-builder
-description: Build or edit interactive iDecide presentations directly in the myiDecide editor (my.idecide.com) — write the script, design and compose slides, source stock video, generate narration, wire menus and buttons, track viewer choices. Use when someone asks to build, create, design, revise, fix, restyle or add to an iDecide/myiDecide presentation, or names a myiDecide builder URL. Runs through browser automation against the editor's own agent API; no API key needed.
+description: Build or edit interactive iDecide presentations directly in the myiDecide editor (my.idecide.com). Runs the full intake — asks whether you are building new or editing, takes your builder URL, walks a questionnaire (accepting an existing script, brochure, PowerPoint or logo if you have one), then writes the script, designs and composes the slides, sources stock video, generates narration, wires menus and buttons, tracks viewer choices, and takes edit requests afterwards. Use when someone asks to build, create, design, revise, fix, restyle or add to an iDecide/myiDecide presentation, or names a myiDecide builder URL. Browser automation against the editor's own agent API; no API key needed.
 ---
 
 # iDecide Presentation Builder
@@ -12,22 +12,127 @@ An iDecide presentation is not a linear deck. Viewers **choose** what to watch:
 menus branch into topics, questions branch on the answer, and every path ends at
 a call to action. Design for that, not for a slideshow.
 
-## Before anything else
+## How a session runs
 
-1. **Get the builder URL.** It looks like
-   `https://my.idecide.com/builder/create/<sessionId>`. If the person hasn't
-   given you one, ask for it — you cannot work without it.
-2. **Append `?aiagent=`** to the URL and open it. This exposes
-   `window.aiagent.api`, `.engine` and `.instructions`. Without it, nothing
-   below exists.
-3. **Read `window.aiagent.instructions` first, every session.** It is the
-   platform's own contract and it changes. `references/aiagent-surface.md` in
-   this skill maps the whole surface with examples, but the live instructions
-   win where they disagree.
-4. **Establish which job you are on:**
-   - *Build from scratch* → follow "Building a deck" below.
-   - *Edit an existing deck* → follow "Editing a deck". Never redraw a slide
-     you did not design; change its elements instead.
+This mirrors the extension's side panel. Follow it in order — do not jump to
+the questionnaire before you have a URL, and do not start building before the
+answers are in.
+
+### 1. New or existing — ask first
+
+Open with the fork, before anything else:
+
+> Are we building a **new** presentation, or **editing one you already have**?
+
+Use `AskUserQuestion`. Nothing else happens until this is answered, because the
+two paths need different URLs and different conversations.
+
+### 2. Get the URL for that choice
+
+- **New build** → ask for the URL of the **blank presentation** they want to
+  build into. They create it in myiDecide first; you cannot create the
+  container itself.
+- **Editing** → ask for the URL of the **presentation they want to change**.
+
+Either way it looks like `https://my.idecide.com/builder/create/<sessionId>`.
+Then **append `?aiagent=`** and open it — that exposes `window.aiagent.api`,
+`.engine` and `.instructions`, without which nothing in this skill exists.
+
+**Read `window.aiagent.instructions` before you write anything.** It is the
+platform's own contract and it changes. `references/aiagent-surface.md` maps
+the surface with examples, but the live instructions win where they disagree.
+
+### 3a. New build — walk the questionnaire
+
+The extension asks 30 questions one at a time. In a chat that is 30
+round-trips, so ask them in **seven themed rounds** instead — same questions,
+same wording, same answer keys, just grouped. Use `AskUserQuestion` for the
+rounds marked *closed*; ask the open ones in prose and let them answer in one
+message.
+
+**Only `brand_name` is required.** Everything else can be skipped, and skipping
+is a normal answer — never block on an optional question.
+
+| Round | Asks about | Keys |
+|---|---|---|
+| 1 · The brand | Name (**required**), one-sentence description, website, tagline | `brand_name` `one_sentence` `website` `tagline` |
+| 2 · What you already have | Script, deck/brochure, logo — see below | `upload_script` `upload_deck` `upload_logo` |
+| 3 · The goal *(closed)* | Reveal timing, primary goal, secondary goals, the one action | `reveal_timing` `primary_goal` `secondary_goals` `one_action` |
+| 4 · The viewer | Audience, distinct groups, the hook, surprising stats, the story | `audience` `groups` `hook` `stats` `story` |
+| 5 · The substance | Differentiators, proof, topics to explore, products/pricing, income component, company, offer | `differentiators` `proof` `topics` `products` `income` `company` `offer` |
+| 6 · The close *(partly closed)* | CTA actions, their links, contact info, replicated/rep URL | `cta_actions` `cta_links` `contact` `rep_url` |
+| 7 · Voice and look *(partly closed)* | Narrator voice, brand colours/fonts/imagery rules, anything else | `voice` `visual` `anything` |
+
+Ask the website question early and **actually read the site** — it fills in
+colours, typefaces, proof and product detail the person would rather not type.
+
+Closed options, verbatim from the panel:
+
+- `reveal_timing` — Reveal it right away · Build intrigue first, then
+  rub-to-reveal the logo · Let the AI decide
+- `primary_goal` / `secondary_goals` — Sell a product or service · Sign people
+  up / recruit to an opportunity · Get leads / book calls or appointments ·
+  Educate & build trust (soft sell) · Promote an event, speaker, or cause ·
+  Drive a specific signup / claim / action
+- `cta_actions` — Buy now · Schedule a call · Fill out a contact form · Visit a
+  website · Sign up / get started
+
+For `cta_links`: scheduling links are handled automatically — use the
+`[sender-scheduling-url]` shortcode so every rep's own calendar is used.
+
+### 3b. Round 2 — material they already have
+
+Ask for all three together, and make clear each is optional:
+
+- **A script** (`.csv`, `.txt`, `.docx`, `.md`) — *"Do you already have a script
+  for this presentation? Share it and I'll build from it — your structure and
+  wording, tightened."* If they give you one, **it is the spine.** Keep their
+  structure and their words; do not rewrite it into your own voice. Ask only
+  about what it does not cover.
+- **A presentation or brochure** (`.pptx`, `.pdf`) — *"Any existing
+  presentation or brochure I should use as reference?"* Pull the copy, pricing,
+  proof and product detail out of it and treat it as answers already given.
+  Skip questions it has already answered rather than asking twice.
+- **A logo** (`.svg`, `.png`, `.jpg`) — *"And your logo? I'll place it on the
+  cover and closing slides."* SVG is best.
+
+**On the logo, be straight about the mechanics.** A URL you can fetch — the one
+on their website — is the path that works end to end. If they attach a file
+instead, read it for the palette and the mark, but placing that exact file may
+need them to add it to the editor's media library themselves. Say so when it
+comes up rather than promising and failing.
+
+### 3c. Building with test data
+
+If someone asks to **use test data** — "let's use test data", "use a test
+brand", "fill it in for me" — skip the questionnaire and offer the prefilled
+brands in `references/test-brands.md` via `AskUserQuestion`. Their answers are
+already in the shape the build expects; read the file, take the chosen brand's
+fields as the answers, and go straight to the script.
+
+Two honest notes. This is **undocumented in the product, not secret** — this
+file is public, so anyone reading it can find the phrase. And `visual` is empty
+in every test brand on purpose: the build has to learn the palette and
+typefaces from the live site, which is part of what the test exercises.
+
+### 4. New build — write, then build
+
+With the answers in, go to **Building a deck** below. Write the script first,
+plan the slides, then compose. Do not start creating slides while questions are
+still open.
+
+### 4b. Editing — ask what they want changed
+
+For an existing deck, skip the questionnaire entirely. Ask what they want
+different, read the deck before touching it, and follow **Editing a deck**
+below.
+
+### 5. When the build finishes — stay open for edits
+
+Say what you built: how many slides, the menu structure, where the CTAs point.
+Then invite changes — the extension drops into a revision chat at exactly this
+point, and so should you. Edit requests after a build follow **Editing a deck**:
+read the slide, change its elements, verify, and report what moved.
 
 ## The rules that are not negotiable
 
@@ -58,10 +163,9 @@ built and play broken.
 Work in this order. Do not skip ahead — later phases depend on assets that
 earlier ones resolve.
 
-1. **Interview.** Ask about the business, the audience, the goal, the tone,
-   what the viewer should be able to choose between, and where they should end
-   up. Ask for a website you can read for brand colours and typefaces.
-   Use `AskUserQuestion` where the options are genuinely closed.
+1. **Answers in hand.** The questionnaire above is complete (or a test brand
+   was chosen). If a script or brochure came in, it is the spine — build from
+   their structure and wording, not a fresh invention.
 2. **Script.** Write it as a branching structure: opener → menu → chapters →
    per-chapter close back to the menu → finish section → terminal CTAs.
    `references/script-craft.md` has the voice and pacing rules.
@@ -148,6 +252,7 @@ Load these as needed — do not read them all up front.
 | `references/deck-outline.md` | Planning a deck — the per-slide field contract |
 | `references/script-craft.md` | Writing narration and on-screen copy |
 | `references/platform-facts.md` | Something behaves unexpectedly — the verified footgun list |
+| `references/test-brands.md` | Someone asked to build with test data — nine prefilled brands |
 
 ## When something fails
 
