@@ -1,6 +1,8 @@
 {
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "myidecide-builder",
-  "description": "Build and edit interactive iDecide presentations directly in the myiDecide editor \u2014 script, slide design, stock video, narration, menu wiring.",
+  "displayName": "myiDecide Builder",
+  "description": "Build and edit interactive iDecide presentations directly in the myiDecide editor — script, slide design, stock video, narration, menu wiring.",
   "version": "1.1.1",
   "author": {
     "name": "iDecide Interactive",

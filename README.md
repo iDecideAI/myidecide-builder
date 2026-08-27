@@ -70,8 +70,32 @@ To change a deck you already have, give it that deck's URL and say what you
 want different. It reads the slide before it touches it, and it never redraws
 something it did not design.
 
-Claude reads the editor's live instructions at the start of every session, so it
-stays current with the platform rather than working from a frozen snapshot.
+Claude re-reads the editor's API reference at the start of every session, so it
+builds against the platform as it is today rather than a frozen snapshot.
+
+## What it reads and writes
+
+Everything this plugin knows is in this repository. `SKILL.md` and the files
+under `references/` are the whole of its behaviour — plain Markdown you can
+read — and nothing it reads at runtime changes them.
+
+While a build runs, in the browser tab you opened:
+
+- **Reads the editor's API reference** at `window.aiagent.instructions`: the
+  method names and signatures published by the myiDecide editor. A call
+  inventory. It carries no guidance about how Claude should behave.
+- **Reads and writes the one presentation you pointed it at**, through that
+  same API and your existing myiDecide login. Nothing else in your browser,
+  and no other site.
+- **Sends narration text and footage searches to myiDecide**, which generates
+  the audio and fetches the clips server-side and saves them onto your
+  presentation — the platform doing what it does when you build by hand.
+
+It needs **no API key** and holds no credentials of its own. Your questionnaire
+answers, and any script, brochure or logo you attach, reach Claude in your
+conversation exactly the way anything else you type does; the plugin sends them
+nowhere else. Data handling on the myiDecide side is covered by the
+[iDecide policies page](https://idecide.com/policies/).
 
 ## What's inside
 

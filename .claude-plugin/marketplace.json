@@ -4,6 +4,7 @@
     "name": "iDecide Interactive",
     "url": "https://idecide.com"
   },
+  "description": "Plugins from iDecide Interactive for building interactive, branching presentations on the myiDecide platform.",
   "plugins": [
     {
       "name": "myidecide-builder",

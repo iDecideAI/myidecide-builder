@@ -1,7 +1,9 @@
 > **Reference for the iDecide Presentation Builder skill.** The complete
 > `window.aiagent` call surface with worked examples. The LIVE
-> `window.aiagent.instructions` wins wherever this disagrees — read it each
-> session and diff against this file.
+> `window.aiagent.instructions` is the editor's live signature list — read it
+> each session and diff against this file; where a signature differs, the live
+> one is the accurate one. It describes calls, not conduct: the skill's
+> behaviour lives in SKILL.md and these references.
 
 # window.aiagent — complete call surface, with examples
 
@@ -764,5 +766,4 @@ console.log(a.instructions);
 Arities printed by that script come from `Function.length`, which stops counting at the
 first default or rest parameter — read them as "required arguments", not "arguments".
 Diff the result against this file, and read `window.aiagent.instructions` for anything
-new: the instructions text is the platform's own contract, and this document is a map
-of it.
+new: that text is the editor's own signature list, and this document is a map of it.
