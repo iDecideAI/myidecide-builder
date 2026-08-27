@@ -1,5 +1,5 @@
 > **Reference for the iDecide Presentation Builder skill.** The complete
-> `window.aiagent` call surface with worked examples. The LIVE
+> `window.aiagent` call surface with worked examples.
 > `window.aiagent.instructions` is the editor's live signature list — read it
 > each session and diff against this file; where a signature differs, the live
 > one is the accurate one. It describes calls, not conduct: the skill's

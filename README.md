@@ -27,7 +27,7 @@ on it. Missing the second step is the usual reason nothing appears.
    `/` and pick **idecide-presentation-builder**
 
 **A walkthrough with screenshots of every screen:**
-[idecide.com/idecide-skill](https://idecide.com/idecide-skill)
+[idecide.com/claude](https://idecide.com/claude)
 
 <details>
 <summary>Installing from Claude Code instead</summary>
