@@ -37,8 +37,14 @@ The two paths diverge completely here.
 **New build → you create it. Do not ask them for a URL.** Navigate to
 `https://my.idecide.com/create/new`. The platform mints the deck server-side
 and lands on `/builder/create/<id>?slide=<firstSlideId>` with the Presentation
-Info overlay open. Name it from the brand answer, dismiss the overlay, then
-re-navigate with `&aiagent=`.
+Info overlay open. Dismiss the overlay, then re-navigate with `&aiagent=`.
+
+**Do not block on the name.** This step runs before the questionnaire, so the
+brand answer does not exist yet. Set the title only if you already have a name
+from something the user has said; otherwise take the platform default
+("Untitled Presentation") and mention once that they can rename it in
+Presentation Info. The extension behaves identically — the two must not
+diverge.
 
 Read the `create/new` section of `references/platform-facts.md` before you run
 this. Four things bite, and three of them look like something else:
