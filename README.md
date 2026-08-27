@@ -117,4 +117,10 @@ Claude loads `SKILL.md` first and pulls a reference in only when it needs it.
 
 Questions and bug reports: [idecide.com](https://idecide.com)
 
+**Security.** To report a suspected vulnerability in this plugin, email
+[hi@idecide.com](mailto:hi@idecide.com). We read those and investigate them.
+
+How the plugin handles your data is set out in section 12 of the
+[iDecide policies](https://idecide.com/policies/#sec12).
+
 Licensed for use with the myiDecide platform — see [LICENSE](LICENSE).
