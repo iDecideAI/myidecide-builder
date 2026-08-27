@@ -12,9 +12,9 @@ editor while you watch.
 
 ## Install
 
-**In the Claude app** (or Cowork — open the Cowork tab first, then Customize).
-There are two things to add: the *marketplace*, then the *plugin* on it. Missing
-the second step is the usual reason nothing appears.
+**In Cowork**, in the Claude desktop app — open the **Cowork** tab first, then
+**Customize**. There are two things to add: the *marketplace*, then the *plugin*
+on it. Missing the second step is the usual reason nothing appears.
 
 1. Open **Customize** in the left sidebar, then the **Plugins** tab
 2. Click **Add** at the top right → **Add marketplace**
@@ -37,8 +37,9 @@ the second step is the usual reason nothing appears.
 /plugin install myidecide-builder@idecide
 ```
 
-Same plugin, same marketplace. Most people use the app; this is here because
-you are reading it on GitHub.
+Same plugin, same marketplace. **Cowork is the supported way to run it** — that
+is what we test against and what the walkthrough covers. These commands are here
+because you are reading this on GitHub.
 </details>
 
 Updates arrive through the marketplace when we publish a new version. A plugin
@@ -49,9 +50,10 @@ why the steps above use a marketplace.
 
 - A **myiDecide account** and a builder URL — it looks like
   `https://my.idecide.com/builder/create/<sessionId>`
-- A way for Claude to drive your browser (Claude in Chrome, or Cowork with
-  browser access). The plugin works against the editor's own agent API in the
-  page.
+- **Cowork, in the Claude desktop app** for Mac or Windows, on a paid plan —
+  Pro, Max, Team or Enterprise. Cowork is not on the Free plan. Claude builds by
+  driving the myiDecide editor in a browser, through the editor's own agent API
+  in the page.
 - **No Anthropic API key.** It runs on your own Claude subscription.
 
 ## Using it
