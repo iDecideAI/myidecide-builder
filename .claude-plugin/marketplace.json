@@ -8,8 +8,23 @@
   "plugins": [
     {
       "name": "myidecide-builder",
+      "displayName": "myiDecide Builder",
       "source": "./plugins/myidecide-builder",
-      "description": "Build and edit interactive iDecide presentations directly in the myiDecide editor."
+      "description": "Build and edit interactive iDecide presentations directly in the myiDecide editor.",
+      "author": {
+        "name": "iDecide Interactive",
+        "url": "https://idecide.com"
+      },
+      "homepage": "https://idecide.com/idecide-skill",
+      "license": "LicenseRef-Proprietary",
+      "category": "productivity",
+      "keywords": [
+        "presentation",
+        "interactive-video",
+        "myidecide",
+        "idecide",
+        "branching"
+      ]
     }
   ]
 }
