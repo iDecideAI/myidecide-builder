@@ -877,6 +877,23 @@ it from the questionnaire's brand answer, dismiss the overlay, re-navigate
 with `?aiagent`, then run Phase 0.5. The Edit flow keeps the opposite
 contract: it expects to already be on the presentation the user wants edited.
 
+**Re-verified end-to-end through the browser on 2026-08-27 (deck 301)**, and
+the SKILL now owns this flow rather than only documenting it. Three details
+the 2026-08-25 write-up did not have:
+
+1. **The re-navigation is always `&aiagent=`, never `?aiagent=`.** By the time
+   the overlay is dismissed the URL already reads
+   `/builder/create/{id}?slide={firstSlideId}`. Appending `?aiagent=` to that
+   yields two `?` and the API never appears.
+2. **Do not test the overlay with `offsetParent`.** `#presentationOverlay` is
+   `position: fixed`, so `offsetParent` is `null` while it is plainly on
+   screen — a false negative that reads as "already dismissed". Poll
+   `display` / `visibility` instead, as the snippet above does.
+3. **The builder tab must be open and in focus** for browser tooling to reach
+   the page. A navigation or call that hangs for more than a moment is usually
+   a backgrounded tab, not a slow platform — ask the operator to click into
+   the tab and retry rather than continuing to wait.
+
 ### Logged-out: `/create/new` redirects to `/login` (verified 2026-08-25)
 
 Visiting `https://my.idecide.com/create/new` without a session lands on:

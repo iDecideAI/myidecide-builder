@@ -48,7 +48,9 @@ why the steps above use a marketplace.
 
 ## What you need
 
-- A **myiDecide account** and a builder URL — it looks like
+- A **myiDecide account**, signed in. For a new presentation that is all you
+  need — Claude creates it for you. To change one you already have, you give it
+  that presentation's address, which looks like
   `https://my.idecide.com/builder/create/<sessionId>`
 - **Cowork, in the Claude desktop app** for Mac or Windows, on a paid plan —
   Pro, Max, Team or Enterprise. Cowork is not on the Free plan. Claude builds by
@@ -60,7 +62,9 @@ why the steps above use a marketplace.
 
 Type `/` and pick the skill, or just say what you want — it starts on its own.
 Either way it opens by asking whether you are building something new or editing
-a deck you already have, then asks for the matching builder URL.
+a deck you already have. **For something new it creates the presentation
+itself** — you do not need to go and make a blank one first. To edit, it asks
+for that presentation's address.
 
 For a new build it walks a short questionnaire — what the presentation is for,
 who is watching, what they should be able to choose between, where they should
@@ -68,7 +72,7 @@ end up — and it will take an existing script, brochure, PowerPoint or logo if
 you have one. Hand it a script and it keeps your structure and your wording
 rather than inventing its own. Then it writes, builds, and stays open for edits.
 
-To change a deck you already have, give it that deck's URL and say what you
+To change a deck you already have, give it that deck's address and say what you
 want different. It reads the slide before it touches it, and it never redraws
 something it did not design.
 

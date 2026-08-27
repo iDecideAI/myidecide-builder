@@ -1,6 +1,6 @@
 ---
 name: idecide-presentation-builder
-description: Build or edit interactive iDecide presentations directly in the myiDecide editor (my.idecide.com). Runs the full intake — asks whether you are building new or editing, takes your builder URL, walks a questionnaire (accepting an existing script, brochure, PowerPoint or logo if you have one), then writes the script, designs and composes the slides, sources stock video, generates narration, wires menus and buttons, tracks viewer choices, and takes edit requests afterwards. Use when someone asks to build, create, design, revise, fix, restyle or add to an iDecide/myiDecide presentation, or names a myiDecide builder URL. Browser automation against the editor's own agent API; no API key needed.
+description: Build or edit interactive iDecide presentations directly in the myiDecide editor (my.idecide.com). Runs the full intake — asks whether you are building new or editing, creates the new presentation for you or takes the URL of the one to change, walks a questionnaire (accepting an existing script, brochure, PowerPoint or logo if you have one), then writes the script, designs and composes the slides, sources stock video, generates narration, wires menus and buttons, tracks viewer choices, and takes edit requests afterwards. Use when someone asks to build, create, design, revise, fix, restyle or add to an iDecide/myiDecide presentation, or names a myiDecide builder URL. Browser automation against the editor's own agent API; no API key needed.
 ---
 
 # iDecide Presentation Builder
@@ -27,23 +27,47 @@ Open with the fork, before anything else:
 Use `AskUserQuestion`. Nothing else happens until this is answered, because the
 two paths need different URLs and different conversations.
 
-### 2. Get the URL for that choice
+### 2. Get to the presentation
 
-- **New build** → ask for the URL of the **blank presentation** they want to
-  build into. They create it in myiDecide first; you cannot create the
-  container itself.
-- **Editing** → ask for the URL of the **presentation they want to change**.
+The two paths diverge completely here.
 
-Either way it looks like `https://my.idecide.com/builder/create/<sessionId>` —
-and what someone copies out of their address bar very often carries a
-`?slide=<id>` on the end.
+**New build → you create it. Do not ask them for a URL.** Navigate to
+`https://my.idecide.com/create/new`. The platform mints the deck server-side
+and lands on `/builder/create/<id>?slide=<firstSlideId>` with the Presentation
+Info overlay open. Name it from the brand answer, dismiss the overlay, then
+re-navigate with `&aiagent=`.
 
-**Open it with `aiagent=` in the query string.** That exposes
+Read the `create/new` section of `references/platform-facts.md` before you run
+this. Four things bite, and three of them look like something else:
+
+- **Go there exactly once.** The deck is created *before* the overlay appears,
+  so every visit burns an id and strands an orphan "Untitled Presentation".
+  Navigate when the build is actually starting — never to check something.
+- **Check for signed-out first.** `/create/new` without a session lands on
+  `/login`, and `document.title` is identical either way. Test the path. If
+  they are signed out, stop and ask them to log in — never type credentials
+  for them. The platform returns them to the same screen afterwards, so the
+  retry is just re-running this step.
+- **The name save is asynchronous.** Poll the session record until
+  `presentationName` matches. An immediate read still says "Untitled
+  Presentation"; that is not a failure, and re-submitting makes it worse.
+- **Do not test the overlay with `offsetParent`.** It is `position: fixed`, so
+  `offsetParent` is `null` while the overlay is plainly on screen. Poll
+  `display` / `visibility`.
+
+**Editing → they give you the URL.** Ask for the address of the presentation
+they want changed. It looks like
+`https://my.idecide.com/builder/create/<sessionId>`, usually carrying a
+`?slide=<id>` from their address bar.
+
+**Either path, open it with `aiagent=` in the query string.** That exposes
 `window.aiagent.api`, `.engine` and `.instructions`, without which nothing in
-this skill exists. Append `?aiagent=` to a bare URL, `&aiagent=` to one that
-already has a query string. Never append `?aiagent=` to a URL that already
-contains a `?` — the result is malformed, the page loads without the API, and
-the failure looks like the platform being broken rather than a bad URL.
+this skill exists. Append `?aiagent=` to a bare URL, **`&aiagent=` to one that
+already has a query string** — and after `create/new` the URL always carries
+`?slide=`, so the new-build path is always `&aiagent=`. Never append
+`?aiagent=` to a URL that already contains a `?`: the result is malformed, the
+page loads without the API, and the failure looks like the platform being
+broken rather than a bad URL.
 
 **Read `window.aiagent.instructions` before you write anything.** It is the
 editor's own API reference — the method names and signatures this session will
@@ -281,7 +305,11 @@ Load these as needed — do not read them all up front.
   under-reports it — walk the prototype chain.
 - **A change didn't persist** → you didn't commit. A documented `api.*`
   mutation plus `changeSlide`.
+- **A navigation or call just hangs** → the builder tab has to be open and in
+  focus for browser tooling to reach it. If something has been pending for
+  more than a moment, ask the user to click into that tab, then retry. Do not
+  keep waiting, and do not conclude the platform is down.
 - **The editor shows a fatal dialog** → the page needs a reload; re-open with
-  `?aiagent=` and resume from the last committed slide.
+  the `aiagent` param and resume from the last committed slide.
 - **Say what actually happened.** If a step failed, report the failure. A
   reported success for work that did not happen is worse than the failure.
