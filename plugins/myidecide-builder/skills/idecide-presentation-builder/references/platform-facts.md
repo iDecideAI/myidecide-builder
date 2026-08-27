@@ -4,6 +4,8 @@
 
 # Verified platform facts (myiDecide / CE.SDK v1.74.1)
 
+
+
 Every item below was proven live in the builder and re-verified after a full page
 reload. These are the rules the extension's inject scripts must follow — several were
 learned the hard way and silently corrupt a deck if ignored.
@@ -878,7 +880,9 @@ with `?aiagent`, then run Phase 0.5. The Edit flow keeps the opposite
 contract: it expects to already be on the presentation the user wants edited.
 
 **Re-verified end-to-end through the browser on 2026-08-27 (deck 301)**, and
-the SKILL now owns this flow rather than only documenting it. Three details
+the SKILL now owns this flow rather than only documenting it.
+
+ Three details
 the 2026-08-25 write-up did not have:
 
 1. **The re-navigation is always `&aiagent=`, never `?aiagent=`.** By the time

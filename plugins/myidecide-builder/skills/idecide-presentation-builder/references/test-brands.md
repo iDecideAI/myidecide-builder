@@ -1,9 +1,7 @@
 # Test brands
 
 > **Reference for the iDecide Presentation Builder skill.** Prefilled
-> questionnaire answers, generated from the extension's own test fixtures by
-> `claude-skill/build-test-brands.mjs` — do not hand-edit, it is overwritten.
-> Used only when someone asks to build with test data. Facts are limited to what
+> questionnaire answers. > Used only when someone asks to build with test data. Facts are limited to what
 > these companies publish; `visual` is deliberately empty so the build has to
 > learn the palette and typefaces from the live site.
 

@@ -5,6 +5,9 @@ description: Build or edit interactive iDecide presentations directly in the myi
 
 # iDecide Presentation Builder
 
+<!-- MAINTAINERS: this file is the SOURCE; the copy inside the published
+     plugin is generated from it. Edit this one. -->
+
 Build and edit interactive presentations inside the myiDecide editor by driving
 its own `window.aiagent` API from the browser.
 
