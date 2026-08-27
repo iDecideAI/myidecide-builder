@@ -34,9 +34,16 @@ two paths need different URLs and different conversations.
   container itself.
 - **Editing** → ask for the URL of the **presentation they want to change**.
 
-Either way it looks like `https://my.idecide.com/builder/create/<sessionId>`.
-Then **append `?aiagent=`** and open it — that exposes `window.aiagent.api`,
-`.engine` and `.instructions`, without which nothing in this skill exists.
+Either way it looks like `https://my.idecide.com/builder/create/<sessionId>` —
+and what someone copies out of their address bar very often carries a
+`?slide=<id>` on the end.
+
+**Open it with `aiagent=` in the query string.** That exposes
+`window.aiagent.api`, `.engine` and `.instructions`, without which nothing in
+this skill exists. Append `?aiagent=` to a bare URL, `&aiagent=` to one that
+already has a query string. Never append `?aiagent=` to a URL that already
+contains a `?` — the result is malformed, the page loads without the API, and
+the failure looks like the platform being broken rather than a bad URL.
 
 **Read `window.aiagent.instructions` before you write anything.** It is the
 editor's own API reference — the method names and signatures this session will
