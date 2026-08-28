@@ -837,6 +837,23 @@ their source, so cloning plate → label in source order preserves
 plate-backmost for the new group; a fresh api-uploaded icon is then
 `insertChild`ed just above its plate.
 
+## Duplicating a deck RESETS slide 1 to the stock template (verified 2026-08-28)
+
+Duplicating a presentation from the myiDecides list copies every slide except
+the opener. Slides 2..n arrive intact — text, media, narration, timing, wiring.
+**Slide 1 comes back as the stock "Play Button" welcome**: `Welcome` at 90px,
+the placeholder images and shapes, and the two 24px `[sender-name]` /
+`[sender-email]` layers that sit under our 28px floor.
+
+Observed on a duplicate of the Northbound demo: 13 blocks, all of them
+template, none of them the cover that was there. The slide keeps the name
+"Play Button" too, so a renamed opener loses its name as well.
+
+**So a duplicate needs its cover rebuilt** — the same clear → sweep → verify →
+compose pass as a from-scratch build. Anything that duplicates a deck for a
+client, a template or a demo has to redo the opener or ship the stock one by
+accident.
+
 ## Slide 1: clear the stock cover, then compose your own (verified 2026-08-28, deck 3)
 
 
