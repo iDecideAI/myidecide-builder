@@ -236,6 +236,13 @@ earlier ones resolve.
    (`blocks.removeBlock`), then verify the count is zero before composing.
    See `references/platform-facts.md`.
 
+   **Any OTHER stock slide should be deleted, not cleared.** `aiagent` has no
+   slide delete, but the platform does over REST:
+   `DELETE /api/builder/builderSession/<sid>/slides/<slideId>` with
+   `credentials: 'include'`, retried once after ~600ms. Delete every slide the
+   platform shipped that is not in your plan. Slide 1 is the exception — a
+   deck must open on something, so it is cleared and recomposed instead.
+
    Slide 1 stays silent, carries no block actions, and never auto-advances.
 
 5. **Create the shells.** `api.slides.createMultiple(count, atIndex, 'end')`

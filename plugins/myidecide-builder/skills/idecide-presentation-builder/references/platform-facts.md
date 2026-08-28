@@ -845,12 +845,31 @@ slide-1 graphics and composes a new cover.** The stock "Play Button" welcome is
 a template, not a starting point — repurposing its text leaves a deck that
 looks like the demo it came from.
 
-**You cannot delete the slide.** There is no delete anywhere on the aiagent
-surface — not `api.slides` (`changeSlide`, `changeSlideByIndex`, `create`,
-`createMultiple`, `get`, `getDimensions`, `setAutoAdvance`, `setMenuSlide`,
-`setName`) and not `api.provider.getCtx()` (which offers only `blocksRemove`).
-Slide delete remains an SH/REST-only capability. **So clear-and-recompose IS
-the delete**, and it is the supported path.
+**Slide delete is REST, not aiagent.** There is no delete anywhere on the
+aiagent surface — not `api.slides` (`changeSlide`, `changeSlideByIndex`,
+`create`, `createMultiple`, `get`, `getDimensions`, `setAutoAdvance`,
+`setMenuSlide`, `setName`) and not `api.provider.getCtx()` (which offers only
+`blocksRemove`). **But the platform deletes slides perfectly well over REST**,
+and the extension has done so since well before this note:
+
+```js
+await fetch(`/api/builder/builderSession/${sid}/slides/${slideId}`,
+            { method: 'DELETE', credentials: 'include' });
+```
+
+Retry once after ~600ms on a non-ok response; the builder occasionally refuses
+the first attempt.
+
+**Sweep only on a build, never on a revision.** A from-scratch build should
+delete every live slide that is not in its plan — that is how a stray
+"Play Button" gets removed rather than repurposed. An edit or revision pass
+must never do this: a slide the user added by hand is not yours to destroy.
+Make it an explicit opt-in flag rather than default behaviour.
+
+**Prefer deleting.** Build your own slides, then purge what the platform
+shipped. Clear-and-recompose is the FALLBACK for when the DELETE is refused —
+and slide 1 is the one case where it is the only option, because a deck must
+open on something and the extension explicitly refuses to delete the opener.
 
 **`clearAllVisual()` does NOT clear everything.** On the stock cover it removed
 6 of 13 blocks and left five text layers plus one decorative shape sitting on
