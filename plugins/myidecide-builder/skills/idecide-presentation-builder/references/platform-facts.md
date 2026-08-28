@@ -837,6 +837,45 @@ their source, so cloning plate → label in source order preserves
 plate-backmost for the new group; a fresh api-uploaded icon is then
 `insertChild`ed just above its plate.
 
+## Slide 1: clear the stock cover, then compose your own (verified 2026-08-28, deck 3)
+
+
+**Standing rule (Bren, 2026-08-28): every from-scratch build clears the default
+slide-1 graphics and composes a new cover.** The stock "Play Button" welcome is
+a template, not a starting point — repurposing its text leaves a deck that
+looks like the demo it came from.
+
+**You cannot delete the slide.** There is no delete anywhere on the aiagent
+surface — not `api.slides` (`changeSlide`, `changeSlideByIndex`, `create`,
+`createMultiple`, `get`, `getDimensions`, `setAutoAdvance`, `setMenuSlide`,
+`setName`) and not `api.provider.getCtx()` (which offers only `blocksRemove`).
+Slide delete remains an SH/REST-only capability. **So clear-and-recompose IS
+the delete**, and it is the supported path.
+
+**`clearAllVisual()` does NOT clear everything.** On the stock cover it removed
+6 of 13 blocks and left five text layers plus one decorative shape sitting on
+the canvas — which then collide with whatever you compose. Sweep the
+survivors:
+
+```js
+CS.blocks.clearAllVisual();
+await new Promise(r => setTimeout(r, 900));
+// template blocks ship with LOW sequential ids; anything you create gets a
+// large one, so on a FRESH deck this is a safe discriminator
+for (const b of await CS.blocks.getVisual())
+  if (b.blockId < 1000) CS.blocks.removeBlock(b.blockId);
+```
+
+Then verify by count before composing. On deck 3 the survivors were ids
+111/114/117/120/123/126 (five texts + a `gif`) and one `shape` graphic at
+798,238 — a decorative bar that sat directly over the video panel.
+
+**`getFrameHeight` returns the DECLARED box, not the rendered text.** A
+two-line 60px headline in a box declared 210 tall reads back as 210, so it
+cannot tell you a line wrapped. A 76px headline in a 620px column silently
+wrapped to three lines and overran the block beneath it. Set explicit heights
+from the type size and line count, and re-measure after any size change.
+
 ## Three shapes that bite on a from-scratch build (verified 2026-08-28, deck 3)
 
 Found while building the Northbound demo end to end through the plugin. All

@@ -225,23 +225,36 @@ earlier ones resolve.
 3. **Plan the slides.** One plan object per slide: name, kind, narration,
    copy, items (with their targets), imagery hint. Names are identities —
    pick them once. `references/deck-outline.md` gives the field contract.
-4. **Create the shells.** `api.slides.createMultiple(count, atIndex, 'end')`
+4. **Clear slide 1 and compose your own cover.** A fresh deck arrives with one
+   slide holding the stock "Play Button" welcome template. That is a template,
+   not a starting point — **never repurpose its text.** There is no slide
+   delete on the aiagent surface, so clearing and recomposing *is* the delete.
+
+   `blocks.clearAllVisual()` leaves survivors — on the stock cover it removed
+   6 of 13 and left five text layers plus a decorative shape, which then
+   collide with whatever you place. Clear, then sweep what remains
+   (`blocks.removeBlock`), then verify the count is zero before composing.
+   See `references/platform-facts.md`.
+
+   Slide 1 stays silent, carries no block actions, and never auto-advances.
+
+5. **Create the shells.** `api.slides.createMultiple(count, atIndex, 'end')`
    creates a run in ONE request — 13× faster than looping `create()`. Group
    the slides you need into consecutive runs and issue one call per run.
-5. **Resolve assets before composing.** Search and import stock video in bulk
+6. **Resolve assets before composing.** Search and import stock video in bulk
    with `api.assets.importPexelVideoBatch` — it uploads many clips in one
    request and does not need the target slide to be current. Do the same for
    narration with `api.narration.generateBatch`. Both stream results through
    an `onCompleted` callback; consume them as they land.
-6. **Compose each slide**, then wire it, then commit by navigating to the next.
+7. **Compose each slide**, then wire it, then commit by navigating to the next.
    `references/composition.md` carries the layout system: zones, gaps,
    type roles, and the element/group contract.
-7. **Wire the deck.** Buttons → `blockActions.set(bgLayer, type, target)`.
+8. **Wire the deck.** Buttons → `blockActions.set(bgLayer, type, target)`.
    Menus point at chapter openers; chapter closes point back at the menu;
    terminal CTAs use `finishPresentation` with an outcome payload.
-8. **Track the choices that matter.** Question answers and menu topics should
+9. **Track the choices that matter.** Question answers and menu topics should
    record what the viewer picked — see "Tracking choices".
-9. **Verify.** Walk the deck: every button has an action, every auto-advance
+10. **Verify.** Walk the deck: every button has an action, every auto-advance
    has a target, no slide is bare, nothing overlaps, no type under 28px.
 
 ## Editing a deck
