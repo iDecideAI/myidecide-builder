@@ -837,6 +837,39 @@ their source, so cloning plate → label in source order preserves
 plate-backmost for the new group; a fresh api-uploaded icon is then
 `insertChild`ed just above its plate.
 
+## Three shapes that bite on a from-scratch build (verified 2026-08-28, deck 3)
+
+Found while building the Northbound demo end to end through the plugin. All
+three read as "the call is broken" and are none of them.
+
+**1. `assets.searchVideos(q)` does not return an array.** It returns
+`{ page, perPage, totalResults, videos[] }`, and the items carry
+**`pexelVideoId`**, not `id`. `(res||[]).find(...)` throws
+*"find is not a function"*. Use `(res.videos || [])` and map to `pexelVideoId`
+before handing the list to `importPexelVideoBatch`.
+
+**2. `blocks.getVisual()` speaks a different coordinate space than the engine
+setters.** Entries key on **`blockId`** (not `id` — `b.id` is `undefined` and
+every engine read on it fails silently), and their `x/y/width/height` are
+**viewport/preview** coordinates, not canvas: a block set to `y:230 h:104` on
+the 1558×720 canvas reads back as `y:274 h:59` at a 113% editor zoom. Use
+`getVisual()` to ENUMERATE, then `E.block.getPositionX/Y` and
+`getFrameWidth/Height` for real geometry. Mixing the two silently misplaces
+everything.
+
+**3. Block ids do not survive a `changeSlide`.** The page re-hydrates and mints
+new ids, so an id captured before a slide change throws *"Block <id> is
+unknown."* on return. **Name every block you will come back to**
+(`E.block.setName(id, 'menu-plate-1')`), then re-read and match by name — or by
+its text via `E.block.getString(id,'text/text')`. This is the same class of
+error as verifying media by filename after a save.
+
+Also confirmed on this run: `E.block.findByKind('page')[0]` is the page id for
+the rule-13 `insertChild(page, audioId, 0)` audio placement, and the platform's
+default "Play Button" cover ships `[sender-name]` and `[sender-email]` at
+**24px** — under our own 28px floor. A from-scratch build should raise them
+(`setTextFontSize` then commit with `updateText(id, sameText)`).
+
 ## Creating a NEW presentation from the agent (verified 2026-08-25, deck 184)
 
 `https://my.idecide.com/create/new` **auto-creates a deck server-side** and
