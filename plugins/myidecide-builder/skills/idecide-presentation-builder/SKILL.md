@@ -354,8 +354,14 @@ earlier ones resolve.
    `api.assets.importPexelImageBatch(urls)` (at most 50 per request; a failed
    entry is `null` at its index, no blocks are made) and keep the returned
    `UploadedFileResponse` per query. Do the same for narration with
-   `api.narration.generateBatch`. The video and narration batches stream
-   results through an `onCompleted` callback; consume them as they land.
+   `api.narration.generateBatch`, giving every narration the house delivery
+   — `voiceSettingsOrStability: { stability: 0.1, similarity: 0.9, style:
+   0.9 }` (the same three numbers the per-slide
+   `api.currentSlide.narration.generateAndInsert(voiceId, text, 0, 0.1, 0.9,
+   0.9)` takes; the platform fixes the model and speaker boost). If a voice
+   over-performs, raise stability first. The video and narration batches
+   stream results through an `onCompleted` callback; consume them as they
+   land.
 
    Place a batch-imported still on its slide, after `changeSlide`, with
    `api.currentSlide.images.insertUploadedImage(upload, x, y, w, h, 0, null)`
