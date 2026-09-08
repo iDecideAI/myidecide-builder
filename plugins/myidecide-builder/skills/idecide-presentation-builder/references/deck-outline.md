@@ -1,4 +1,4 @@
-> **Reference for the iDecide Presentation Builder skill.** The per-slide plan
+> **Reference for the myiDecide Presentation Builder skill.** The per-slide plan
 > contract — the fields each slide object carries and what they mean. Written
 > as instructions to a planner; apply it to your own planning.
 
@@ -171,9 +171,11 @@ from research.
 TOKENS APPEAR ONCE PER SLIDE (binding): a shortcode like [viewer-name-first],
 [viewer-name], [sender-name], [sender-email] may appear AT MOST ONCE across a
 slide's entire on-screen copy (headline + support + greeting + items +
-contact). The contact block already carries [sender-name]/[sender-email], so
-no other element on that slide repeats them; a greeting that says
-[viewer-name-first] means the headline must not. (Narration is exempt.)
+contact) — never in two copy slots of the same slide. The contact block
+already carries [sender-name]/[sender-email], so no other element on that
+slide repeats them; the cover's greeting line is drawn by the builder, so the
+cover's eyebrow and headline must not repeat [viewer-name-first]. (Narration
+is exempt.)
 
 SELF-CHECK before emitting (the validator rejects violations, costing a slow
 repair round): (1) every slide's category fits its content SHAPE and capacity;
@@ -248,6 +250,20 @@ without one is a DEAD button in the player. On a trivia question, the
 correct option targets "Answer N - Correct"; every other option targets
 "Answer N - Incorrect". Never emit an item and leave its wiring to be
 guessed later.
+
+THE CONVERSE HOLDS (binding): items on an AUTO-ADVANCING content slide are
+DISPLAY — label, body, icon, no `target`, no `url`. A wired item on a slide
+that advances on its own is a button nobody can use. The only wired item on a
+non-interactive slide is the single "Back" item of a sub-fork sub-beat, and
+that slide has `autoAdvance: false`.
+
+THE COVER IS THE EXCEPTION (binding, Bren 2026-09-03): the `kind: "cover"`
+slide never has options. The platform advances slide 1 on ANY click, and the
+builder draws its one action element itself — the static "Click anywhere to
+Begin" pill. Do not plan a "Get Started" button for it; a cover item list, if
+one is ever written, is decorative and the builder ignores targets/urls
+there. Every answer slide the questions point at must exist in `slides`
+under its exact CSV Slide Name.
 
 SHARED RESPONSES FIT EVERY CHOICE (binding): when two or more options
 route to the SAME answer slide, that slide's narration and copy must read

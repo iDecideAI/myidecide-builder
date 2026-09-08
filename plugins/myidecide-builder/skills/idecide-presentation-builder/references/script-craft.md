@@ -1,4 +1,4 @@
-> **Reference for the iDecide Presentation Builder skill.** How to write the
+> **Reference for the myiDecide Presentation Builder skill.** How to write the
 > narration and on-screen copy. Written as guidance to the writer; apply it to
 > your own drafting.
 
@@ -13,9 +13,27 @@ interaction is phrased, which house lines to reuse.** It does NOT govern the out
 slide naming, or closing structure — the script contract above does, and it WINS on any conflict.
 Where this guide describes the corpus doing something the contract forbids (a hamburger specced as a
 production-note row rather than a real terminal slide; menus written as two rows on one slide; answer
-forks sharing one Slide#/Part; no Slide Name column), that is an accurate description of the SOURCE
-SCRIPTS and an incorrect shape for YOUR OUTPUT. Take the wording from here, the structure from the
-contract.
+forks sharing one Slide#/Part; no Slide Name column; `(NO VOICE OVER)` written into the Script cell),
+that is an accurate description of the SOURCE SCRIPTS and an incorrect shape for YOUR OUTPUT. Take
+the wording from here, the structure from the contract.
+
+**THREE ROW RULES THAT ARE NOT NEGOTIABLE (Bren 2026-09-03 / 2026-09-05, from tester decks):**
+1. **Every row carries its Slide Name.** The builder discards a row whose Slide Names cell is blank —
+   that slide is never built. Tester run 2 blanked the cell on the answer rows ("Answer 1 - Correct" /
+   "Answer 1 - Incorrect"): the slides did not exist, and every question button pointed at nothing.
+   Answer rows, `IF` branch rows, silent rows, the Hamburger Menu — all of them are named.
+2. **A silent beat is an EMPTY Script cell.** Never write `(NO VOICE OVER)`, `(NO VOICEOVER)`,
+   `(no narration)`, `[silent]`, `none` or any other marker in the Script column. Where this guide
+   quotes the corpus using such a marker, that is how the SOURCE read; your output leaves the cell
+   empty. A marker in the cell is read aloud by the narrator ("no voiceover" was spoken on three
+   slides of a tester's deck) or breaks the voice step.
+3. **The column header row is the FIRST LINE of the CSV — nothing before it.** No opening sentence,
+   no "I'll look at the site first", no research note, no code fence: research silently and start
+   with `Script,On Screen,coordinated,Slide #,Part,section,Attachments,Slide Name`. The Patagonia deck
+   (2026-09-05) opened with one sentence glued to the header on the same line; the header was not
+   recognised, no row had a name, and every voiceover in the deck was re-invented instead of taken
+   from the script. The builder now cuts such a preamble and repairs the header, but a script that
+   needs repairing is a script that was written wrong.
 
 ## 1. Voiceover voice & register
 
@@ -364,13 +382,15 @@ carry the personalized token.
   multi-lane product/opportunity decks 14–26. Content sections run 5–19 rows; hooks 3–6 rows before questions;
   Finish Up 4–13 rows; terminal slides 2–5 rows.
 - Long hover-panel rows (up to 160 words) are fine — they're read only if clicked, not linear narration.
-- Write `(NO VOICE OVER)` rows in exactly these five places:
-  1. Slide 1 Part 1 `(NO VOICE OVER) Get Started` — universal cover row.
-  2. Hover/expander panels where on-screen text does the talking (`(HOVER NO VO) MEDICAL DEBT` [40]).
+- Silent rows — an EMPTY Script cell, never a `(NO VOICE OVER)` marker (the corpus wrote the marker;
+  you do not) — belong in exactly these five places:
+  1. Slide 1 Part 1, the Get Started cover row — Script empty, Slide Name "Get Started".
+  2. Hover/expander panels where on-screen text does the talking (corpus: `(HOVER NO VO) MEDICAL DEBT` [40]).
   3. Paged reference documents and testimonial walls (`HOVER SECTION 1 OMG Mary Omg! I just hit 9 pounds…` [03]).
-  4. `No audio` form/scheduler steps on terminal slides (`scheduler 2 OF 3` [40]).
-  5. Auto-playing testimonial/embed videos (`NO VOICEOVER / Patrick- Fast Food Industry` [32]).
-  Everywhere else, every row speaks.
+  4. `No audio` form/scheduler steps on terminal slides (corpus: `scheduler 2 OF 3` [40]).
+  5. Auto-playing testimonial/embed videos (corpus: `NO VOICEOVER / Patrick- Fast Food Industry` [32]).
+  Everywhere else, every row speaks. The stage direction that used to ride in the Script cell goes in
+  On Screen; the Script cell stays empty.
 - Sequence per deck: hook (3–6 short rows) → intro questions (3–15 rows) → logo reveal (1 row) → credibility
   beats (2–8 rows) → first-visit menu (1 row) → sections each ending in a gate → Finish Up recap → closing fork →
   terminal slides. Deliberate silence is a tool: `STOP MUSIC AFTER 'SECOND' AND START AGAIN AT NEXT LINE FOR EFFECT` [37].
@@ -395,7 +415,8 @@ carry the personalized token.
 - Mark speculative lines: `ALTERNATE RECORDING VO:` + OS `DON'T BUILD GRAPHICS FOR THIS LINE BUT INCLUDE…
   SO SHE CAN RECORD VO FOR POSSIBLE LATER USE` [03].
 - Testimonials: introduce with "It's one thing when you hear it from us, but totally different when you hear real
-  stories from real people" framing [24][26], then `(NO VOICEOVER)` rows, one per testimonial, formatted
+  stories from real people" framing [24][26], then silent rows (EMPTY Script cell; the corpus wrote
+  `(NO VOICEOVER)` there — you do not), one per testimonial, the quote in On Screen formatted
   quote + em-dash + first name/initial: `"…saved almost $4,000 on a condo in Maui…" - Jon` [04]; `— Dave S.` [32].
   Give each a 2–4 word identity-hook title: `Fat Funeral Miranda`, `Chicken Sue` [03]; `Erin- Stay At Home Mom` [32].
   Video testimonials = Name + URL + timecodes in OS [05][17]. Always attach a results-vary disclaimer.
@@ -424,6 +445,9 @@ carry the personalized token.
    "Have a great day!" or "welcome to X!", with a CONTINUE ANYWAY path on every decline.
 6. OS column: key phrases only, caps for build commands, disclaimers placed, URLs carry rep-identifier notes,
    empty cells wherever the visual holds.
+7. EVERY row has its Slide Name (answer rows and branch rows included — a blank one is a slide that is
+   never built), and every silent beat has an EMPTY Script cell, not a "(NO VOICE OVER)" marker.
+8. The column header row is line 1 of the CSV. Not a word before it.
 
 ## Repetition is the tell of a generated script (Bren's tester, 2026-08-24)
 

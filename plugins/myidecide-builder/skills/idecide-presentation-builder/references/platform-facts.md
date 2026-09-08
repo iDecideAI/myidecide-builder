@@ -1,4 +1,4 @@
-> **Reference for the iDecide Presentation Builder skill.** Verified platform
+> **Reference for the myiDecide Presentation Builder skill.** Verified platform
 > behaviour and footguns — every entry was proven live before it was written
 > down. Read the relevant section when something behaves unexpectedly.
 
@@ -10,7 +10,7 @@ Every item below was proven live in the builder and re-verified after a full pag
 reload. These are the rules the extension's inject scripts must follow — several were
 learned the hard way and silently corrupt a deck if ignored.
 
-Last updated 2026-08-21.
+Last updated 2026-09-04.
 
 > **Dual-environment rule (Bren, 2026-08-07).** This file and the project runbook
 > (`WORKFLOW.md` / `AIAGENT_API.md` / `BUILD_NOTES.md` at the repo root) must BOTH be
@@ -20,6 +20,125 @@ Last updated 2026-08-21.
 > The extension and the agent runbook drive the same platform through different code
 > paths, so a finding recorded in only one place is lost to the other. Prose alone is not
 > enough.
+
+---
+
+## 2026-09-03 — tester-run findings
+
+Three tester build records and Bren's own rebuild, read against the logs.
+Each item names the code that now enforces it.
+
+### Slide 1 has exactly ONE action element
+
+§13 below already says it: **never set actions on slide 1 — any click there
+starts the presentation.** What the records showed is the other half of that
+fact: a *second* button on the cover is not harmless, it is a defect. The
+planner wrote `copy.items = [{label:"Get Started", target:"Welcome"}]` on the
+cover; archetype O drew the static "Click anywhere to Begin" pill, then the
+"nav items are buttons, everywhere" pass built a wired `btn:Welcome` pill
+beside it, the wire pass tried to give it an action the platform ignores,
+and the design reviewer flagged a "missing Begin button". Now:
+
+- `composer.js compose()` strips wired items from a `kind:"cover"` plan and
+  skips the nav-button row (`cover: slide 1 advances on any click — dropped N
+  wired item(s)…` in the log); archetype O no longer draws the accent chip.
+- `pipeline.js wireSlideBlocks` skips the cover (first slide of the deck or
+  `kind:"cover"`) and removes any action record already sitting on a
+  `btn:`-named block there; `buildNav` never calls it for the cover.
+- `applyEdits`: `setAction` / a targeted `addButton` on the cover are refused
+  with "slide 1 advances on any click — the platform never carries button
+  actions there; nothing to wire"; `delete` of a wired button on the cover is
+  ALLOWED (it is the duplicate).
+- `review_system.md` / `revise_system.md` / the plan prompts carry the rule.
+
+### The editor does not finish booting in a BACKGROUND tab
+
+After the panel appended `?aiagent=` and reloaded, the tab was behind another
+one. The API trace stops after `GET builderSession` — no templates, no
+uploads, no blockactions calls — and `window.aiagent` never appears. The
+mount probe returned `{ok:false, err:"no engine"}` instantly, but the thrown
+message was hard-coded to the "45s / no current page" wording, so every retry
+"failed after 45s" in the same second. **Activate the tab
+(`chrome.tabs.update({active:true})` + `chrome.windows.update({focused:true})`)
+before waiting on the editor, and wait for `window.aiagent.engine`, not just
+`window.aiagent`.** The same applies to every navigated pass — img.ly needs a
+visible tab for `changeSlide` / `block.export` / snapshots; backgrounded runs
+lost slides to 30 s stalls in two of the three records.
+
+### Colour changes go through `IDP.recolorDeck`, never a rebuild
+
+A `theme` change in the revision chat rebuilt all 45 slides through the plan
+with the palette registered at connect time (`SH.init` colours = the OLD
+accent, and the composer's `C()` reads `IDP.job.theme.paletteRoles`, also
+old) — so the rebuild painted the orange back on. Now:
+
+- `IDP.recolorDeck(pairs, names, opts)` — detached like `buildNav`; walks each
+  slide as it stands and repaints solid fills, gradient stops, strokes, text
+  (whole block when uniform, per-run spans when mixed — `getTextColors(id,i,i+1)`
+  scans), the page background (fill + `backgroundColor/color`) and icons whose
+  recorded `idecide/iconTone` matches (re-placed via `uploadAndInsertImage`
+  when `IDP.iconUris` has `<tone>:<concept>`, else reported in
+  `missingIcons`). Per-channel tolerance 0.035; the layer's alpha is kept.
+  Each touched slide gets the applyEdits commit pair (documented dirty +
+  `exportAndPutSlide`) and the closing `commitEdits` navigation. Result in
+  `IDP.recolorResult`, settle flag `status().recolorFinished`.
+- `IDP.registerTheme(theme)` re-runs the colour half of `IDP.init` (the SH
+  token map AND `IDP.job.theme`) without the font lookups. The panel calls it
+  after any theme change. A theme change schedules NO rebuild.
+
+### A silent marker is silence
+
+The script model wrote the literal "(NO VOICEOVER)" into rows;
+`restoreDroppedNarration` restored it "from the script (2 words)"; the voice
+service spoke it (1.0–1.7 s clips) or failed with "audio missing after
+generation". `IDP.isSilentNarration(text)` is the one test — empty,
+punctuation-only, `(NO VOICEOVER)` / `(no voice over)` / `(no narration)` /
+`[silent]` / `(none)` / `none` / `n/a` / `—`, with or without brackets and
+periods, and a leading marker such as `(NO VOICE OVER) Get Started` — and
+`buildNav`'s `wantText`, the Slide Notes writers and the wire pass all use
+it: no TTS call, no audio-missing error, no notes, default timing. The
+script contract now says a silent beat is an EMPTY Script cell.
+
+### A CSV row with a blank Slide Name is a slide that never exists
+
+Tester run 2 left the Slide Names cell blank on the answer rows.
+`reconcilePlanNames` dropped "Answer 1 - Correct/Incorrect" (no CSV
+identity), `normalizeWiring` kept the now-unresolvable `target`, the dead-
+option fallback never ran, and the wire pass failed with `unknown target` on
+every visit — a viewer who answered would have hit a dead end. The script
+prompts now state, bluntly, that every row carries its Slide Name; the panel
+fills blank names from the outline order, keeps plan slides that are
+referenced as targets, and drops unresolvable targets so the fallback
+re-points them.
+
+### Anthropic API — an identity-linked key with no workspace needs a header
+
+Not a myiDecide fact, but it decides whether the extension works at all, and
+it was measured the same day (second tester run). A Console key created with
+*Linked account* set and **no workspace chosen** is an *all-workspaces* key:
+
+- `POST /v1/messages` and `GET /v1/models` both answer `400
+  invalid_request_error` — *"anthropic-workspace-id is required when
+  authenticating with an identity-linked API key; send the id of the
+  workspace this request acts in."* — for **every** model, including the
+  one-token Haiku ping the diagnostic uses.
+- With the header set to something that is not a workspace the API answers
+  *"anthropic-workspace-id header must be a valid workspace ID."* (`default`
+  is not accepted; the value is the `wrkspc_…` ID from the ID column of
+  Console → Settings → Workspaces).
+- The Admin API (`GET /v1/organizations/workspaces`, `/v1/organizations/me`)
+  answers `403 permission_error` to a personal key, so **the panel cannot
+  discover the workspace** — the person pastes it or creates a key with a
+  workspace chosen (that key carries its scope and needs nothing).
+- CORS preflight on `api.anthropic.com` lists `anthropic-workspace-id` in
+  `access-control-allow-headers`, and the panel's `host_permissions` cover
+  the origin anyway.
+- A successful call returns the resolved workspace in the
+  `anthropic-workspace-id` **response** header (also for the Default
+  Workspace); the diagnostic shows it in the "accepts the key" row.
+
+Source: platform.claude.com/docs → Manage Claude → Authentication → "Select a
+workspace".
 
 ---
 
@@ -947,6 +1066,12 @@ default "Play Button" cover ships `[sender-name]` and `[sender-email]` at
 
 ## Creating a NEW presentation from the agent (verified 2026-08-25, deck 184)
 
+> **Superseded 2026-09-04.** `POST /create/aiagent/new` creates the deck
+> without a builder tab, skips the Presentation Info modal and answers an
+> `editUrl` that already carries `?aiagent` — see "2026-09-04 — create
+> endpoint, image batch, lottie batch" at the end of this file. Everything
+> below still holds and is the FALLBACK path (a non-200 from the endpoint).
+
 `https://my.idecide.com/create/new` **auto-creates a deck server-side** and
 redirects to `/builder/create/{newId}` with the Presentation Info overlay
 (`#presentationOverlay`) open. Two things to know:
@@ -1168,3 +1293,152 @@ never needs it, because `executeScript` covers a build.
 `chrome.runtime.getURL()` returns the static URL while dynamic-URL resources are
 only reachable through the rotating token, so the handshake may not survive that
 flag unchanged. That needs a live test in Chrome, not a code read.
+
+## 2026-09-04 — create endpoint, image batch, lottie batch (verified)
+
+All four verified live on my.idecide.com (deck 200). The rest of the surface is
+unchanged — `api.assets.searchImages/searchVideos/importPexelVideoBatch`,
+`api.currentSlide.images.uploadAndInsertImage/insertPexelImage/
+replaceWithPexelImage`, `api.currentSlide.videos.*`, the narration batch,
+`slides.createMultiple` — and the full instructions text still lives on the
+page as `window.aiagent.instructions`.
+
+### A. A presentation can be created without a builder tab
+
+`POST /create/aiagent/new` — same origin (`https://my.idecide.com`), JSON body
+`{name: "Q4 Sales Deck", slideCount: 5}`, `Content-Type: application/json`;
+the browser session cookie authenticates, so it works from any page on the
+site. Response `200` JSON:
+
+```json
+{ "editUrl": "/builder/create/201?aiagent&slide=40717",
+  "userSessionId": 201, "name": "Q4 Sales Deck",
+  "introSlideId": 40716, "slideIds": [40717, 40718] }
+```
+
+- `slideCount` N creates **the intro slide PLUS N blank slides**;
+  `introSlideId` is the platform's Slide 1, `slideIds` the blanks in order
+  (the sample above is abbreviated).
+- `editUrl` **already carries `?aiagent`** and points at the first blank
+  slide. Navigating to it lands in the editor in aiagent mode; the
+  Settings / "Presentation Info" modal is **skipped**. No `&aiagent=`
+  re-navigation, no overlay to dismiss.
+- A signed-out session gets no deck: the request is redirected to the login
+  page (an HTML 200 with `response.redirected` set) or refused — test for that
+  before reading the body.
+- **There is no archive/delete call in the aiagent surface.** A deck minted is
+  a deck kept: create exactly once, when a build is actually starting.
+
+The build flow now owns this: it POSTs from the myiDecide tab it is on (the
+dashboard is enough — it opens one if the active tab is elsewhere), names the
+deck from the brand answer when it already has one and "myiDecide
+presentation" otherwise, asks for **one** blank slide (the shells phase
+creates the rest with `createMultiple` and clears whatever it did not make),
+navigates to `editUrl`, waits for `window.aiagent` with the tab in front, and
+carries on through the same connect path as before. The `/create/new`
+navigation below is kept only as the fallback for a non-200 answer; both
+paths log which one ran. The plugin's SKILL.md teaches the same endpoint.
+
+### B. `api.assets.importPexelImageBatch(images)` — stills in one request
+
+`images: Array<string | {url, name?}>` → `Promise<(UploadedFileResponse|null)[]>`.
+One server request, **at most 50** entries, results in input order; a
+non-Pexels url or a failed import is `null` at its index and does not take
+the batch down. Makes **no blocks**; not page-bound. Internally `POST
+/builder/{sid}/pexels/import/image/batch`. The image twin of the footage
+wave: resolve the deck's stills in Phase 0.5 beside the video batch, place
+them later with D.
+
+### C. `api.assets.importLottieBatch(lotties)` — Lottie JSON in one request
+
+`lotties: Array<string | {lottie: string, name?}>` → `Promise<(UploadedFileResponse|null)[]>`.
+Each entry is the **raw Lottie JSON document as a STRING** — not a url, not a
+parsed object. At most 50; makes no blocks. Returns `{id, label, meta: {uri,
+thumbUri, width, height, …}}` per entry (`null` on failure). Internally `POST
+/builder/builderSession/{sid}/uploads/lottie/batch`. Supply a `name`.
+
+### D. `api.currentSlide.images.insertUploadedImage(upload, x, y, w, h, startTime|null, duration|null)`
+
+→ `Promise<BlockId>` (**0 on failure**). Places a batch-imported image **or**
+lottie (an `UploadedFileResponse` from B or C) on the current page — no server
+call. For a lottie it calls `engine.asset.defaultApplyAsset({… mimeType:
+'application/json+lottie', looping: true})` and then `setLooping(true)` — the
+engine treats it as an `application/json+lottie` asset and **the platform
+loops it**. For both it sets **Cover** fill mode + `adjustCropToFillFrame`,
+then applies the size, position and timing given. Icons and lotties are
+switched to **Contain** afterwards (and re-sized to their native aspect) so
+they keep their whole frame; a documented `api.*` insert, so the slide is
+dirty and the next `changeSlide` commits it.
+
+**Lottie in the editor (phase 3, 2026-09-04).** The extension's animated-icon
+path: catalogue match → recolour panel-side → `importLottieBatch` (≤50) →
+`insertUploadedImage` → Contain + native aspect, looping, duration = the
+slide's (the file is a 60 s seamless loop). Import + insert were verified live
+on deck 200.
+
+**PROVED 2026-09-05 (deck 202): the editor's Lottie renderer does NOT honour a
+time-remapped loop — it plays the first cycle and freezes on the last frame;
+N back-to-back precomp layers play and loop.** Method: place both builds of
+the same icon (`arrows/arrow-1`, `ui/clock`, white tone) on "Find Your Sport -
+3", then `engine.block.setPlaybackTime(page, t)` for t = 0.2 … 7.3 s and
+`engine.block.export(block, 'image/png')` at each t, hashing the bytes: the
+`--mode tm` file's frames stopped changing after its ~1 s source cycle; the
+`--mode layers` file's frames kept changing through every sample and repeated
+its cycle. Bren confirmed both on the canvas ("your 2 test lottie uploads are
+working"). Consequences: the bundled library is regenerated with `--mode
+layers` (`catalog.json` → `rules.loopMode: "layers"`, gated by
+`smoke-panel.mjs`), and a lottie placed from the old `tm` build on a deck
+built before 2026-09-05 stays frozen until the slide is rebuilt (deck 202's
+one arrow). Placed-block facts: the fill is `//ly.img.ubq/fill/video` with
+`fill/video/totalDuration` 60; `playback/looping` is not readable on the
+block (`getBool` throws) — read looping from the fill if it is ever needed;
+the block's duration is the slide's, which trims the 60 s loop.
+
+**PROVED 2026-09-05 (deck 205): `api.currentSlide.images.insertUploadedImage`
+must be called ONE AT A TIME.** Three concurrent calls for three lottie
+uploads (the materialiser's chunk of 4 in `Promise.all`) left only the LAST
+promise resolving inside 12 s; the other two hung, and in the build they
+eventually came back as graphic blocks with a **black colour fill**, `Contain`
+set, the icon's name and metadata — the "black squares" on the Lordicon test
+menu. The platform's `engine.asset.defaultApplyAsset` keeps one pending apply,
+exactly like the pexel upload slot did (BUILD_NOTES "asset pre-resolution").
+Sequential calls (`await` each) all resolve with `fill/video` blocks
+(`getState` → `Ready`, `fill/video/totalDuration` 60.87 / 60 / 60.25 s for
+the three test files). `SH.placeUploadedImage` therefore serialises every
+placement through one promise chain (SH `2026-09-05-r9`); callers may still
+fire placements in parallel. Corollary: an in-flight apply that never
+resolves blocks every LATER apply on that page until the page is reloaded —
+a harness that leaves hung inserts behind must reload before building again.
+Also proved on the way: `engine.asset.defaultApplyAsset` with a `blob:` URL
+returns a block with a colour fill (it does not load blob: sources) — test
+lotties through `importLottieBatch` + `insertUploadedImage`, never through a
+blob URL.
+
+**Lordicon files (cdn.lordicon.com, 2026-09-05) come in three shapes, and the
+engine's Lottie loader accepts all three once prepared** (`prepareLordicon` in
+the library generator's `lottie-core.js` — every file is prepared before it is
+hosted; the extension repo's `tools/LOTTIE-LIBRARY.md` has the rules): **A. marker
+states** (`markers[]` name `in-reveal` / `default:hover-…` / `morph-…` /
+`loop-…` with `tm` start + `dr` frames; each state a precomp layer limited to
+its window, `st` = its start; no expressions); **B. expression state layers**
+(root precomps `hover-N` / `loop-N` all spanning the timeline, opacity driven
+by an expression reading a `State-…` effect slider on a `Color & Stroke
+Change` null, plus a time remap; without expressions every state renders at
+once); **C. one timeline** (root layers are the animation). B and C carry a
+`watermark` shape layer (ip 2.5–25 frames) whose opacity only an expression
+hides. Colours are two slots — primary `#121331`, secondary `#08a88a` — that
+the library thresholds classify as "accent", so the recolourer is told their
+roles (`colourRoles`). The 500 px canvas keeps ~15–20 % air around the
+artwork: the materialiser draws a Lordicon animation 28 % larger than the
+glyph box it replaces. Icons not yet on the public CDN ("latest", most of the
+*system* family on 2026-09-06) are served to the site's own player from
+`media.lordicon.com/icons/<family>/<style>/<index>-<name>.li` — base64 of the
+same Lottie JSON XOR `0x2a` — and the harvest runner decodes those.
+
+Toolkit parity: `sh/media.js` → `SH.preResolveImages(specs, opts)` (search
+via `searchImages`, best landscape result, dedupe by url, ≤50 per request,
+returns `{query → UploadedFileResponse}`), `SH.placeUploadedImage(upload, x,
+y, w, h, {contain, nativeAspect, name, radius, start, duration})`, and
+`SH.applyPexelImage(block, query, {upload | uploads})` preferring a
+pre-resolved upload. The lottie build step itself (which slides get one) is
+being implemented separately in the composer.

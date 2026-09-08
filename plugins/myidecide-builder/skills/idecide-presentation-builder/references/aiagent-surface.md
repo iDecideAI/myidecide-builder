@@ -1,4 +1,4 @@
-> **Reference for the iDecide Presentation Builder skill.** The complete
+> **Reference for the myiDecide Presentation Builder skill.** The complete
 > `window.aiagent` call surface with worked examples.
 > `window.aiagent.instructions` is the editor's live signature list — read it
 > each session and diff against this file; where a signature differs, the live
@@ -19,7 +19,7 @@ discipline — save model, template rules, footguns, the SH/REST fallback — se
 
 | Surface | Calls |
 |---|---|
-| `aiagent.api` | **48** |
+| `aiagent.api` | **51** (48 enumerated 2026-08-23 + 3 verified 2026-09-04) |
 | `aiagent.engine` | **547** |
 
 Two caveats that matter if you enumerate this yourself:
@@ -41,9 +41,27 @@ commit or it is lost.
 
 ---
 
-# Part 1 — `window.aiagent.api` (48 calls)
+# Part 1 — `window.aiagent.api` (51 calls)
 
 ## 1.0 Top level — 3
+
+> **Not on `api`, but part of the surface an agent needs (verified 2026-09-04):**
+> `POST /create/aiagent/new` — same origin, JSON body `{name, slideCount}`,
+> cookie-authenticated, works from any page on the site. Returns
+> `{editUrl, userSessionId, name, introSlideId, slideIds[]}`; `slideCount` N
+> makes the intro slide PLUS N blanks; `editUrl` already carries `?aiagent`
+> and skips the Settings modal. A signed-out session is redirected to the
+> login page (an HTML 200 with `response.redirected`) — test for that before
+> reading the body. There is no delete: mint exactly once, when a build is
+> actually starting.
+>
+> ```js
+> const r = await fetch('/create/aiagent/new', { method: 'POST', credentials: 'include',
+>   headers: { 'Content-Type': 'application/json' },
+>   body: JSON.stringify({ name: 'Q4 Sales Deck', slideCount: 1 }) });
+> if (!r.ok || r.redirected) throw new Error('sign in first');
+> const d = await r.json(); location.href = d.editUrl;
+> ```
 
 ### `api.helloWorld(): string`
 
@@ -196,7 +214,7 @@ await A.slides.setAutoAdvance(ids['03 menu'], false, 0);                // menu 
 
 ---
 
-## 1.2 `api.assets` — 3 calls (deck level, no current-slide requirement)
+## 1.2 `api.assets` — 5 calls (deck level, no current-slide requirement)
 
 ### `assets.searchImages(terms, page): Promise<{page, perPage, totalResults, photos[]}>`
 
@@ -244,6 +262,34 @@ await window.aiagent.api.assets.importPexelVideoBatch(
 The extension runs this as a **continuous uploader**: one queue for the whole deck,
 ten clips a request, two requests in flight, and each slide takes its clip as it lands.
 
+### `assets.importPexelImageBatch(images): Promise<(UploadedFileResponse|null)[]>` — verified 2026-09-04
+
+`images: Array<string | {url, name?}>`. One server request, **at most 50**
+entries, results in input order; a non-Pexels url or a failed import is `null`
+at its index and does not take the batch down. **Creates no blocks**; not
+page-bound — the still twin of the footage wave. Internally `POST
+/builder/{sid}/pexels/import/image/batch`.
+
+```js
+const hits = await Promise.all(queries.map(q => window.aiagent.api.assets.searchImages([q], 1)));
+const picks = hits.map(r => r.photos.find(p => p.width > p.height) || r.photos[0]).filter(Boolean);
+const urls  = [...new Set(picks.map(p => p.url))].slice(0, 50);          // dedupe, cap
+const ups   = await window.aiagent.api.assets.importPexelImageBatch(urls.map(u => ({ url: u })));
+// ups[i] is {id, label, meta:{uri, thumbUri, width, height, …}} or null — keep it per query
+```
+
+### `assets.importLottieBatch(lotties): Promise<(UploadedFileResponse|null)[]>` — verified 2026-09-04
+
+`lotties: Array<string | {lottie: string, name?}>`. Each entry is the **raw
+Lottie JSON document as a string** — not a url, not a parsed object. At most
+50, no blocks. Returns `{id, label, meta:{uri, thumbUri, width, height, …}}`
+per entry (`null` on failure). Internally `POST
+/builder/builderSession/{sid}/uploads/lottie/batch`. Always give a `name`.
+
+```js
+const ups = await window.aiagent.api.assets.importLottieBatch([{ lottie: lottieText, name: 'pulse-icon' }]);
+```
+
 ---
 
 ## 1.3 `api.narration` — 2 calls (deck level)
@@ -283,7 +329,7 @@ for (const r of all.filter(x => x.success)) {
 
 ---
 
-## 1.4 `api.currentSlide` — 31 calls
+## 1.4 `api.currentSlide` — 32 calls
 
 ### The slide itself — 3
 
@@ -506,7 +552,7 @@ const id = await window.aiagent.api.currentSlide.narration.generateAndInsert(
 );
 ```
 
-### `currentSlide.images` — 3
+### `currentSlide.images` — 4
 
 #### `images.insertPexelImage(url, x, y, width, height, startTime, duration): Promise<BlockId>`
 
@@ -533,6 +579,24 @@ recoloured Iconify SVG or anything else you generated.
 const svg  = await fetchIconSvg('shield-check', '#0989cf');
 const file = new File([svg], 'icon.svg', { type: 'image/svg+xml' });
 const id   = await window.aiagent.api.currentSlide.images.uploadAndInsertImage(file, 640, 300, 52, 52, 0, null);
+```
+
+#### `images.insertUploadedImage(upload, x, y, width, height, startTime|null, duration|null): Promise<BlockId>` — verified 2026-09-04
+
+Places a batch-imported image **or** lottie (an `UploadedFileResponse` from
+`importPexelImageBatch` / `importLottieBatch`) on the current page — **no
+server call**; `0` means it failed. A lottie is applied as an
+`application/json+lottie` asset with `looping: true` and the platform loops
+it. Both get **Cover** + crop-to-fill, then the size, position and timing
+given — switch an icon or lottie to **Contain** afterwards and restore its
+native aspect so it keeps its whole frame. A documented `api.*` insert, so
+the slide is dirty and the next `changeSlide` commits it.
+
+```js
+await window.aiagent.api.slides.changeSlide(slideId);
+const id = await window.aiagent.api.currentSlide.images.insertUploadedImage(upload, 86, 96, 686, 528, 0, null);
+if (!id) throw new Error('insertUploadedImage failed');
+window.aiagent.engine.block.setContentFillMode(id, 'Contain');     // icons and lotties only
 ```
 
 ### `currentSlide.videos` — 3

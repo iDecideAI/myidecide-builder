@@ -1,9 +1,9 @@
 # myiDecide Builder — a Claude plugin
 
-Build and edit **interactive iDecide presentations** by talking to Claude.
+Build and edit **interactive myiDecide presentations** by talking to Claude.
 
-[myiDecide](https://idecide.com) is a platform for presentations that branch. An
-iDecide presentation is not a linear deck: viewers *choose* what they watch —
+[myiDecide](https://idecide.com) is a platform for presentations that branch. A
+myiDecide presentation is not a linear deck: viewers *choose* what they watch —
 menus open into topics, questions branch on the answer, and every path ends at a
 call to action. This plugin teaches Claude to design for that, then build it —
 writing the script, composing the slides, sourcing stock footage, generating the
@@ -114,6 +114,7 @@ nowhere else. Data handling on the myiDecide side is covered by the
 | `references/platform-facts.md` | Verified platform behaviour and footguns |
 | `references/script-craft.md` | Writing the narration and on-screen copy |
 | `references/test-brands.md` | Prefilled answers for demo builds |
+| `references/troubleshooting.md` | Plain-English help for every message you might see, one entry per situation |
 
 Claude loads `SKILL.md` first and pulls a reference in only when it needs it.
 

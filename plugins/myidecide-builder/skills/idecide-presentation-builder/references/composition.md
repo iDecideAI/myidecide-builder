@@ -1,4 +1,4 @@
-> **Reference for the iDecide Presentation Builder skill.** Two documents:
+> **Reference for the myiDecide Presentation Builder skill.** Two documents:
 > the ELEMENT CONTRACT (what an element is, how its parts group, the slot
 > rules) followed by the DESIGN PLAYBOOK (zones, type roles, gaps, colour
 > roles). Read when composing or re-aligning slides.
@@ -40,7 +40,30 @@ work out which blocks belong together from their positions or sizes — ask.
 
 A `move` acts on the whole element (every sibling by the same delta) and a
 `delete` removes the whole element. Deleting a wired button (`btn:`, `btnurl:`,
-`btnfinish:`) is refused outright by the build.
+`btnfinish:`) is refused outright by the build — except on the cover, where a
+wired button is the duplicate to remove (next section).
+
+## The cover has exactly one action element (binding, 2026-09-03)
+
+Slide 1 is advanced by the platform on **any click**; it never carries a
+button action (verified-platform-facts §13). So the cover is built with
+exactly one thing that reads as clickable: the **static** "Click anywhere to
+Begin" pill (`btn-static`), which the composer draws itself. Concretely:
+
+- the composer strips every wired item (`target` / `url` / `finish`) from a
+  `kind: "cover"` plan before its renderer runs, and never builds the
+  bottom-left nav-button row there; the old top-right "accent chip" on the
+  cover is gone for the same reason;
+- the wire pass skips the first slide of the deck (and any `kind: "cover"`
+  plan), and removes an action record it finds on a `btn:`-named block there,
+  so decks built before this rule are healed on the way past;
+- `setAction` and a targeted `addButton` on the cover are refused with the
+  rule spelled out; `delete` of a wired button on the cover is **allowed**,
+  because it was never the way forward.
+
+A cover with one static pill is complete. Two pills on a cover is a defect
+(three tester builds shipped one — `btn-static` beside a wired `btn:Welcome`
+built from the planner's `copy.items`).
 
 ## What a slide is made of is recorded, not guessed
 
@@ -102,6 +125,234 @@ box to centre-aligned.
 
 The whole set is middle-aligned in the room it *actually* has — bounded by the
 photo band or side panel, not the canvas.
+
+### The template's arrangement decides the axis (binding, 2026-09-04)
+
+Every variation declares an arrangement — `left-aligned`, `centered` or
+`right-aligned` (`skel.arr.align`, lifted into `spec.align`). That axis governs
+**everything in the content zone**: text, button groups, Back pills, stat units,
+charts, photo-card strips and the sender block. Left stays left, right stays
+right, centred stays centred. Only an Edit-step request changes it; a
+reviewer who finds a left-aligned layout centred (or the reverse) has found a
+defect, not a choice.
+
+Concretely: `text()` takes the declared axis when its caller says nothing (the
+old canvas-centre heuristic survives only for plans with no arrangement);
+every renderer records its content zone (`zoneSet`); the nav-pill row is built
+inside that zone on that axis as ONE set (it is never pinned bottom-left);
+`alignAxis` moves whole rows onto the axis — left ink edges to the zone's left
+edge, right edges to its right edge, centres to its centre.
+
+### Which side the photo goes (binding, 2026-09-04)
+
+The skeleton's `side` / `cues` say where the photo sits; the spec prose is read
+only for a phrase that names the PHOTO's side ("photo left", "portrait right").
+"photo left, 3 compact rows right" contains both words — grepping the prose
+for "right" first drew a photo-LEFT template mirrored. One helper (`photoLeft`)
+answers for every split renderer.
+
+### A deck alternates its layouts (binding, 2026-09-05)
+
+The axis rule above says a template's arrangement is honoured; it does not say
+every template should be left-aligned. The library is 314 left / 60 centred /
+1 right, so a picker that only avoided repeats let the majority speak and deck
+202 came out left end to end. Variety is an objective of the template picker
+(`assignVariations`): among the candidates that already pass every hard rule
+(capacity, photo, freshness across the last two builds, adjacent signature),
+the ones that differ from the previous slide — a different axis, the photo on
+the other side, a different layout family — and that pull the deck toward a
+mix while its running left share is high are preferred, and the seeded draw
+decides between the leaders, so a deck is still reproducible from its
+`styleSeed`. Parallel beats (answers, menus) still share one variation. The
+build log reports the axis mix ("axis mix: 29 left / 19 centred-or-right").
+None of this changes an axis after binding — that is still an Edit request.
+
+### The kind outranks the category (binding, 2026-09-05)
+
+The outline model can bind a slide to any category; the renderer is chosen by
+what the slide IS first. A `question`, `menu` or `hamburger` is rendered by K
+(wired buttons), a `cta` by N, the `cover` by O — whatever category the
+outline named — and `enforceDeckStructure` coerces the category to the kind's
+family (question → 4, cta → 15, menu/hamburger → 2, cover → 1) before the
+picker runs, so the variation it binds can hold the buttons. The composer
+renders any interactive kind through K as a last net. Deck 202's "Finish Up -
+3" was a question bound to category 14: it drew as display rows with no
+buttons and the outcome fork was a dead end.
+
+Within a category the parsed skeleton, not the category number, picks the
+renderer: category 6 with items goes by `arr.itemsMode` (rows → G, cards →
+F, chips → H, else A); category 7 by `layout` (column → C photo band,
+layered → A over a full-bleed photo, else B side panel); category 3 and 10
+already did. A renderer is never asked to draw a stage it has no code for.
+
+## What sits inside a button is centred (binding, 2026-09-04)
+
+The label of a button with no icon is centred across the plate's inner width.
+With an icon, the icon + gap + label are paired as ONE object and that pair is
+centred inside the plate — on every button: pills, rect rows, stacked menu
+rows, K tiles. (Icons in a stacked menu therefore do not line up in a column;
+accepted.) Never set a label's text alignment to Left or Right to "align it
+with" its icon — the pair is measured (ink width, `Auto` width trick, position
+restored) and placed.
+
+## No answer key (binding, 2026-09-04)
+
+A button is drawn in the contrast (featured) colour ONLY when its label is a
+way-forward — Move Ahead, Finish Up, Continue, Next — and NEVER on a
+`question` slide, whatever the item's target. Every answer on a question wears
+the same plate colour: the viewer is not told which one is right. If buttons
+on a slide differ in colour, either exactly one is the way-forward button or
+every button has its own colour by design.
+
+## Buttons only where the viewer must leave by hand (binding, 2026-09-04)
+
+On a content slide that auto-advances, the items in `copy.items` are
+**display** — photo cards, rows, chips — paired with the script. Their targets
+are dropped and logged ("rendered as display — the slide moves on by itself").
+Pills are built only on a slide the viewer must leave: `autoAdvance:false`, or
+a sub-fork with its Back item. Category 14 explainers (renderer P) draw their
+items as `paneltile.photo` tiles: photo + scrim + icon + label, one object,
+never a `btn:` name. When such a template names `action.rect` REQUIRED, the
+display units built from the same items satisfy the contract and the audit
+says so.
+
+## Graphic elements sit in the flow like anything else (binding, 2026-09-04)
+
+SVG icons, infographic parts, charts, images, lotties and videos follow the
+template's spacing and positioning rules and are grouped with the text they
+belong to — they are never dropped at a fixed spot after the renderer runs.
+
+- **`stat.ring` is one unit**: ring graphic + figure + label. The figure is
+  drawn first and MEASURED; the ring is sized to hug that ink (≥180px, ≤ the
+  zone; the digits use ≤78% of the diameter), and when even the largest ring
+  cannot hold the digits the type comes down (floor 64px) — the figure is the
+  content, the ring is its frame. The ring is inserted BEHIND the digits; the
+  label sits under the ring on the slide's axis. The ring chart is uploaded
+  without its own label/caption (the figure IS the label) and with a track
+  visible on its field (ink at 12% on light fields, white at 22% on dark).
+- Other chart types are a `chart.flat` unit placed in the stack at the
+  column's alignment, never at a fixed y.
+- A row whose graphic ENCLOSES its text (a ring around a figure, a disc, a
+  plate) is spaced by the graphic's box, exactly like a plated button row —
+  never by the text's ink.
+- **Animated icons (lotties) are icons.** Where the animated library has a
+  confident match for an icon concept, the build places a looping animation
+  in the icon's slot — same size box (the animation keeps its own aspect
+  inside it, Contain), same group role `icon`, same z-order plate → icon →
+  label, same well — recoloured to the brand before upload: the drawing's
+  ink → brand ink on light fields, white on dark fields; its accent → the
+  brand accent; whites transparent — except the wired *flat* drawing, the
+  designed one, which is placed exactly as Lordicon drew it (its colours and
+  whites untouched). The file is a 60 s seamless loop; the
+  block's duration is the slide's, so the animation is trimmed to the slide
+  and loops within it. No match → the SVG glyph, exactly as before. A
+  recolour re-places the animation in the new tone; a lottie is never a
+  background or a photo.
+- **Lotties by default, SVG for the gaps. The order is the remote library →
+  the SVG glyph (2026-09-06).** The library is the whole Lordicon *wired*
+  collection plus the *system* family — 3,687 icons harvested under Bren's
+  PRO licence, pre-processed by the library generator (pinch variation, 60 s
+  `layers` loop, repainted to the library's colour language) and hosted at
+  `https://idecide.com/lottie-library/` (`LOTTIE_REMOTE` in the panel; the
+  catalogue is probed through `version.json`, cached in `chrome.storage`,
+  files fetched per build). History, so old logs make sense: 2026-09-04 a
+  548-file bundled library; 2026-09-05 a live `api.lordicon.com` search with a
+  packaged key in front of it; 2026-09-06 both removed — "after we have the
+  new library build, we can remove our original self hosted lotties, and the
+  lordicon api approach and just use our new self hosted lordicon files".
+  No key, no attribution (PRO), no Settings step.
+- **Which drawing where (Bren 2026-09-06/08).** Every icon has up to four
+  drawings — "think of the wired versions as more visual, stylized
+  versions, and the system versions as more simplified versions for button,
+  or pill elements": wired **outline** (2-tone, recoloured to the brand) on
+  light fields and wired **flat** (the designed drawing — "intentional
+  colors that should not be modified when used", placed untouched) on
+  dark/photo fields — "the theme decides", a hex tone by its lightness — for
+  standalone icons: above text, or alone on screen; the 1-tone **system
+  outline** (light) / **system solid** (dark), recoloured, for button and
+  pill icons. The panel uploads the wired build under
+  `<tone>:<concept>` and the system build under `<tone>:<concept>#ui`; every
+  button/pill glyph is named `btn/icon`, so `icon()` asks for `#ui` there and
+  falls back to the wired drawing when the icon has no system version. A
+  Lordicon animation is drawn 28 % larger than the glyph's box because its
+  canvas keeps a margin, so it reads the size of the glyph it replaces.
+- **The match is precision-first, never fuzzy:** a name word must match —
+  the file name or one of the item's **aliases** (the builder's Lucide-style
+  spellings: `chevrons-down` → `two-chevrons-down`, `refresh-cw` →
+  `arrow-rotate-right`) — every concept word must be a tag, no foreign name
+  word, motif categories only on request; a refined name falls back to its
+  base word (`calendar-check` → `calendar`, `shopping-bag` → `bag`);
+  directions are meaningful (`arrow-left` is not `arrow`). The detail prompt
+  tells the copy model the vocabulary is the Lordicon wired collection with
+  exact names. The files are the `layers` loop build — the editor's player
+  freezes a time-remapped loop after its first cycle. The library step never
+  fails silently: the log says how many icons animated and which source,
+  what stayed SVG, and when the remote catalogue was unreachable (the cached
+  copy is used, or the step is skipped with one line). The cover-guard
+  leaves glyphs and animations alone (they are Contain, never Cover).
+- **An icon knows what it is, so an edit can change any part of it (Bren
+  2026-09-08).** Every placed icon carries marks — `idecide/icon` (concept),
+  `idecide/iconTone`, and for an animation `idecide/lottie` (the catalogue
+  id), `idecide/iconStyle` (`outline` / `flat` / `system-outline` /
+  `system-solid`), `idecide/iconAccent` (`brand`, a hex override, or `none`
+  for a designed drawing), `idecide/iconSwaps` (colours swapped on request)
+  and `idecide/iconColors` (the hexes it shows) — and `inspect` reports them
+  as `layers[].icon`. The edit ops read them: **setIcon** puts another
+  concept in the same box (tone, style, family kept — a button icon stays a
+  system drawing), **setIconStyle** swaps the drawing (solid ↔ outline
+  within the family, wired ↔ system, flat, animated ↔ static), and
+  **setIconColor** takes a `tone` (ink), an `accent` (the 2-tone drawing's
+  second colour) or `from`/`to` swaps (one specific colour for another — the
+  one way a designed flat drawing is ever repainted, because it was asked
+  for). Each such drawing is an upload of its own, keyed
+  `<tone>:<concept>[#ui|@<style>][+<accent>][~<from>><to>…]` (`lottieKeyFor`
+  in the pipeline); the panel asks `IDP.iconNeeds` which keys a turn's ops
+  want, fetches those files from the library, paints and swaps them
+  (`ensureLottieNeeds`) and uploads them before the ops run. The deck-wide
+  `recolor` sweep follows an animation's tone AND accent, keeps its style,
+  and leaves designed drawings alone. The 28 % overscan applies to every
+  Lordicon drawing an op places or re-places (glyph → animation grows the
+  box, animation → glyph shrinks it), so sizes read the same either way.
+
+### A kicker is one object, recorded once (binding, 2026-09-05)
+
+An eyebrow on a headline is `heading.kicker` — one group with the parts
+`eyebrow` and `headline` — whether the renderer built it through
+`EL.heading` or drew two text blocks that `headBind` paired from geometry.
+The headline's solo ledger entry goes in before the pairing so the pair
+replaces it; a slide never records `heading.standard×2` for one heading, and
+the audit reads every heading for the eyebrow part before it reports a kicker
+short of one.
+
+## One shortcode per slide (binding, 2026-09-04)
+
+A `[viewer-*]` / `[sender-*]` token appears at most ONCE on a slide. The
+canonical contact lines (`token-sender`, `token-email`, the `contact:` group)
+win; otherwise the first in reading order keeps it and the later text loses
+the token — a block left empty is destroyed and removed from the ledger. The
+cover greeting is drawn by the builder, so a plan that also puts
+`[viewer-name-first]` in the headline gets it once, not twice.
+
+## The ☰ opens the Hamburger Menu (binding, 2026-09-04)
+
+`api.slides.setMenuSlide(id, true)` is UNIQUE — setting it on one slide unsets
+every other. So the flag is set on the **Hamburger Menu** slide only, never on
+menu-kind slides in general, and `assertMenuSlide` re-reads the live list and
+re-sets it after the shells pass, at the end of every navigated build, after a
+restore and at the start of every edit commit. The revision step can ask for
+it with `{"hamburger": true}`.
+
+## Measure only what has stopped moving (binding, 2026-09-04)
+
+The engine lays text out with whatever face it has at that instant; a display
+font still downloading measures as the fallback face. Every pass that reads a
+text frame — the packer, the axis pass, the overlap audit — runs only after
+`settleText` has seen two consecutive samples (frame height + visible line
+count, every text block) agree, up to 1.5s. Deck 200's question headline
+measured 2 lines at creation and was 3 once Poppins arrived; the buttons had
+already been spaced under the short number. Two text blocks in one column are
+always two rows (stacked text never legitimately overlaps), and rows inside a
+unit are verified against the real frame above them after placement.
 
 ## Timing follows the same structure
 

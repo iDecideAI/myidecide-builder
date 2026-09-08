@@ -10,7 +10,7 @@
       "name": "myidecide-builder",
       "displayName": "myiDecide Builder",
       "source": "./plugins/myidecide-builder",
-      "description": "Build and edit interactive iDecide presentations directly in the myiDecide editor.",
+      "description": "Build and edit interactive myiDecide presentations directly in the myiDecide editor.",
       "author": {
         "name": "iDecide Interactive",
         "url": "https://idecide.com"
