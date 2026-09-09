@@ -233,6 +233,23 @@ built and play broken.
   `(NO VOICEOVER)`, `(no narration)`, `[silent]`, `(none)`, `n/a` or `—`. A
   marker is text, and text gets narrated ("no voiceover", spoken aloud) or
   fails generation. Empty string, default timing, nothing else.
+- **Facts come from the client.** Names, dates, places, products, prices,
+  numbers and claims come from the questionnaire and the client's own site.
+  Only a household-name brand with an unambiguous public record (Duolingo,
+  Patagonia, IKEA) may carry well-established facts of record — founders,
+  launch year, headquarters, flagship products — where the story invites
+  them; never user counts, revenue or results for anyone, never a fact you
+  are unsure of. In doubt, stay impressionistic ("two computer scientists").
+- **A named person is never a stock face.** An item or slide naming a real
+  person (founder, owner, staff, a quoted customer) gets no portrait or
+  headshot from stock — illustrate the role, the place or the product, or
+  use an icon only. Real faces come only from the client's own files.
+- **Production prefixes are script notation, never voice.** `(LABEL:
+  slide16_p1_first)`, `IF "OPTION"` / `IF CORRECT` / `IF INCORRECT`, `STORE
+  ANSWER IN NOTIFICATIONS` sit in the Script cell ahead of the words; strip
+  them before anything is narrated or written to a slide's notes, and take
+  EVERY line of a multi-line cell (a menu once narrated "LABEL slide sixteen
+  p one first" for four seconds and lost its real sentence).
 - **Every script row carries its Slide Name.** Answer rows most of all — a
   blank name means the slide never exists, every button that pointed at it
   dies, and the viewer hits a dead end. Names are identities; fill them once,
@@ -296,6 +313,31 @@ built and play broken.
   friends appear at most once on a slide; the contact block owns the sender
   tokens. The cover greeting already carries the viewer's name — never repeat
   it in the headline.
+- **Say it once.** One FIGURE per slide: on a stat layout the numeral carries
+  the number and the headline/eyebrow say what it means without the digits
+  ("ABOUT 5 MINUTES / 5 minutes survives a bad day. / 5 min" is one fact
+  three times and reads as a mistake). Items never restate the headline word
+  for word. Chapter openers share one eyebrow style with no ordinals — the
+  viewer chooses the order, so "CHAPTER SIX" is wrong for whoever taps it
+  first. Two answers to one question may share a headline (a viewer sees only
+  one); any other two slides may not.
+- **One icon style per group.** Buttons on a slide share one icon style
+  (system solid, system outline, or the 2-tone wired outline); a row of
+  icons above lines of text shares one (wired flat or wired outline). When
+  one member has no drawing in the tone's rule style but every member has
+  the family's other style, the whole group takes that style; when no style
+  is shared, the rule stands and the odd icon falls back alone — another
+  style, then the static SVG as the last resort. An icon the library does
+  not know stays SVG and never pulls the group off the rule.
+- **A detail line hangs off its title.** Pair a subordinate line with the
+  text directly above it in its own column — never with a tall numeral or
+  icon beside that text; tight inside the pair (16 px), wider between pairs.
+- **A chapter does not repeat a look.** Beyond the no-adjacent-repeat rule,
+  prefer a skeleton signature the chapter has not used yet (two dark
+  full-bleed kicker slides one apart read as near-copies).
+- **A `STOCK:` line is direction, never copy.** Shot lists in the On Screen
+  cell — `STOCK:`, `4 PANELS:`, `3 tiles:`, `clips:` — describe footage; a
+  grid whose copy is its panel labels needs no headline.
 - **The ☰ opens the Hamburger Menu.** `api.slides.setMenuSlide(id, true)` is
   UNIQUE — setting it on a slide unsets every other — so set it on the
   Hamburger Menu slide only, never on menus in general, and re-check

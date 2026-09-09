@@ -43,6 +43,21 @@ A `move` acts on the whole element (every sibling by the same delta) and a
 `btnfinish:`) is refused outright by the build — except on the cover, where a
 wired button is the duplicate to remove (next section).
 
+### A subordinate line hangs off the text directly above it (binding, 2026-09-09)
+
+A detail line pairs with its title, not with whatever else shares the
+title's row. On a numbered step the row is [big numeral, title] and the
+detail sits under the TITLE; spacing it off the row's ink bottom hung it
+16 px under the numeral's glyph — a full line below its title — and "Your
+laptop / Wherever you work" read as two list items (Duolingo "English Test
+- 3", Bren: "make sure these lines are being properly grouped and share
+tighter spacing, and then keep the wider spacing between the groups of
+paired text"). The packer now pairs a subordinate row with the previous
+row's text that shares its horizontal span (the title), and only with the
+whole row when nothing does; a plated or ringed row is still spaced by its
+box. Pair gap inside a unit (`PAIR_GAP`, 16 px), unit gap between units
+(`GAPT`) — the pair reads as one object, the list as its members.
+
 ## The cover has exactly one action element (binding, 2026-09-03)
 
 Slide 1 is advanced by the platform on **any click**; it never carries a
@@ -276,6 +291,34 @@ belong to — they are never dropped at a fixed spot after the renderer runs.
   falls back to the wired drawing when the icon has no system version. A
   Lordicon animation is drawn 28 % larger than the glyph's box because its
   canvas keeps a margin, so it reads the size of the glyph it replaces.
+- **One icon style per group (binding, Bren 2026-09-09).** "Elements of the
+  same group type on the same slide should attempt to use the same icon
+  style … if there are multiple buttons on screen, they should all try to
+  use the same icon style, like a system solid, outline or 2 tone icon. If
+  we are listing 3 icons above 3 lines of text, these should all try to use
+  the same style as well … if no icon of the same style is available, it can
+  then fall back to another style, or then fall back to the static svg icons
+  as the last resort." The tone rule above already gives one style per
+  family per field; what broke it was availability — one member of a row
+  without a flat (or a system solid) took the other style alone, and the row
+  read as two styles (Duolingo "How A Lesson Works - 3": a designed yellow
+  puzzle beside white glyphs). The panel decides per slide, per group — the
+  wired buttons of a menu/question/CTA are one group, the display icons
+  (rows, cards, chips, steps, `copy.icon`) another
+  (`decideSlideIconStyles`): every animated member has the rule's style →
+  nothing changes; not all, but every one has the family's other style → the
+  GROUP takes that style (uploaded as `<tone>:<concept>@<style>`, written to
+  the plan as `_iconStyle.ui` / `.wired`, and `icon()` tries that key first);
+  no style they all share → the rule stands and the odd member falls back on
+  its own — the other style, then the SVG glyph. An icon the library does
+  not know is SVG whatever the group does, and never pulls the group off the
+  rule. The log line is `icon styles (<slide>): …`.
+- **The cover's pill arrow is animated too (2026-09-09).** The "Click
+  anywhere to Begin" pill is composed, not planned, so no plan ever asked the
+  library for its arrow; the panel now prefetches the library's exact
+  `arrow-right` with the SVG warm-up and the pill asks for it by that name
+  (`btn/icon` → the system drawing). The SVG fallback is still the `arrow`
+  glyph.
 - **The match is precision-first, never fuzzy:** a name word must match —
   the file name or one of the item's **aliases** (the builder's Lucide-style
   spellings: `chevrons-down` → `two-chevrons-down`, `refresh-cw` →

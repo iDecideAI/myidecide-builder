@@ -337,6 +337,9 @@ Reuse ONE gate sentence per deck rather than writing bespoke ones. Canonical var
   - A 62-word compliance paragraph reduces to seven fragments: `WFG / financial services company / step-by-step
     process / …` [21]
 - Leave OS EMPTY when nothing new appears — an empty cell means "hold the current visual." Most explanation rows are empty.
+- A `STOCK:` suggestion never puts a stock FACE beside a named real person (a founder, the owner, a
+  quoted customer): suggest the place, the work or the product — "two people sketching on a
+  whiteboard" is fine, "portrait of the founder" is not. Real faces come only from client files.
 - Transcribe 1:1 only when the VO literally reads a bullet list — then paste the exact bullets [04][32].
 - Use ALL-CAPS imperative verbs for build instructions: `SHOW`, `REVEAL`, `HIGHLIGHT`, `ADD`, `REMOVE`, `REUSE`:
   - `(SHOW $4,590 ON SCREEN)` [17]; `SHOW PREVIOUS GRAPHIC BUT BRING EACH FORWARD AS VO SAYS THEM` [35]
@@ -353,6 +356,21 @@ Reuse ONE gate sentence per deck rather than writing bespoke ones. Canonical var
 - Row-status markers you may encounter and must respect when revising: `(NEW)`, `EDIT`, `DELETE`, `UNUSED`
   (row retained, copy dead), `[REUSE]`, `(RENAMED)`, `was s10` renumbering notes [06][09][20][33].
   Never build from a DELETE/UNUSED row; keep part numbers stable when retiring rows (`DELETE / BLANK` [20]).
+
+## 8a. Facts come from the client (binding, Bren 2026-09-09)
+
+Everything factual — names, dates, places, products, prices, numbers,
+claims — comes from the questionnaire and from what was taken from the
+client's own site. One exception: a household-name brand whose public
+record is unambiguous (Duolingo, Patagonia, IKEA) may carry well-established
+facts of record — founders, founding or launch year, headquarters city,
+flagship products — where the client's story invites them. Never for a
+business known only through its questionnaire; never user counts, revenue,
+ratings or results for anyone; never a fact you are unsure of. When in
+doubt, stay impressionistic ("two computer scientists", not two names). The
+Duolingo test deck (2026-09-08) added founders, 2012, Pittsburgh and
+reCAPTCHA 2007 unprompted — all true, all from memory; for a real client
+that is exactly where an invented fact comes from.
 
 ## 8b. Shortcodes never enter the Script column (binding)
 
