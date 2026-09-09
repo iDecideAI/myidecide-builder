@@ -307,6 +307,22 @@ belong to — they are never dropped at a fixed spot after the renderer runs.
   pinned equal) puts buttons back on that family. A Lordicon animation is
   drawn 28 % larger than the glyph's box because its canvas keeps a margin,
   so it reads the size of the glyph it replaces.
+- **The stroke weight (Bren 2026-09-09).** Lordicon draws the wired icons at
+  three weights — light, regular, bold — and in the source every stroke
+  width is an expression, `value / 2 ×` the control layer's stroke menu
+  (1 · 2 · 3). The harvest baked that menu at 2, so **every library file is
+  the REGULAR weight** and that is what a build places ("regular is probably
+  a good default"). The other two are the same drawing with every stroke
+  width scaled — ×0.5 and ×1.5, what the expression would have computed —
+  applied panel-side by `IDP_LOTTIE.setStroke` and uploaded under
+  `<tone>:<concept>^light` / `^bold`. A client gets one by asking
+  (`setIconStyle` with `stroke`: light / regular / bold, or "bolder" /
+  "thinner", which step one from where the icon is). The weight belongs to
+  the stroke-drawn WIRED family: the system drawings are filled paths (the
+  harvested system-outline calendar has no stroke shape at all), so the op
+  says so rather than scaling a stray outline. A placed icon carries
+  `idecide/iconStroke` when it is not regular, and `inspect` reports
+  `icon.stroke`.
 - **One icon style per group (binding, Bren 2026-09-09).** "Elements of the
   same group type on the same slide should attempt to use the same icon
   style … if there are multiple buttons on screen, they should all try to
@@ -332,12 +348,30 @@ belong to — they are never dropped at a fixed spot after the renderer runs.
   same ladder, then the SVG glyph. An icon the library does not know is SVG
   whatever the group does, and never pulls the group off the default. The
   log line is `icon styles (<slide>): …`.
+- **Three concepts per icon (binding, Bren 2026-09-09).** "Does the lottie
+  icon search currently only search for 1 topic match per icon? … let's
+  widen it to 3 possible icon concepts per lottie search, to widen the
+  possible matches, and to give a little diversity to lists that might land
+  on the same icon choices per list item." A plan's item (and `copy.icon`)
+  carries `icon` — the first choice — plus `iconAlts`, two MORE things that
+  could draw the same line, each a fair reading on its own and never a
+  respelling of the first ("Designed in-house": `pencil-ruler`, then
+  `house`, `glasses`; "Thirty days": `calendar`, then `truck`, `watch`).
+  Before a slide's icons are fetched, `chooseSlideIcons` settles ONE concept
+  per slot in slide order: the first candidate the library HAS whose drawing
+  no earlier slot on that slide already took; when every known candidate is
+  taken, the first known one (a repeat still animates); when the library
+  knows none, the first choice stays and the slot falls to its SVG glyph.
+  The pick is written back to `icon`, so everything downstream still reads
+  one name, and the candidates + reason to `_iconChoice`, which a re-run
+  reads back so the original order still decides. This is what stopped
+  Warby Parker's "Five days" and "Thirty days" both drawing the same
+  calendar. Log line `icons (<slide>): "<label>": <first> → <chosen> (why)`.
 - **The cover's pill arrow is animated too (2026-09-09).** The "Click
   anywhere to Begin" pill is composed, not planned, so no plan ever asked the
   library for its arrow; the panel now prefetches the library's exact
-  `arrow-right` with the SVG warm-up and the pill asks for it by that name
-  (`btn/icon` → the system drawing). The SVG fallback is still the `arrow`
-  glyph.
+  `arrow-right` with the SVG warm-up and the pill asks for it by that name.
+  The SVG fallback is still the `arrow` glyph.
 - **The match is precision-first, never fuzzy:** a name word must match —
   the file name or one of the item's **aliases** (the builder's Lucide-style
   spellings: `chevrons-down` → `two-chevrons-down`, `refresh-cw` →
@@ -356,18 +390,20 @@ belong to — they are never dropped at a fixed spot after the renderer runs.
   2026-09-08).** Every placed icon carries marks — `idecide/icon` (concept),
   `idecide/iconTone`, and for an animation `idecide/lottie` (the catalogue
   id), `idecide/iconStyle` (`outline` / `flat` / `system-outline` /
-  `system-solid`), `idecide/iconAccent` (`brand`, a hex override, or `none`
+  `system-solid`), `idecide/iconStroke` (the weight, only when it is not
+  regular), `idecide/iconAccent` (`brand`, a hex override, or `none`
   for a designed drawing), `idecide/iconSwaps` (colours swapped on request)
   and `idecide/iconColors` (the hexes it shows) — and `inspect` reports them
   as `layers[].icon`. The edit ops read them: **setIcon** puts another
-  concept in the same box (tone, style, family kept — a button icon stays a
-  system drawing), **setIconStyle** swaps the drawing (solid ↔ outline
-  within the family, wired ↔ system, flat, animated ↔ static), and
+  concept in the same box (tone and drawing kept), **setIconStyle** swaps
+  the drawing (solid ↔ outline within the family, wired ↔ system, flat,
+  animated ↔ static) and sets the **stroke weight** (light / regular / bold,
+  or "bolder" / "thinner" — valid on its own, no style needed), and
   **setIconColor** takes a `tone` (ink), an `accent` (the 2-tone drawing's
   second colour) or `from`/`to` swaps (one specific colour for another — the
   one way a designed flat drawing is ever repainted, because it was asked
   for). Each such drawing is an upload of its own, keyed
-  `<tone>:<concept>[#ui|@<style>][+<accent>][~<from>><to>…]` (`lottieKeyFor`
+  `<tone>:<concept>[#ui|@<style>][+<accent>][~<from>><to>…][^<stroke>]` (`lottieKeyFor`
   in the pipeline); the panel asks `IDP.iconNeeds` which keys a turn's ops
   want, fetches those files from the library, paints and swaps them
   (`ensureLottieNeeds`) and uploads them before the ops run. The deck-wide

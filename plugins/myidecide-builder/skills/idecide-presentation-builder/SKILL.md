@@ -336,6 +336,15 @@ built and play broken.
   icon, or a row), and they are the fallbacks when an icon has no outline —
   a button: outline → system outline (light) or solid (dark) → the other
   system style → flat; a display icon: outline → flat → the system pair.
+- **Three concepts per icon.** Every icon slot names its first choice plus
+  two alternates — different THINGS that could draw the same line, not
+  respellings ("Designed in-house": a pencil-ruler, a house, glasses;
+  "Thirty days": a calendar, a delivery truck, a watch). Take the first one
+  the animated library actually has, and when two items on a slide would
+  land on the SAME drawing, the later one takes an alternate — a list of
+  rhyming labels ("Five days" / "Thirty days") must not draw one calendar
+  twice. None in the library → the first choice stays and that slot uses the
+  static glyph.
 - **One icon style per group.** Buttons on a slide share one icon style
   (the 2-tone wired outline by default, or system solid / system outline);
   a row of icons above lines of text shares one (wired outline by default,
@@ -499,12 +508,19 @@ The same surface, one slide at a time. Read before you write:
   icon the builder placed carries `idecide/icon` (the concept) and
   `idecide/iconTone`; an animated one also `idecide/lottie` (the library
   id), `idecide/iconStyle` (`outline` · `flat` · `system-outline` ·
-  `system-solid`), `idecide/iconAccent` (`brand`, a hex, or `none` for a
+  `system-solid`), `idecide/iconStroke` (the weight, when not regular),
+  `idecide/iconAccent` (`brand`, a hex, or `none` for a
   designed drawing), `idecide/iconSwaps` and `idecide/iconColors` (the
   hexes it shows) — `engine.block.getMetadata(id, key)`. Then:
   - *another icon* → the new concept's drawing in the same style the old
     one wore (the 2-tone outline unless it had been switched to flat or a
     system drawing), same tone;
+  - *another weight* → light / regular / bold, the three weights Lordicon
+    draws the wired icons at. Ours are built at REGULAR; "make that icon
+    bolder" / "thinner lines" scales every stroke width in the file (×1.5 /
+    ×0.5 — what Lordicon's own stroke expression computes for menus 3 and
+    1). It is a wired-drawing setting: the 1-tone system drawings are filled
+    shapes with no strokes, so say that rather than pretending;
   - *another drawing* → the same library item's other file — this is how
     the user gets one of the other styles instead of the default: "outline"
     on a system icon is `system-outline`, on a wired icon the 2-tone wired
