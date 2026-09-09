@@ -276,21 +276,37 @@ belong to — they are never dropped at a fixed spot after the renderer runs.
   new library build, we can remove our original self hosted lotties, and the
   lordicon api approach and just use our new self hosted lordicon files".
   No key, no attribution (PRO), no Settings step.
-- **Which drawing where (Bren 2026-09-06/08).** Every icon has up to four
-  drawings — "think of the wired versions as more visual, stylized
-  versions, and the system versions as more simplified versions for button,
-  or pill elements": wired **outline** (2-tone, recoloured to the brand) on
-  light fields and wired **flat** (the designed drawing — "intentional
-  colors that should not be modified when used", placed untouched) on
-  dark/photo fields — "the theme decides", a hex tone by its lightness — for
-  standalone icons: above text, or alone on screen; the 1-tone **system
-  outline** (light) / **system solid** (dark), recoloured, for button and
-  pill icons. The panel uploads the wired build under
-  `<tone>:<concept>` and the system build under `<tone>:<concept>#ui`; every
-  button/pill glyph is named `btn/icon`, so `icon()` asks for `#ui` there and
-  falls back to the wired drawing when the icon has no system version. A
-  Lordicon animation is drawn 28 % larger than the glyph's box because its
-  canvas keeps a margin, so it reads the size of the glyph it replaces.
+- **Which drawing where — the 2-tone wired outline, everywhere (binding,
+  Bren 2026-09-09).** Every icon has up to four drawings: the WIRED family's
+  **outline** (2-tone, recoloured to the brand — every one of the library's
+  3,687 icons has it) and **flat** (the designed drawing — "intentional
+  colors that should not be modified when used", placed untouched), and the
+  1-tone SYSTEM family's **system outline** / **system solid** (a few hundred
+  each). "Add a preference to favor using the 2-toned wired outline version
+  of the icons. Let it be able to use the other styles, and ensure that the
+  user can still ask to use one of the other styles instead, but default to
+  using the 2 toned versions. These match the style of presentations a
+  little better and feel more intentionally branded" — asked whether
+  buttons too: "Everywhere, buttons included." So the build places the
+  wired outline for standalone icons, icons above text, and button/pill
+  icons alike, on every field; the tone decides only the paint (ink on
+  light fields, white on dark, a hex when asked). The panel uploads it under
+  `<tone>:<concept>`; a button/pill glyph is still named `btn/icon` (its
+  group for the style rule below and for the edit ops), but `icon()` no
+  longer prefers a `#ui` drawing there. The other three styles stay
+  reachable two ways: a client asks by name in an edit turn (`setIconStyle`
+  / `addIcon` with `style` — "flat"/"designed", "system"/"1-tone"/"solid",
+  "system-outline" — uploaded as `<tone>:<concept>@<style>`), and the
+  ladder below falls back to them when an icon has no outline. History, so
+  old decks and logs read right: 2026-09-05/06 "the theme decides" — outline
+  on light fields, flat on dark/photo (`lordiconFieldStyleFor`, still what
+  "flat" resolves to) — and buttons took the system drawing (system-outline
+  light / system-solid dark, `lordiconSystemStyleFor`, still what "system"
+  resolves to) under `<tone>:<concept>#ui`; one flag in each of the three
+  files (`LORDICON_UI_SYSTEM` / `LOTTIE_UI_SYSTEM` / `UI_SYSTEM_DEFAULT`,
+  pinned equal) puts buttons back on that family. A Lordicon animation is
+  drawn 28 % larger than the glyph's box because its canvas keeps a margin,
+  so it reads the size of the glyph it replaces.
 - **One icon style per group (binding, Bren 2026-09-09).** "Elements of the
   same group type on the same slide should attempt to use the same icon
   style … if there are multiple buttons on screen, they should all try to
@@ -298,21 +314,24 @@ belong to — they are never dropped at a fixed spot after the renderer runs.
   we are listing 3 icons above 3 lines of text, these should all try to use
   the same style as well … if no icon of the same style is available, it can
   then fall back to another style, or then fall back to the static svg icons
-  as the last resort." The tone rule above already gives one style per
-  family per field; what broke it was availability — one member of a row
-  without a flat (or a system solid) took the other style alone, and the row
-  read as two styles (Duolingo "How A Lesson Works - 3": a designed yellow
-  puzzle beside white glyphs). The panel decides per slide, per group — the
-  wired buttons of a menu/question/CTA are one group, the display icons
-  (rows, cards, chips, steps, `copy.icon`) another
-  (`decideSlideIconStyles`): every animated member has the rule's style →
-  nothing changes; not all, but every one has the family's other style → the
-  GROUP takes that style (uploaded as `<tone>:<concept>@<style>`, written to
-  the plan as `_iconStyle.ui` / `.wired`, and `icon()` tries that key first);
-  no style they all share → the rule stands and the odd member falls back on
-  its own — the other style, then the SVG glyph. An icon the library does
-  not know is SVG whatever the group does, and never pulls the group off the
-  rule. The log line is `icon styles (<slide>): …`.
+  as the last resort." The default above already gives one style per group
+  per field; what broke it was availability — one member of a row without
+  the style in play took another alone, and the row read as two styles
+  (Duolingo "How A Lesson Works - 3": a designed yellow puzzle beside white
+  glyphs; YETI's menu: one system-solid glyph among wired ones). The panel
+  decides per slide, per group — the wired buttons of a menu/question/CTA
+  are one group, the display icons (rows, cards, chips, steps, `copy.icon`)
+  another (`decideSlideIconStyles`): every animated member has the default
+  → nothing changes; not all, but every one has the next style on the
+  LADDER (`lordiconLadderFor` — a button: outline → the system drawing the
+  field picks → the other system style → flat; a display icon: outline →
+  flat → the system pair) → the GROUP takes that style (uploaded as
+  `<tone>:<concept>@<style>`, written to the plan as `_iconStyle.ui` /
+  `.wired`, and `icon()` tries that key first); no style they all share →
+  the default stands and the odd member falls back on its own — down the
+  same ladder, then the SVG glyph. An icon the library does not know is SVG
+  whatever the group does, and never pulls the group off the default. The
+  log line is `icon styles (<slide>): …`.
 - **The cover's pill arrow is animated too (2026-09-09).** The "Click
   anywhere to Begin" pill is composed, not planned, so no plan ever asked the
   library for its arrow; the panel now prefetches the library's exact

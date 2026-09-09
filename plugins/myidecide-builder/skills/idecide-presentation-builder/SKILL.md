@@ -240,6 +240,11 @@ built and play broken.
   launch year, headquarters, flagship products — where the story invites
   them; never user counts, revenue or results for anyone, never a fact you
   are unsure of. In doubt, stay impressionistic ("two computer scientists").
+- **Every non-menu slide gets designed copy; its wiring never changes.**
+  A question, a CTA or a sub-fork slide with only its buttons still needs a
+  headline from the script beat — never its internal name ("Finish Up - 3")
+  as a title. Designing it may dress its buttons (icon, body) but never
+  change a label, target, url or finish the outline gave.
 - **A named person is never a stock face.** An item or slide naming a real
   person (founder, owner, staff, a quoted customer) gets no portrait or
   headshot from stock — illustrate the role, the place or the product, or
@@ -321,14 +326,25 @@ built and play broken.
   viewer chooses the order, so "CHAPTER SIX" is wrong for whoever taps it
   first. Two answers to one question may share a headline (a viewer sees only
   one); any other two slides may not.
+- **The 2-tone wired outline is the default icon drawing, everywhere.**
+  Every animated icon — standalone, above a line of text, in a button or
+  pill — is placed as the library's wired outline, painted in the brand
+  colours (ink on light fields, white on dark). "These match the style of
+  presentations a little better and feel more intentionally branded." The
+  designed wired flat and the 1-tone system outline/solid drawings stay
+  available: the user can ask for any of them by name (an edit of one
+  icon, or a row), and they are the fallbacks when an icon has no outline —
+  a button: outline → system outline (light) or solid (dark) → the other
+  system style → flat; a display icon: outline → flat → the system pair.
 - **One icon style per group.** Buttons on a slide share one icon style
-  (system solid, system outline, or the 2-tone wired outline); a row of
-  icons above lines of text shares one (wired flat or wired outline). When
-  one member has no drawing in the tone's rule style but every member has
-  the family's other style, the whole group takes that style; when no style
-  is shared, the rule stands and the odd icon falls back alone — another
-  style, then the static SVG as the last resort. An icon the library does
-  not know stays SVG and never pulls the group off the rule.
+  (the 2-tone wired outline by default, or system solid / system outline);
+  a row of icons above lines of text shares one (wired outline by default,
+  or wired flat). When one member has no drawing in the default style but
+  every member has the next style on the ladder above, the whole group
+  takes that style; when no style is shared, the default stands and the odd
+  icon falls back alone — down the ladder, then the static SVG as the last
+  resort. An icon the library does not know stays SVG and never pulls the
+  group off the default.
 - **A detail line hangs off its title.** Pair a subordinate line with the
   text directly above it in its own column — never with a tall numeral or
   icon beside that text; tight inside the pair (16 px), wider between pairs.
@@ -417,9 +433,11 @@ earlier ones resolve.
    `https://idecide.com/lottie-library/` (a plain static folder — `catalog.json`
    lists 3,687 Lordicon icons with tags and aliases; each has a wired
    `outline` file (2-tone, painted black + red so black → ink and red →
-   accent), a designed `flat` variant (its own colours — never repaint it),
-   and for most a 1-tone `system-outline` / `system-solid` variant for
-   buttons and pills; each item's `variants` map names the files).
+   accent — THE DEFAULT for every icon, buttons included), most a designed
+   `flat` variant (its own colours — never repaint it), and a few hundred a
+   1-tone `system-outline` / `system-solid` variant; each item's `variants`
+   map names the files. The other styles are for the user to ask for, or
+   the fallback when an icon has no outline).
    Do not promise animated icons you do not have files for. Where animations exist, default to them wherever one
    is a good match for an icon's meaning and let the static glyph fill the
    gaps — never force a near-miss (a briefcase is not a shopping bag).
@@ -484,12 +502,15 @@ The same surface, one slide at a time. Read before you write:
   `system-solid`), `idecide/iconAccent` (`brand`, a hex, or `none` for a
   designed drawing), `idecide/iconSwaps` and `idecide/iconColors` (the
   hexes it shows) — `engine.block.getMetadata(id, key)`. Then:
-  - *another icon* → the new concept's drawing in the same family (a
-    `btn/…` icon stays a 1-tone system drawing; a standalone icon stays
-    wired), same tone and style;
-  - *another drawing* → the same library item's other file: "outline" on a
-    system icon is `system-outline`, on a wired icon the 2-tone wired
-    outline; "solid" is `system-solid`; "flat" the designed wired drawing;
+  - *another icon* → the new concept's drawing in the same style the old
+    one wore (the 2-tone outline unless it had been switched to flat or a
+    system drawing), same tone;
+  - *another drawing* → the same library item's other file — this is how
+    the user gets one of the other styles instead of the default: "outline"
+    on a system icon is `system-outline`, on a wired icon the 2-tone wired
+    outline; "solid" is `system-solid`; "flat" / "designed" the wired flat
+    drawing; "system" / "1-tone" the system drawing the field picks
+    (outline on light, solid on dark); "wired" / "2-tone" the default;
     a static glyph becomes the animation when the library has one;
   - *another colour* → repaint the file: the tone (black → the colour), the
     accent (red → the colour), or swap one specific colour for another
