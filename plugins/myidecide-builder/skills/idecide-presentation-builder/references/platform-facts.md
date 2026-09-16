@@ -1528,3 +1528,25 @@ claiming it.
   pass doubled every icon that way. The same discipline applies to the
   extension's `exec()`: never re-issue a mutation on a timeout without reading
   the page first.
+
+## 2026-09-16 — the engine resets a GLYPH's fill mode on load, exactly as a photo's (deck 304)
+
+`verifyCover` (the byte-level check of the persisted slideData) counted
+`block_content_fill_mode: 0` on every animated icon and SVG glyph the scene
+renderer had placed with Contain — 3 on a question with three buttons, 5 on a
+menu — and paid a corrective revisit on every such slide (4–7 s each, 37
+slides). The in-visit cover guard had skipped glyphs on purpose ("they are
+Contain, never Cover"), so nothing re-asserted them after the resource load
+reset them to Crop. Now the guard and `recoverCover` re-assert Contain on
+glyphs (`idecide/icon` / `idecide/lottie` marks, `icon-*`, `*/icon`,
+`stat/ring`, `chart*`), and what persists is what was composed. For a
+square Lottie canvas Crop and Contain draw the same picture, which is why
+nobody saw it; the cost was time, not pixels.
+
+Also verified on 304: `engine.block.export(page, 'image/jpeg', {targetWidth,
+targetHeight})` from the aiagent page returns a full-canvas frame at the
+page's current `setPlaybackTime` — the cheap way to look at a slide from a
+browser pane that cannot zoom (an `<img>` overlay in the page, then a
+screenshot). `logoUris.aspect` (w/h) now travels with the logo uploads:
+`IDP.setLogo` reads an SVG's viewBox / width+height or decodes a raster,
+and `composer.logoImg` / `scene.placeLogo` size every placement from it.

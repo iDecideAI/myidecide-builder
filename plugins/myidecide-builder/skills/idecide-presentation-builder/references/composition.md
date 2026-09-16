@@ -606,7 +606,7 @@ Always **one grouped unit** of stacked layers: plate (fill + corner radius = the
 - **EXACTLY ONE animated icon per button** — the label's concept, else an arrow (a check on finish/agree labels, a left arrow on Back). Never two.
 - **Text-style (backgroundless) buttons** are legitimate on quiet designs: the builder lays a fully transparent plate under the whole box and puts the action on it, so the click never misses. Give them a clear 64px row and an underline or a leading icon so they read as actions.
 - **Padding is non-negotiable:** ≥ 24px horizontal inside a plate, label never touching the edge, label never wrapping — widen the plate or shorten the label. Buttons in a set share ONE width; a solo pill may `fit:true` to hug its label.
-- **Sizes:** 56–84px tall (64 is the default pill; 72–84 for menu rows), ≥ 490px wide for full rows, 14–18px between rows.
+- **Sizes:** 68–84px tall (the builder raises anything under 64; 72–84 for menu rows), 520–680px wide in a column, ≥ 490px for full rows, 14–18px between rows. Glass plates carry a hairline stroke on both fields; the icon inside a 72px+ plate is 40px.
 - **Featured** = solid primary (accent on a primary field) + onDark text — only for Move Ahead / Finish Up / Continue / Next. Question answers are all equal.
 - **The cover has exactly one action element**, the static "Click anywhere to Begin" pill; the platform advances slide 1 on any click.
 
@@ -680,3 +680,18 @@ Twenty-eight demo slides across ten markets and a full 25-slide Patagonia deck w
 - **Tints between 0.4 and 0.65 keep footage alive** under white type; 0.7+ turns it into texture (fine for dense slides).
 - **Track choices by default.** Question answers, menu topics and final outcomes are recorded for the sender without being asked.
 - **The real logo, found online, on every slide the design asks for** — uploaded once, placed as a Contain image, light or dark drawing by field.
+
+---
+## PART III — WHAT THE FIRST LIVE 2.0 BUILD TAUGHT (deck 304, Patagonia, 2026-09-16)
+
+The renderer worked; the designs were thin. Thirty-seven slides came out as a headline over darkened footage, a headline beside a hard-cornered panel, three grey rows with empty wells — competent and generic — and the client said so. What changed, and is now binding:
+
+- **A slide is layered — six to twelve elements.** Stage · eyebrow or accent rule · headline · ONE substance element (cards on stroked plates with icons in tinted wells, rows with wells, a dot grid, an animated bar chart, photo tiles with captions, a pull-quote and its attribution) · ONE detail (a badge, a divider, a soft disc behind a numeral, a legend). Two-element slides are for section intros and closing lines, at most four per deck. The design contract carries three worked scenes; compose to that standard.
+- **Every slide is designed.** The menus never reached the design pass (the outline had given them their items, so the template-era shortcut skipped them) and fell back to a flat row list. In 2.0 a slide without a scene is a slide that still needs designing, whatever copy it already has.
+- **The band is binding and the builder sizes by length.** Headlines were written at 40 and 34, support at 26, a figure as body at 104. `size` is honoured only inside the role's band; a figure is a numeral; a two-to-four-word headline is one line (the box widens before the words break).
+- **The corner mark is the builder's.** The real logo, small, top-left (or the first free corner) on every slide after the reveal — the way deck 303 carried it — unless the scene places a logo or says `logoMark:false`. The reveal draws the mark large and centred from its real proportions (`logoUris.aspect`), whatever box the scene gave.
+- **Framed panels get 24px corners; columns never overlap.** A panel that touches no edge is rounded by default; a text box that runs into the column beside it narrows to a 28px gutter before anything is drawn (the overlap resolver had shoved a list's first row sideways instead).
+- **An empty well is worse than no well.** Icons draw first; wells go in behind an icon that landed. The tones a scene names (an accent well icon) are prepared with the slide's icons, and a tone that still fails falls back to the field's own.
+- **Glyphs persist as Contain.** The engine resets an icon's fill mode on load exactly as a photo's; the in-visit guard now re-asserts Contain on glyphs, so the byte-level verify stops counting them and no slide pays a corrective revisit for its animated icons.
+- **The sender block keeps its lead line** ("For more information, contact") — a 110px box used to drop it; the default is 140.
+- **The review edits by element.** The reviewer sees the element list (index · type · role · text fragment · box) and matches by role family or text; a redesign is a full scene under the same contract and anatomy, never three text blocks in a corner.

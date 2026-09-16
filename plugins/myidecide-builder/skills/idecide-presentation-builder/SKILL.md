@@ -517,6 +517,24 @@ is the binding design system (type roles sized by content length, colour
 roles, footage rules, the interactive units, the rhythm rules across a long
 deck, the polish checklist) and the element contract the drawing must obey.
 
+**A slide is layered (binding, after the first live 2.0 build, 2026-09-16).**
+The Extension's first template-free deck drew a headline over darkened
+footage thirty times and the client said it looked nothing like the
+hand-designed decks. Every content slide carries at least: the stage · an
+eyebrow or an accent rule · the headline · ONE substance element (cards on
+stroked plates with icons in tinted wells, rows with wells, a dot grid, an
+animated bar chart, photo tiles with captions, a pull-quote with its
+attribution) · ONE detail that says designed (a badge, a divider, a soft disc
+behind a numeral, a legend). Six to twelve elements is the normal range; a
+two-element slide is for a section intro or a closing line, at most four per
+deck. Menus and questions carry an eyebrow and a real headline above their
+buttons; a CTA its headline, support line, buttons, sender block and footage
+or a panel. Buttons are 68–84px tall on hairline-stroked glass plates with a
+40px icon; framed panels get 24px corners; the real logo sits small in a
+corner of every slide after the reveal and large, centred, on the reveal.
+Never size text below its role's band to make room — widen the box, shorten
+the words or move the neighbour.
+
 The compositions that proved themselves on the test builds, and that a deck
 should show a dozen of: full-bleed footage with a left scrim and a hero; a
 split with a 42–46% media column; a centred statement on a darkened clip; a
