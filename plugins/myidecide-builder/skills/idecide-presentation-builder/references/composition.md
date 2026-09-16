@@ -1,16 +1,26 @@
 > **Reference for the myiDecide Presentation Builder skill.** Two documents:
-> the ELEMENT CONTRACT (what an element is, how its parts group, the slot
-> rules) followed by the DESIGN PLAYBOOK (zones, type roles, gaps, colour
-> roles). Read when composing or re-aligning slides.
+> the ELEMENT CONTRACT (the binding rules every drawn slide obeys — grouping,
+> the cover, axis, buttons, graphics in the flow, shortcodes, measuring)
+> followed by the DESIGN PLAYBOOK (2.0, template-free: type roles sized by
+> content, colour roles, footage, interactive units, the composing procedure,
+> rhythm across a long deck, the polish checklist, and what the test builds
+> taught). Read when composing or re-aligning slides.
 
-# Element contract — what a slide is made of
+# Element contract — the binding rules the builder enforces
 
-Every slide in this deck was built from a **template** that references
-**element variations** from a fixed library. Each slide's plan carries a
-`BUILT FROM` brief naming exactly which ones. Read it before you judge or
-change a layout — it is the difference between a design choice and a defect.
-
-Full schema: `assets/docs/template-schema.md`. Library: `assets/json/elements.json`.
+**2.0 (2026-09-15, template-free).** Every slide is composed by the design
+pass as a SCENE — a stage and an ordered list of elements with their own
+geometry (the contract: `assets/prompts/slide_detail_system.md`; the design
+system: `assets/prompts/playbook.md`) — and drawn by `inject/scene.js`
+through the composer's primitives. This document is what those primitives
+and the passes after them GUARANTEE, whatever the scene says: how parts
+group, what may never be dropped, how buttons are built and wired, how icons
+are chosen, marked and edited, how text is measured. It is not a list of
+slots to fill; the scene decides what a slide holds. The template library
+(templates, variations, the element library, the BUILT FROM briefs) is
+retired — `docs/archive/retired-2026-09-15-templates/` keeps it for decks
+built before 2.0, which still carry their bound template and render through
+the composer's archetypes.
 
 ## The one rule
 
@@ -106,24 +116,30 @@ carries the click; `?` marks an optional part.
 If a slot is anchored `under:` another, you may not move one without the other,
 and you may not keep it when the parent is dropped.
 
-## What you may change when content doesn't fit
+## What happens when content doesn't fit (2.0)
 
-In this order — stop as soon as it fits:
+A scene is a designed, FIXED layout (the page is stamped `idecide/layout:
+fixed`). The builder does not re-pack it; it measures and protects it:
 
 ```
-1  drop:decor          motifs, logo, chip rows
-2  drop:support.line   the supporting line, then a kicker's eyebrow part
-3  swap:heading.long   move the headline into the 130-char band
-4  shrink:heading      within its band
-5  yield:media         photo band → 30% floor · side panel → 22% floor
-6  scale:group         the WHOLE set together, never one element (28px floor)
-7  tighten:rhythm      the stack gap gives LAST
+1  measure     text frames are read after the fonts settle (never estimated)
+2  tighten     every text box is trimmed to its words (shortcodes reserved)
+3  reflow      a stack re-flows on the measured heights; a free-standing
+               text that wrapped taller pushes what sits below it in its
+               column down by the difference
+4  separate    no two buttons may overlap; overlapping text pairs are pushed
+               apart by the measured overlap
+5  fit         nothing leaves the canvas
 ```
 
-**Never dropped, at any rung:** anything marked `REQUIRED` in the brief — every
-`action.*` button, every menu row, the headline, the stage field. Navigation is
-never sacrificed and a button label is never truncated. If buttons don't fit,
-shrink the group, shrink the heading, or narrow the media — in that order.
+What that means for a design: a column written too long runs off the bottom,
+it is not silently thinned. The fix is the designer's (shorter copy, a wider
+box, a smaller role, one element fewer) or the reviewer's (`sceneEdits` /
+`scene`). **Never dropped by any pass:** every wired button, every menu row,
+the headline, the stage. Navigation is never sacrificed and a button label is
+never truncated. Decks built before 2.0 keep the old fit ladder (drop decor →
+drop the support line → longline → shrink → yield media → scale the group →
+tighten the rhythm) inside the composer's archetypes.
 
 ## Sizing
 
@@ -141,64 +157,37 @@ box to centre-aligned.
 The whole set is middle-aligned in the room it *actually* has — bounded by the
 photo band or side panel, not the canvas.
 
-### The template's arrangement decides the axis (binding, 2026-09-04)
+### The scene's column decides the axis (binding, 2026-09-04 → 2.0)
 
-Every variation declares an arrangement — `left-aligned`, `centered` or
-`right-aligned` (`skel.arr.align`, lifted into `spec.align`). That axis governs
-**everything in the content zone**: text, button groups, Back pills, stat units,
-charts, photo-card strips and the sender block. Left stays left, right stays
-right, centred stays centred. Only an Edit-step request changes it; a
-reviewer who finds a left-aligned layout centred (or the reverse) has found a
-defect, not a choice.
+A composition puts its content column left, centred or right, and that axis
+governs **everything in the column**: text, button groups, Back pills, stat
+units, graphics, photo-card strips and the sender block. Left stays left,
+right stays right, centred stays centred. Only an Edit-step request changes
+it — as a `scene` redesign or `sceneEdits` that move every element of the
+column together; a reviewer who finds a left-aligned layout centred (or the
+reverse) has found a defect, not a choice. `text()` never invents an axis: a
+scene text element states its `align`, and the default is Left.
 
-Concretely: `text()` takes the declared axis when its caller says nothing (the
-old canvas-centre heuristic survives only for plans with no arrangement);
-every renderer records its content zone (`zoneSet`); the nav-pill row is built
-inside that zone on that axis as ONE set (it is never pinned bottom-left);
-`alignAxis` moves whole rows onto the axis — left ink edges to the zone's left
-edge, right edges to its right edge, centres to its centre.
+### A deck alternates its layouts (binding, 2026-09-05 → 2.0)
 
-### Which side the photo goes (binding, 2026-09-04)
+Variety is the design pass's job and the validator's check: the outline
+states one layout intent per slide, no two neighbouring content slides may
+share an intent + field + photo treatment, no intent appears more than four
+times, and the design pass names each composition's `family` and does not
+repeat its neighbour's. The autoScene fallback (a plan with no scene)
+alternates its axis and photo side by a hash of the slide name, so even a
+deck whose design pass failed does not read as one template.
 
-The skeleton's `side` / `cues` say where the photo sits; the spec prose is read
-only for a phrase that names the PHOTO's side ("photo left", "portrait right").
-"photo left, 3 compact rows right" contains both words — grepping the prose
-for "right" first drew a photo-LEFT template mirrored. One helper (`photoLeft`)
-answers for every split renderer.
+### The kind outranks everything (binding, 2026-09-05 → 2.0)
 
-### A deck alternates its layouts (binding, 2026-09-05)
-
-The axis rule above says a template's arrangement is honoured; it does not say
-every template should be left-aligned. The library is 314 left / 60 centred /
-1 right, so a picker that only avoided repeats let the majority speak and deck
-202 came out left end to end. Variety is an objective of the template picker
-(`assignVariations`): among the candidates that already pass every hard rule
-(capacity, photo, freshness across the last two builds, adjacent signature),
-the ones that differ from the previous slide — a different axis, the photo on
-the other side, a different layout family — and that pull the deck toward a
-mix while its running left share is high are preferred, and the seeded draw
-decides between the leaders, so a deck is still reproducible from its
-`styleSeed`. Parallel beats (answers, menus) still share one variation. The
-build log reports the axis mix ("axis mix: 29 left / 19 centred-or-right").
-None of this changes an axis after binding — that is still an Edit request.
-
-### The kind outranks the category (binding, 2026-09-05)
-
-The outline model can bind a slide to any category; the renderer is chosen by
-what the slide IS first. A `question`, `menu` or `hamburger` is rendered by K
-(wired buttons), a `cta` by N, the `cover` by O — whatever category the
-outline named — and `enforceDeckStructure` coerces the category to the kind's
-family (question → 4, cta → 15, menu/hamburger → 2, cover → 1) before the
-picker runs, so the variation it binds can hold the buttons. The composer
-renders any interactive kind through K as a last net. Deck 202's "Finish Up -
-3" was a question bound to category 14: it drew as display rows with no
-buttons and the outcome fork was a dead end.
-
-Within a category the parsed skeleton, not the category number, picks the
-renderer: category 6 with items goes by `arr.itemsMode` (rows → G, cards →
-F, chips → H, else A); category 7 by `layout` (column → C photo band,
-layered → A over a full-bleed photo, else B side panel); category 3 and 10
-already did. A renderer is never asked to draw a stage it has no code for.
+What a slide IS decides its buttons: a `question`, `menu`, `hamburger` or
+`cta` — and any slide that waits for the viewer (`autoAdvance: false`, the
+sub-fork Back) — gets a real, wired button for EVERY wired item, whatever the
+scene declares. A scene that leaves a wired item without a `button` element
+gets a default button row appended by the normaliser (logged). The cover
+gets exactly one static pill. A content slide that auto-advances gets no
+buttons: its wired items are drawn as display rows (logged) — the click lives
+on the slide after it.
 
 ## What sits inside a button is centred (binding, 2026-09-04)
 
@@ -225,17 +214,19 @@ On a content slide that auto-advances, the items in `copy.items` are
 **display** — photo cards, rows, chips — paired with the script. Their targets
 are dropped and logged ("rendered as display — the slide moves on by itself").
 Pills are built only on a slide the viewer must leave: `autoAdvance:false`, or
-a sub-fork with its Back item. Category 14 explainers (renderer P) draw their
-items as `paneltile.photo` tiles: photo + scrim + icon + label, one object,
-never a `btn:` name. When such a template names `action.rect` REQUIRED, the
-display units built from the same items satisfy the contract and the audit
-says so.
+a sub-fork with its Back item. An explainer or action-steps slide before a
+CTA draws its items as display cards or rows (a `list` element, or media
+panels), one object each, never a `btn:` name; the audit accepts those display
+units in place of buttons on an auto-advancing slide and says so.
 
 ## Graphic elements sit in the flow like anything else (binding, 2026-09-04)
 
 SVG icons, infographic parts, charts, images, lotties and videos follow the
-template's spacing and positioning rules and are grouped with the text they
-belong to — they are never dropped at a fixed spot after the renderer runs.
+scene's spacing and positioning and are grouped with the text they belong to
+— they are never dropped at a fixed spot after the renderer runs. In 2.0 the
+data graphics (bars, hbars, dots, ring, stat, progress, and the charts.js
+types) are `graphic` elements the scene places and the renderer draws as
+native blocks, each grouped with its labels.
 
 - **`stat.ring` is one unit**: ring graphic + figure + label. The figure is
   drawn first and MEASURED; the ring is sized to hug that ink (≥180px, ≤ the
@@ -522,312 +513,170 @@ The sample string uses mid-width letters, so it is neither the widest case
 
 ---
 
-# iDecide Slide Design System — Composition Playbook
-**v5 — full library: 15 categories × 25 variations; skeletons in strict §12 vocabulary with arrangement/distinct differentiators.**
+# myiDecide Slide Design System — Composition Playbook
+**2.0 — template-free. The designer composes every slide as a SCENE; the builder draws it, measures it, animates it.**
 
-**Purpose.** This document is the authoring source of truth. It describes the template library the way a designer would brief it — skeletons, proportions, capacities, and variables — so the builder composes a *bespoke* layout that fits the specific content, while still cycling through the full range of 375 structurally distinct compositions.
+**Purpose.** This document is the design source of truth for every slide the
+extension builds. Since 2026-09-15 there is no template library: the design
+pass writes each slide's composition itself — a stage and an ordered list of
+elements with their own geometry on the 1558×720 canvas — and the builder
+renders it through primitives that enforce the deck's mechanical rules. What
+follows is what a designer must know to compose well for this canvas, and
+what the builder guarantees so the designer does not have to.
 
 > **The one rule that matters:** *Anything that must move or disappear together
-> is ONE element with several parts — never two separate things.* A slot is the
-> smallest thing the layout may address; a part (a button's label, a kicker's
-> eyebrow, a row's detail) has no independent existence.
+> is ONE element with several parts — never two separate things.* A button is
+> its plate, its icon and its label; a list row is its well, icon, title and
+> detail; a stat is its numeral and its label. The builder groups these for
+> you when you use the button / list / graphic / sender elements — draw a
+> composite from loose rects and texts only when no element fits, and then
+> give its parts one `group` id.
 >
-> **The second rule:** *The template is already chosen.* Each slide arrives
-> bound to one of 375 templates, each built from named element variations.
-> Write copy TO the slots it declares — read the slide's BUILT FROM brief
-> first. Don't pick a different look and don't squeeze content past a cap:
-> the caps are what keep a slide legible at phone size.
+> **The second rule:** *Design for a phone.* The deck plays full-screen,
+> landscape, on a screen about 7 inches wide. Big type, one idea, generous
+> air, strong contrast. Anything that only reads on a laptop is a defect.
 >
-> **What that rule does NOT mean.** The brief governs COPY. It is not a list of
-> what the slide is permitted to contain. Footage always lands — a photo zone
-> holds it, a layout with none gets it as a scrimmed background. A grid is
-> arithmetic: `grid: {cols, rows}` on the plan draws that grid whatever the
-> template's own zones say, and every panel of a multi-panel grid gets its own
-> clip. A button can be built and wired on any slide. Never leave something out
-> of a slide, and never tell the client it cannot be done, because the bound
-> template has no slot with that name.
+> **The third rule:** *Vary the deck.* No two neighbouring slides share a
+> composition; a composition family appears at most four times in a deck;
+> the axis, the photo side, the field and the density alternate. Consistency
+> where the viewer needs orientation (section intros, the menu pair, the
+> button style on menus) — variety everywhere else.
 
 ---
 ## PART I — GLOBAL SYSTEM
 
 ### 1. Canvas, units, margins
 - Canvas **1558 × 720** (mobile landscape, full-screen on a phone, paired with voiceover). Slides are **visual aids**, not documents.
-- All geometry here is **fractions of the canvas** and **relationships**, never fixed pixel boxes. Convert at build time.
-- **Safe inset 4–7%** (≈62–110 px) for all text. Full-bleed *images* reach the edge; full-bleed *text* never does.
-- **Slot rhythm — two gaps, both always in play:** the STACK gap (W×0.024 ≈ 37px)
-  between slots, the TIGHT gap (W×0.010 ≈ 16px) between parts inside one slot (a
-  title and its detail, a numeral and its label, [sender-name] and
-  [sender-email]). Never one uniform gap — equal spacing makes a detail read as
-  its own item.
-- **Panel seams** in multi-panel layouts are hairline (≈0.3%) — panels read as one composition, not separate cards.
+- Scenes state geometry in **pixels** on that canvas (or "NN%" of it). The builder clamps to the canvas and measures every text height itself.
+- **Safe inset 86px** (M, 5.5% of the width) for all text and buttons. Full-bleed *media* reaches the edge; readable content never does.
+- **Two gaps, both always in play:** the STACK gap (37px) between slots, the TIGHT gap (16px) between parts inside one slot (a title and its detail, a numeral and its label, [sender-name] and [sender-email]). Never one uniform gap — equal spacing makes a detail read as its own item. Stacks (`stack` on the elements) space a column on the STACK gap for you.
+- **Panel seams** in multi-panel layouts are hairline or a consistent 16–24px — panels read as one composition, not separate cards.
+- **Spacing inside a container is measured against the container**, not the canvas: a card, a tile, a 2×2 cell states the same two gaps and the same inset against the room it actually has (`metrics(box)` in the composer; `gridCells` hands each cell its inner rect). Pass the canvas and you get the numbers above; pass a cell and you get that cell's.
 - Optical balance beats mathematical centering: headlines over photos sit slightly above center; stat blocks sit slightly left of center in splits.
 
 ### 2. Type roles, sized by content length
-Assign a **role**, then choose a size inside its band based on actual length. Longer content → lower end, or a different role.
+Assign a **role**; the builder picks a size inside its band from the text's actual length and the box width, and shrinks toward the band's floor until the line limit holds. Longer content → lower end, or a different role.
 
 | Role | Size band | Character budget |
 |---|---|---|
-| Hero statement | 92–200 | ≤ 28 chars (160+ only for 1–2 words) |
-| Slide headline | 54–80 | 28–70 chars |
-| Long-sentence headline | 44–58 | 70–130 chars |
-| Stat numeral | 110–260 | ≤ 6 glyphs |
-| Subhead / lead-in | 34–46 | ≤ 70 chars |
-| Body | 28–40 | ≤ 160 chars per block |
-| Card / item title | 30–40 | ≤ 22 chars — buttons, 1–3 words |
-| Card / item body | 28–32 | ≤ 55 chars (dropped before anything else) |
-| Eyebrow / label | 28–34 | ≤ 24 chars, UPPERCASE, tracking 3–6 |
-| Button / chip label | 28–34 | ≤ 22 chars (≤ 18 in a circle action), never wraps, never truncated |
-| Attribution / fine print | 28–32 | ≤ 80 chars |
+| hero | 92–200 | ≤ 28 chars (160+ only for 1–2 words) |
+| headline | 54–80 | 28–70 chars |
+| longline | 44–58 | 70–130 chars (a quote, a long sentence) |
+| numeral | 110–260 | ≤ 6 glyphs |
+| subhead | 34–46 | ≤ 70 chars |
+| body | 28–40 | ≤ 160 chars per block |
+| button (item titles, chips, labels) | 28–34 | ≤ 22 chars, 1–3 words, never wraps |
+| eyebrow | 27–34 | ≤ 24 chars, UPPERCASE |
+| fine (detail, attribution, captions) | 28–32 | ≤ 80 chars |
 
-**Gutters are balanced too.** A side photo/video column is not fixed: when
-the copy runs long, the PANEL gives width — it stays anchored to its canvas
-edge and its inner edge moves so the gutter between the widest line and the
-video equals the margin between the canvas and the text. Text only gives way
-once the panel has reached its floor. This is the horizontal mirror of a
-photo band giving height to the stack above it.
+**Hard floor 28px.** Headlines ≤ 3 lines, body ≤ 4 lines, no orphan last word (the builder binds the last two). A three-word line in a body-sized box is wrong: promote it to hero. A 90-character headline is a longline, not a wrapped hero.
 
-**Paired lines are one object.** A list item that runs to two lines — a
-label over its detail — binds on a TIGHT gap so it reads as a single unit;
-the uniform gap then separates whole units, not lines. Equal spacing between
-every line makes the second line look like its own list item. A headline is
-never half of a pair: it leads the slide. Measure the tight gap ink-to-ink,
-because an icon well beside a label is taller than the words it sits next
-to.
+**Condensed display faces** (Oswald, Barlow Condensed, Roboto Condensed, Stint Ultra Condensed) run about 15–20% narrower and read smaller: give them a size at the top of the band or a `size` override, and check the phone.
 
-**Stacks are flex columns.** Elements stacked vertically — eyebrow,
-headline, subhead, button, contact block — sit on ONE repeated gap, not a
-different gap per pair, and the finished group is middle-aligned in the space
-it actually has (on a cover with a photo band that is canvas-top to band-top,
-not the whole canvas). Lines that belong to a single unit (a contact block's
-name and address) use a tighter gap so the unit reads as one thing. When the
-room runs short the unit sheds its least load-bearing line before anything
-overlaps.
+**Paired lines are one object.** A list item that runs to two lines — a label over its detail — binds on the TIGHT gap; the STACK gap separates whole units. A headline is never half of a pair: it leads the slide.
 
-## Grouped elements (the element system)
+**Stacks are flex columns.** Elements stacked vertically — eyebrow, headline, subhead, list, buttons, contact block — sit on ONE repeated gap and the finished column is placed in the space it actually has (`stacks.<id>.valign` + `box`). When the room runs short, shed the least load-bearing line (the support line, a detail) before anything overlaps — the builder pushes lower elements down rather than let text collide, so a column written too long runs off the bottom.
 
-A slide is not a pile of blocks. It is a handful of GROUPS, and the layout
-engine moves, spaces, centres and animates each group as one object. Write
-copy to the group, not to the block.
-
-| Group | Its parts, bottom → top | Holds |
-|---|---|---|
-| Button / action | background (carries the click) · icon · label | label ≤22 chars, never wraps |
-| Circle action | circle · icon · label | 1–3 words, 2 short lines max |
-| Chip | pill · icon · label | ≤22 chars |
-| List row (listrow.icon) | row background(click, on menus) · icon well · icon · title · detail? | title ≤22, detail ≤55; title→detail on the TIGHT gap, row→row on the STACK gap |
-| Card | card bg · icon · title · body | body drops past 4 cards |
-| Sender block | lead · [sender-name] · [sender-email] | fixed content; lead drops when tight |
-| Stat | numeral · label | numeral ≤6 chars |
-| Quote (quote.mark) | motif/quote-mark · quote · attribution | the mark is a PART of the quote object, not droppable decor |
-| Person | plate · portrait · name · role · facts | facts are mini-pairs |
-| Process step | step.numbered: plate? · step-num · label · body? — OR step.icon: plate? · step/icon · label · body? (never both) | steps share one width; body drops first |
-| Chart | frame · shapes · labels | one per slide |
-
-Three rules follow from this and they are binding:
-
-1. **A group's parts are never separated.** A label belongs to its button, a
-   detail belongs to its title, [sender-name] belongs with [sender-email].
-   Inside a group the spacing is tight; between groups it is even.
-2. **REQUIRED slots are never dropped to make room** — every action button,
-   every menu row, the headline, the stage field. When a slide is crowded the
-   fit ladder runs, in this exact order and no other:
-   drop:decor (motifs, logo, chip rows) → drop:support.line (then a kicker's
-   eyebrow PART) → swap:heading.long (into the 130-char band) → shrink:heading
-   → yield:media (a band to its 30% floor, a side panel to 22%) → scale:group
-   (the whole set together, 28px floor, never one element) → tighten:rhythm
-   (the stack gap gives LAST — it is what makes the set read).
-3. **Stack order is reveal order.** Backgrounds appear, then icons, then
-   titles, then details. Write copy knowing the label lands before its
-   detail.
-
-Full definitions, including internal spacing and what happens when a member
-is added or removed: `assets/docs/element-contract.md` (the binding rules) and
-`assets/docs/template-schema.md` (the schema). `element-system.md` is the
-background essay — useful, superseded wherever the two disagree.
-
-**Options are load-bearing.** A menu or question option is navigation, not
-decoration: it is never dropped, never truncated, and never pushed off the
-canvas. When a slide is crowded the fit ladder above runs and the options all
-stay — the set scales together before anything is lost.
-This is why option labels are held to 1–3 words: every extra word on a label
-steals room from the option below it.
-
-**Hard floor 28 px.** Headlines ≤ 3 lines, body blocks ≤ 4 lines. If it won't
-fit, you do not change the layout and you do not cut items — you write shorter
-copy to the slot's cap, and the build runs its fit ladder:
-   drop:decor (motifs, logo, chip rows) → drop:support.line (then a kicker's
-   eyebrow PART) → swap:heading.long (into the 130-char band) → shrink:heading
-   → yield:media (a band to its 30% floor, a side panel to 22%) → scale:group
-   (the whole set together, 28px floor, never one element) → tighten:rhythm
-   (the stack gap gives LAST — it is what makes the set read). A three-word line in a body-sized slot is equally wrong: **promote it** to Hero statement.
-
-**Typefaces:** one DISPLAY face (headlines, numerals, quotes; 600–800, italic = warm accent where the face has it) + one clean BODY face (body, labels, UI; 400–800). The pairing is a per-brand design decision — serif + sans is one classic option, not a rule: a modern brand may pair a strong sans display with a lighter sans; a heritage brand a serif with a humanist sans; a bold brand a condensed display. Never a third family. Numerals always in the display face — that's what makes stats feel designed.
-
-**Band layouts pack evenly.** With a photo band top or bottom, the text
-stack distributes in the remaining zone: equal padding above and below,
-equal glyph-measured gaps between rows (font leading varies — space is
-computed from font size × lines, never from frame boxes). When the stack
-needs more room, the ladder has already swapped and shrunk the HEADLINE — only
-then does the footage yield (a band to its 30% floor, a side panel to 22%), and
-only after that is the whole set scaled together (28px floor). Text never
-crowds the footage and never crams. Text never touches the footage and never crams. Solid
-background colors live on the CANVAS itself, not on a redundant
-background shape.
-
-**Footage floors.** Background clips and stills always have a short side of
-at least 720px; interactive slides (questions, menus, CTAs, the cover) hold
-their graphics ≥15 seconds and take clips ≥15s long, so the video plays on
-while the viewer reads and decides.
-
-**Button labels are centred by their plate, not by an align setting.** A solo
-button hugs its label's ink (pad max(24, h×0.3), icon gap 18), so there is no
-dead gap to correct; buttons in a set share one width, so a short label centres
-in the shared plate. Never set a button label's text alignment — align is a
-block property and the parts of a button are not independently positionable.
-A featured button never shares its field's color: on a primary field it
-features in accent.
-
-**Buttons, pills and chips — inner padding is non-negotiable.** Any element
-that puts text or an icon inside a shaped background (menu rows, option
-cards, CTA circles/squares/bars, decorative pill chips, credential chips)
-keeps visible breathing room on every side: ≥24px horizontal, and the label
-never touches the shape edge (circles inset labels ~14% of the diameter).
-When space runs short the type scales with the rest of the set (28px floor) and
-the rhythm gap gives LAST — padding never shrinks and a label is never
-truncated. A solo button hugs its label's ink; buttons that appear together
-share ONE width (the widest label's), so a longer label widens the whole set. Labels never overflow their background.
+**Typefaces:** one DISPLAY face (headlines, numerals, quotes; 600–800) + one clean BODY face (body, labels, UI). The pairing is a per-brand design decision. Never a third family. Numerals always in the display face — that is what makes stats feel designed. A display face may lack a glyph: smart quotes fold to straight ones; ★ renders in most faces, ♡ does not.
 
 ### 3. Color roles
-Map the brand palette onto: **Ink** (text on light) · **Surface-light** (default light field) · **Surface-tint** (cards/wells on light) · **Primary** (solid fields, featured buttons, key numerals) · **Primary-deep** (dark fields, photo scrims) · **Accent** (warm secondary — featured item, one underline, one numeral, a signature) · **On-dark** / **On-dark-muted**.
+Map the brand palette onto: **ink** (text on light) · **surfaceLight** (default light field) · **surfaceTint** (cards/wells on light) · **primary** (solid fields, featured buttons, key numerals) · **primaryDeep** (dark fields, photo tints/scrims) · **accent** (warm secondary — featured item, one underline, one numeral, bars in a chart, the "on" dots) · **onDark** / **onDarkMuted**.
 
-Max **2 background field colors** per presentation (plus photos). **Accent on ≤1 element per slide.** Never mid-tone text on mid-tone fill. A single 2-stop gradient is allowed for scrims and occasional fields; nothing more elaborate.
+Max **2 background field colors** per presentation (plus footage). **Accent on ≤1 element per slide** (a data graphic counts as one). Never mid-tone text on mid-tone fill. A single 2-stop gradient is allowed for scrims and occasional fields; nothing more elaborate. Use the role TOKENS in scenes; a hex only for a colour the theme has no role for.
 
-### 4. Photography
-- **The imagery floor: at most FOUR slides in the whole deck may carry no image or video.** These play
-  full-screen on a phone, where a slide with nothing behind the type reads as one that failed to load.
-  Spend those four deliberately — on the densest beats, where a background would compete with the text.
-  Everything else, menus and questions included, gets a full-bleed motion background or a framed image/video.
-- **Every image unique** — no repeats, and watch for near-duplicates from one shoot.
-- Source ~2400 px wide for full-bleed and half-panels, ~1600 for small slots. Never upscale.
-- **Fit:** people/scenes → cover (keep faces out of crop and out from under text). Logos, product, diagrams, QR → contain on a contrasting field.
-- **Casting** matches the audience the script implies, consistently.
-- **Text over photo always needs a scrim:** left-aligned text → horizontal gradient ~90% at the text edge fading to ~20%; centered text → vertical gradient dark top and bottom, ~55% mid; text panel → flat semi-opaque field 78–95%. Never blur. Stack: image → scrim → content.
-- Busy photo? Put text in a solid card beside it or a band across the lower third instead of a gradient.
+### 4. Footage and photography
+- **The imagery floor: at most FOUR slides in the whole deck may carry no image or video.** These play full-screen on a phone, where a slide with nothing behind the type reads as one that failed to load. Everything else, menus and questions included, gets a full-bleed motion background or a framed panel — and the builder ghosts the hint behind a solid design anyway.
+- **Every hint unique** — no repeats, and watch for near-duplicates from one shoot.
+- **Fit:** people/scenes → cover-crop (faces out from under text). Logos, product, diagrams → contain on a contrasting field.
+- **Casting** matches the audience the script implies, consistently. A named person is never a stock face.
+- **Text over footage always needs a tint and/or a scrim:** left-aligned text → `scrim:"left"` (dark at the text edge fading out); centred text → `scrim:"center"` (dark top and bottom, lighter middle); a lower third → `scrim:"bottom"`; plus a tint of the field colour (0.35–0.65 keeps the motion visible, 0.7+ makes footage a texture). Never blur.
+- Busy footage? Put text in a solid panel beside it (a side column or a card with alpha 0.9) or a band across the lower third instead of a gradient.
+- **Multi-panel sets** (2–6 photographable things side by side) are the deck's most premium layouts: hairline seams, each panel its own clip, titles on a bottom band or under the tiles.
 
 ### 5. Icons
-- **Every list item, menu option, benefit card, button, and contact line gets an icon.** A bare bullet is a missed opportunity.
-- **One concept, one icon** — shield=protection, heartbeat=health, home=housing, people=family, calendar=scheduling, document=paperwork, check=confirmation, arrow=progression, pin=location, phone/mail=contact. Never repeat a generic glyph down a list.
-- Single-weight line icons, consistent stroke deck-wide. Bare on color, or inside a soft tinted rounded container ≈1.7–2× the icon's optical size.
-- Sizes: inline with a row ≈0.9–1.2× row text · card icon ≈1.2–1.5× card title · hero/feature icon 3–5× body.
-- Stroke: ink on light, on-dark over dark/photo. Tint the container, not the icon. Never emoji.
+- **Every list item, menu option, benefit card, button and contact line gets an icon.** A bare bullet is a missed opportunity.
+- **One concept, one icon** — shield=protection, home=housing, users=family, calendar=scheduling, document=paperwork, check=confirmation, arrow=progression, map=location, phone/mail=contact. Never repeat a generic glyph down a list.
+- The icons are ANIMATED: the builder places the library's 2-tone wired-outline drawing, painted in the brand colours, wherever the name matches; an unknown name falls back to the static glyph. Use plain, common nouns.
+- Sizes: inline with a row ≈ 36–44 · card icon ≈ 40–56 · hero/feature icon 3–5× body. Bare on colour, or inside a soft tinted rounded well ≈ 1.7× the icon (`well:true`).
+- Tone: ink on light, white over dark/footage, accent only for the one feature icon. Tint the well, not the icon. Never emoji.
+- **Which drawing where — the 2-tone wired outline, everywhere (binding, Bren 2026-09-09).** Standalone icons, icons above a line of text and button/pill icons alike are placed as the library's 2-tone wired outline drawing, painted in the brand colours (ink on light fields, white on dark, a hex when asked). The flat (designed) and 1-tone system drawings exist and a client can ask for them in an edit turn (`setIconStyle`); one icon style per group on a slide. An icon knows what it is, so an edit can change any part of it: every placed icon carries `idecide/icon`, `idecide/iconTone`, and for an animation `idecide/lottie`, `idecide/iconStyle`, `idecide/iconStroke`, `idecide/iconAccent`, `idecide/iconSwaps`, `idecide/iconColors` — the full rules are in `assets/docs/element-contract.md`.
 
-### 6. Interactive units (buttons, menu rows, chips, tiles)
-Always **one grouped unit** of stacked layers:
-1. **background layer** — fill + corner radius + padding = the hit target (pill radius = half height; card radius 14–28).
-2. **icon layer** — bare, or in a rounded icon container.
-3. **text layer** — the label (never wraps; widen the unit instead).
-4. There is no chevron/affordance part — don't invent one. The parts an element
-   has are exactly the ones its library entry lists.
-Featured/selected = solid Primary or Accent + on-dark text. Default = Surface-light or low-alpha fill + ink text. Keep layers grouped so downstream wiring and animation can target them.
+### 6. Interactive units (buttons, menu rows, tiles, chips)
+Always **one grouped unit** of stacked layers: plate (fill + corner radius = the hit target; carries the click) → icon → label. The builder builds them from the `button` element; you place the box.
+- **EXACTLY ONE animated icon per button** — the label's concept, else an arrow (a check on finish/agree labels, a left arrow on Back). Never two.
+- **Text-style (backgroundless) buttons** are legitimate on quiet designs: the builder lays a fully transparent plate under the whole box and puts the action on it, so the click never misses. Give them a clear 64px row and an underline or a leading icon so they read as actions.
+- **Padding is non-negotiable:** ≥ 24px horizontal inside a plate, label never touching the edge, label never wrapping — widen the plate or shorten the label. Buttons in a set share ONE width; a solo pill may `fit:true` to hug its label.
+- **Sizes:** 56–84px tall (64 is the default pill; 72–84 for menu rows), ≥ 490px wide for full rows, 14–18px between rows.
+- **Featured** = solid primary (accent on a primary field) + onDark text — only for Move Ahead / Finish Up / Continue / Next. Question answers are all equal.
+- **The cover has exactly one action element**, the static "Click anywhere to Begin" pill; the platform advances slide 1 on any click.
 
 ### 7. Composing a slide (procedure)
-1. **Read the content** — counts, numbers, items, photo availability, whether a choice is being made.
+1. **Read the content** — counts, numbers, items, whether a choice is being made, what the footage can show.
 2. **Classify the beat** — open · divider · emotional · explanation · proof/stat · list · story/quote · person · process · choice · close.
-3. **Read the slide's BUILT FROM brief** — it names the element variations, their
-   parts, their counts (×N min-max) and which slots are REQUIRED. The template
-   is already assigned by the seeded rotation; you do not choose or change it,
-   and you cannot split a slide (its identity comes from the script row). If
-   the content is too big for the slots, write less of it.
-4. **Assign type roles**, size by actual length (§2).
-5. **Fill the slots** — one copy value per part the brief lists, within its cap.
-   Zones, gaps and positions are resolved by the packer (tighten → clamp →
-   balance); never state pixel positions.
+3. **Read the outline's layout intent** and decide the composition: the stage (field, background footage or a panel, tint, scrim), where the copy column sits, whether the beat's substance is a list, cards, a graphic, a quote, a stat.
+4. **Assign type roles**, size by actual length (§2). Put the copy column in a stack.
+5. **Place every element**: back-to-front, pixels on the canvas, safe inset kept. Buttons for every wired item on a slide that waits for the viewer.
 6. **Icons** for every discrete item (§5).
 7. **Color roles**, contrast check, accent once (§3).
-8. **Photo pass** — unique, high-res, cast, scrimmed (§4).
-9. **Rhythm check** against neighbours (§8).
+8. **Footage pass** — unique hint, cast, tinted and scrimmed (§4).
+9. **Rhythm check** against neighbours (§8) — name the composition family.
 10. **Polish check** (§9).
 
 ### 8. Rhythm across a presentation (50–150+ slides)
-- **Never the same variation twice in a row** — and never the same *skeleton* twice in a row either (a photo-left split followed by a photo-right split is still repetition).
-- **Any variation appears at most 3 times**; prefer 1–2. With 375 available, a 100-slide deck should use ~60+ distinct variations.
-- **Alternate value:** no more than 2 photo-heavy slides consecutively without a solid-field or light-card slide between, and vice versa.
-- **Alternate density:** dense (cards, grid, list) → sparse (hero, statement, stat).
-- **Parallel beats stay identical:** one divider variation, one transition/gate variation, one menu-revisit variation per presentation. Consistency where the viewer needs orientation; variety everywhere else.
+- **Never the same composition twice in a row** — and a mirrored split (photo left after photo right) is still a split: change the family, not just the side.
+- **Any family appears at most 4 times**; prefer 1–2. A 50-slide deck should show a dozen distinct families.
+- **Alternate value:** no more than 2 footage-heavy slides consecutively without a solid or light-panel slide between, and vice versa.
+- **Alternate density:** dense (cards, rows, graphic) → sparse (hero, statement, stat).
+- **Parallel beats stay identical:** one section-intro composition, one menu composition (First and Return share footage and layout), one CTA family per deck. Orientation where the viewer needs it; variety everywhere else.
 - **At most 4 bare slides** in the deck — count before delivering.
 - **Voiceover pairing:** on-screen text ≈ one third of what is spoken. If the slide reads like a transcript, cut it.
 
 ### 9. Polish checklist (fail any → fix before moving on)
-- Nothing below 28 px · headline ≤3 lines · body ≤4 lines · no orphan last word.
-- Every slot's parts read as ONE object: label inside its plate, eyebrow with
-  its headline, detail on the tight gap under its title, anchored slots with
-  their parent.
-- Every REQUIRED slot in the brief is present, un-truncated and on-canvas.
-- No text touching an edge; margins consistent deck-wide.
-- Every text element's size matches its role **and** its actual length.
+- Nothing below 28px · headline ≤ 3 lines · body ≤ 4 lines · no orphan last word.
+- Every unit's parts read as ONE object: label inside its plate, eyebrow with its headline, detail on the tight gap under its title.
+- Every wired item has its button; every button has its one icon; nothing readable within 86px of an edge.
+- Every text element's role matches its actual length; a headline never runs past the safe area.
 - Every list/menu/button item has a distinct, relevant icon.
-- All text over photography sits on a scrim or solid field and passes contrast.
-- One primary action per interactive slide.
-- No duplicate or soft images.
-- Accent used once; ≤2 background field colors deck-wide.
-- Skeleton differs from the previous slide; variation not already used 3×.
+- All text over footage sits on a tint/scrim or a solid panel and passes contrast.
+- One primary action per interactive slide; question answers equal.
+- No duplicate or soft footage; one data graphic at most, from real figures.
+- Accent used once; ≤ 2 background field colors deck-wide.
+- Composition differs from the previous slide; family not already used 4×.
 
-### 10. Building in myiDecide (img.ly CE.SDK v1.74.1)
-- Page **1558 × 720**, one page per slide.
-- Blocks: `//ly.img.ubq/graphic` rects for fields, cards, bands, scrims, button backgrounds; `//ly.img.ubq/text` for every text element; image fills for photos; vector/graphic for icons.
-- **One string per text block** — headline, eyebrow, and subhead are separate blocks (inline bold within a sentence is fine; a *label* is its own block).
-- **Auto-height, not shrink-to-fit**, so overflow is visible during design and fixed by editing copy or size.
-- **Buttons = grouped** background(click) → icon? → label, named by element and
-  index (`btn-1/bg`, `btn-1/icon`, `btn-1/label`). The shared prefix and the
-  group mark are what tell every later pass they are ONE object.
-- **Scrims** = graphic blocks with a 2-stop linear gradient or flat semi-transparent fill, directly above the image block, below all content.
-- **Keep effects simple:** solid or single 2-stop gradient fills, at most one soft shadow per element, plain rect/rounded-rect/circle. No blur/backdrop, blend modes, masks, or layered shadows.
-- **Name blocks by role** (`headline`, `eyebrow`, `photo-hero`, `scrim`, `btn-1/bg`, `btn-1/icon`, `btn-1/label`).
-- **Fonts:** platform-available families only; map/embed both display serif and UI sans so text survives export/import.
-- Personalization tokens are literal bracketed strings in their own text blocks.
+### 10. Building in myiDecide (img.ly CE.SDK v1.74.1) — what the builder does with a scene
+- Page **1558 × 720**, one page per slide. The stage's solid field is the page colour itself; footage is placed through the platform's api (device-adaptive renditions), never as a raw fill.
+- Every text is **one block per string**, auto-height, named by role (`headline`, `eyebrow`, `body`, `numeral`…); buttons are `btn:<target>` / `btnurl:<url>` / `btnfinish:<TITLE>|<url>` plates with `btn/icon` + `btn/label`; lists are `row/*`, `card/*`, `chip/*`, `step/*`; graphics `bar/*`, `dot/*`, `stat/*`, `chart`.
+- Group marks (`idecide/group`, `idecide/groupRole`) ride in the slide's bytes so wiring, animation, edits and audits all see the same units.
+- **Animation:** heroes rise on their baseline; buttons grow; panels and rows slide from the nearer edge (the edge rule); bars grow upward; everything else fades; slots 0.18s apart bottom-to-top, parts 0.08s apart; stage media fades in slowly; EaseOutQuint everywhere; every layer runs to the slide's end (narration + 0.5s tail).
+- The page is stamped `idecide/layout: fixed`: later passes only tighten text boxes, keep buttons apart and keep everything on canvas — a designed composition is never re-packed.
+- **Keep effects simple:** solid or single 2-stop gradient fills, at most one soft shadow per element, plain rect / rounded rect / ellipse. No blur, blend modes, masks or layered shadows.
+- Personalization tokens are literal bracketed strings in their own text blocks; the sender block is one element.
 
 ### 11. Failure modes this document prevents
 | Symptom | Root cause | Correct move |
 |---|---|---|
-| Paragraph crammed where a numeral belongs | Reusing a slot instead of choosing a role | Re-classify; use a Split or List variation with Body role |
-| Three words floating in a body box | Role mismatch | Promote to Hero statement on a Statement variation |
-| Headline running 5 lines | Size copied, not chosen | Drop to long-sentence band or rewrite shorter |
-| Text unreadable over a photo | Missing scrim | Add gradient/flat scrim or move text to a solid field |
-| Seven items in a 3-slot layout | Item count past the slot's count.max | Write to the declared count — merge or cut CONTENT ideas. If the beat is genuinely a set of N things, say so with `grid: {cols, rows}` and it is drawn as N panels; otherwise it is two beats |
-| Every slide looks the same | — | Templates are assigned by the seeded rotation (no back-to-back skeleton, ≤3 uses per deck), so variety is handled for you — but `grid` and `photoZone` are still yours to set when the content asks for them |
+| Paragraph crammed where a numeral belongs | Wrong role | Re-classify: a stat graphic + a headline that says what the number means |
+| Three words floating in a body box | Role mismatch | Promote to hero |
+| Headline running 5 lines | Box too narrow / role too big | Widen the box or drop to longline, or write shorter |
+| Text unreadable over footage | Missing tint/scrim | Add a scrim under the copy or move the copy onto a panel |
+| Seven items in a slide | Content past what a phone reads | Merge or cut to 3–5; a genuine set of N things becomes N panels or two beats |
+| Two icons in a button | An arrow added beside a concept icon | One icon per button — the concept, else the arrow |
+| A click that misses | Text button with no plate | The builder plates text buttons; keep the row 64px tall |
+| Every slide looks the same | Families repeating | Change the family, the axis, the field, the density |
 | Slide reads like the narration | Copy dumped from script | Keep the key phrase; let voiceover carry the rest |
-| Repeated or soft photo | No image ledger / low-res source | Track every image; source at 2400 px |
+| Numbers as prose | A figure buried in body text | A bar chart / dot grid / ring / stat graphic — the number IS the slide |
 
 ---
+## PART II — WHAT THE TEST BUILDS TAUGHT (decks 302 and 303, 2026-09-15)
 
-### 12. Skeleton vocabulary (machine-parseable — use these phrasings EXACTLY)
-Every *Skeleton:* line is built ONLY from these phrases so the parser extracts every field. Never paraphrase them.
+Twenty-eight demo slides across ten markets and a full 25-slide Patagonia deck were composed freehand against this canvas. What held up, and now is the rule:
 
-**Layout mode (exactly one, first):** "side-by-side zones (row)" | "stacked zones (column)" | "grid N cols (2fr+1fr) x M rows" | "layered over full-bleed image" | "single field"
-
-**Photo zones:** "full-bleed photo" | "photo column left|center|right NN% w" | "photo band top|middle|bottom NN% h" | "zone left|right NN% w containing N photo columns side-by-side" | "zone top|bottom NN% h containing N stacked photo cells" | "N photo cells NN% w x NN% h" | "one large photo panel left NN% w full height + N cells right NN% w x NN% h each" | "N color panels (checkerboard)" | "circular portrait" | "logo/mark slot (NNNpx)" | "no photo - solid field" | "no photo - gradient field"
-
-**Bands & panels:** "header band top NN% h (tone)" | "caption band bottom NN% h (tone)" | "content panel left|right|top|bottom NN% w|h (tone)"
-
-**Overlays (absolute layers, after flow zones):** "horizontal scrim from left|right" | "vertical scrim" | "flat tint scrim NN%" | "top|bottom band overlay (tone)" | "corner card top|bottom-left|right ~NN% w (tone)" | "centered overlay NN% w" | "side rail left NNNpx" | "edge tab right NNNpx"
-
-*These flags describe the STAGE so the parser can extract it. They do NOT
-declare content — what a slide holds comes from its element brief
-(listrow.icon, card.photo, chip.pill, motif.glyph, stat.ring…). Where a flag
-and the brief disagree, the BRIEF wins.*
-
-**Arrangement clause (one per skeleton, before field):** "arrangement: <flags>" where flags are comma-separated from: "content centered" | "content left-aligned" | "content right-aligned" | "items as N stacked rows" | "items as N cards in a row" | "items as N pill chips" | "items in N-col grid of M" | "display numeral" | "giant glyph backdrop" | "oversized quote mark" | "italic script accent" | "circular portrait" | "star rating motif" | "progress ring" | "bar chart rows" | "play-button motif"
-
-**Field & inset (always last):** "field: white|light-grey|ink-dark|near-black|primary|primary-light|slate|accent|pale-blue|gradient primary-deep" | "inset NNpx NNpx" | "edge-to-edge zones"
-
-**Action targets (Category 15):** "circle (NN% of canvas height diameter)" | "square NN% w x NN% h of canvas" | "rectangle (NN% of canvas height)" | "N full-height column buttons" | "N quadrant/grid panel buttons"
-
-**Position cues** close every *Notes:* line as "Position cues: photo left; band bottom; text right." — renderers read side/position words there.
-
-**Uniqueness rule:** within a category no two variations may share the tuple (layout mode, photo mode, first photo fraction, photo count, band position, scrim direction, arrangement flags, field tone, action targets). The skeleton signature MUST include the arrangement clause — it is what separates otherwise-similar single-field or repeated-row layouts.
-
----
-
----
-
-*PART II (the 15×25 variation library) ships separately: the planning call receives a condensed category catalog, and each slide's build receives its locked variation's full spec (skeleton + arrangement + distinct + holds + type ceiling + position cues).*
+- **Bespoke beats templated.** Every slide composed for its own content read better than the closest library template. The compositions that worked: full-bleed footage with a left scrim and a hero; split with a 42–46% media column; a centred statement on a darkened clip; a stat with a dot grid or an animated bar chart beside a short headline; three or four photo cards under a headline; numbered steps across the lower half; a quote centred with a fine attribution; a menu of pills over a tinted clip; a hamburger of text-style rows on a quiet field.
+- **Data graphics sell.** The finance response's animated bar graph, the charity response's dot grid and the city-planning response's rings made the point faster than any sentence. Where the script gives a figure, draw it.
+- **The edge rule.** An element on the right half enters from the right, on the left from the left; text rises; buttons grow; the stage never animates. Motion that agrees with position reads as intent.
+- **One icon per button, always animated.** Concept icon when the label has one; otherwise an arrow; a check on finish/agree; a left arrow on Back. Doubling an arrow next to a concept icon read as clutter.
+- **Text buttons need a plate.** A label with no background missed clicks until a transparent plate covered the row and carried the action.
+- **Condensed faces run small.** Oswald and Barlow Condensed needed 15–20% more size than the band suggested.
+- **Tints between 0.4 and 0.65 keep footage alive** under white type; 0.7+ turns it into texture (fine for dense slides).
+- **Track choices by default.** Question answers, menu topics and final outcomes are recorded for the sender without being asked.
+- **The real logo, found online, on every slide the design asks for** — uploaded once, placed as a Contain image, light or dark drawing by field.

@@ -1,23 +1,24 @@
 > **Reference for the myiDecide Presentation Builder skill.** The per-slide plan
-> contract — the fields each slide object carries and what they mean. Written
-> as instructions to a planner; apply it to your own planning.
+> contract — the fields each slide object carries and what they mean,
+> including the layout intent that keeps neighbouring slides different.
+> Written as instructions to a planner; apply it to your own planning.
 
 <!--
-  DECK OUTLINE CONTRACT (modular template flow, tier 1 of 2)
-  ────────────────────────────────────────────────────
-  A FAST deck-level pass: theme + one CATEGORY assignment per slide — no copy,
-  no narration, no photo queries (those come per slide in tier 2). The
-  CONCRETE VISUAL VARIATION within each category (25 per category, 375 total)
-  is assigned downstream by a seeded randomizer — your job is the right
-  category, honest photo intent, and clean structure.
+  DECK OUTLINE CONTRACT (2.0 — template-free, tier 1 of 2)
+  ─────────────────────────────────────────────────────────
+  A FAST deck-level pass: theme + structure + one LAYOUT INTENT per slide — no
+  copy, no narration, no photo queries (those come per slide in tier 2, where
+  each slide is composed as a SCENE from its intent). There is no template
+  library: your job is the right structure, an honest imagery intent, a
+  composition intent a designer could sketch from, and a deck that varies.
 -->
 
 You are the deck designer doing the STRUCTURAL pass. The composition playbook
-above is binding. Read the script CSV + answers and assign each slide its
-CATEGORY from the catalog provided — chosen by the beat's content SHAPE
-(counts, numbers, items, choice vs statement vs story) — honoring deck rhythm
-(§8): alternate density, section intros consistent, and the imagery floor
-below.
+above is binding. Read the script CSV + answers and give each slide its
+LAYOUT INTENT — one line, chosen by the beat's content SHAPE (a statement, a
+story, a count of things, a number, a choice, a comparison, a sequence) —
+honoring deck rhythm (§8): alternate density and axis, section intros
+consistent, and the imagery floor below.
 
 ## THE IMAGERY FLOOR — at most FOUR bare slides in the whole deck
 
@@ -74,20 +75,15 @@ Output ONE JSON object (no fences, no commentary):
                                  // deck order. Set it on the LAST beat of every
                                  // topic chapter: "Main Menu - Return".
       "sectionIntro": true,      // ONLY topic-chapter openers
-      "category": 1-15,          // from the CATEGORY CATALOG, by content shape
+      "layout": "...",           // ONE LINE of composition intent — see LAYOUT INTENT
       "field": "light"|"dark"|"primary",
       "photoZone": "full"|"left"|"right"|"top"|"bottom"|"none",   // photo INTENT
       "imageHint": "...",        // 4-8 word Pexels VIDEO phrase (motion bg), "" if none.
                                  // UNIQUE per slide — vary subjects/settings.
-      "grid": {"cols":1-6,"rows":1-4}   // OPTIONAL. A beat that IS a set of N things
-                                        // shown side by side — four services, three
-                                        // steps, a 2×2 of moments. Say the number and
-                                        // the builder draws that grid, whatever the
-                                        // bound template's own zones declare. Every
-                                        // panel of a multi-panel grid gets its OWN
-                                        // footage by default (add "videoPanels": false
-                                        // for stills). This is the only way to ask for
-                                        // more than one video on a slide, so ask.
+      "panels": 2-6              // OPTIONAL. A beat that IS a set of N photographable
+                                 // things shown side by side — four services, three
+                                 // locations, a 2×2 of moments. Say the number and
+                                 // the design pass gives each its own footage panel.
     }, ...
   ]
 }
@@ -125,9 +121,9 @@ Binding consequences:
 - **"Finish Up" is always a topic**, offered in BOTH menus, even when the
   client gave no closing content — it is how a viewer chooses to leave.
 - **Every outcome the Finish Up question offers gets its own chapter**, ending
-  on a `kind: "cta"`, category-15 terminal. If the client named no call to
-  action at all, that terminal is a Thank You screen — still category 15, still
-  the last thing on screen.
+  on a `kind: "cta"` terminal. If the client named no call to action at all,
+  that terminal is a Thank You screen — still kind "cta", still the last thing
+  on screen.
 - Nothing follows a terminal CTA. It never auto-advances.
 
 SUBFORK CLARIFICATION (the case builds keep getting wrong): the LAST
@@ -139,14 +135,16 @@ so the narration matches the flow.
 
 
 Structural rules:
-- cover = category 1. Menus/hamburger = category 2. Intro questions = category 4.
-- **CALL TO ACTIONS (category 15) are the TERMINAL slides**: every closing fork
+- kinds decide the buttons: cover, menu, hamburger, question and cta slides are
+  drawn with real buttons for their items; content slides are display.
+- **CALL TO ACTIONS (kind "cta") are the TERMINAL slides**: every closing fork
   points at one — the last thing a viewer sees. They are ACTION-NAMED slides
   ("Schedule A Call", "Get Started as Customer", "Visit Our Website",
   "Not Right Now"), kind:"cta", one per closing outcome, targeted BY NAME from
   the Finish Up fork. Nearly every deck has "Schedule A Call"; every deck has a
   polite decline terminal. Never end a path on a content slide.
-- Section intros = category 3, ALL of them (consistency = orientation).
+- Section intros share ONE layout intent, ALL of them (consistency =
+  orientation): the same composition family, the same eyebrow style.
 - Logo Reveal sits immediately before Main Menu - First, and it is an
   INTERACTIVE slide with two beats the builder assembles mechanically:
   * `rubText` — one short spoken line (≤ 10 words, NO [tokens]) inviting the
@@ -178,16 +176,17 @@ cover's eyebrow and headline must not repeat [viewer-name-first]. (Narration
 is exempt.)
 
 SELF-CHECK before emitting (the validator rejects violations, costing a slow
-repair round): (1) every slide's category fits its content SHAPE and capacity;
-(2) the deck uses the library's breadth — Statement, Split, Stats, Lists,
-Full-Screen Image, Multi-Panel, Testimonials, and Process categories all
-appear where the script gives any excuse; never funnel everything into two or
-three familiar categories; (3) **at most FOUR slides in the whole deck have
-photoZone "none"**; (4) every imageHint is unique; (5) every closing fork
-targets a category-15 CTA slide; (6) all sectionIntro slides share category 3;
-(7) every topic chapter's last beat carries `advanceTo: "Main Menu - Return"`;
-(8) a Finish Up chapter exists and ends on the outcome question; (9) every
-outcome has its own chapter ending on a category-15 terminal.
+repair round): (1) every slide has a `layout` intent that fits its content
+SHAPE; (2) the deck varies — statements, splits, stats and data graphics,
+lists and cards, full-bleed footage, multi-panel sets, quotes and steps all
+appear where the script gives any excuse; no two neighbouring content slides
+share an intent, field and photo treatment, and no intent appears more than
+four times; (3) **at most FOUR slides in the whole deck have photoZone
+"none"**; (4) every imageHint is unique; (5) every closing fork targets a
+kind-"cta" slide; (6) all sectionIntro slides share one intent; (7) every
+topic chapter's last beat carries `advanceTo: "Main Menu - Return"`; (8) a
+Finish Up chapter exists and ends on the outcome question; (9) every outcome
+has its own chapter ending on a terminal CTA.
 
 ## Typeface pairing — a DESIGN DECISION, made fresh per brand
 
@@ -220,16 +219,25 @@ Source Code Pro, Source Sans Pro, Source Serif Pro, Space Grotesk, Space Mono,
 Stint Ultra Condensed, Stint Ultra Expanded, Sue Ellen Francisco, TrashHand,
 Ultra, VT323, Yeseva One.
 
-## Reach for Multi-Panel Grids (category 8)
+## Reach for multi-panel sets (`panels`)
 
 Whenever a beat presents 2–6 PARALLEL visual subjects — services, locations,
-team members, product range, amenities, before/after, portfolio proof —
-assign **category 8 (Multi-Panel Grid)** rather than a list or a single
-photo. Grids are the deck's most photographic, premium-feeling layouts
-(mosaics, checkerboards, nested columns) and are consistently under-used:
-aim for 2–3 grid slides per deck when the content supports them. A list
-with icon rows is for abstract points; when the items are THINGS a camera
-can show, use the grid.
+team members, product range, amenities, before/after, portfolio proof — set
+`panels` to their count and say so in the intent ("four footage tiles under a
+headline", "photo strip of three products") rather than a list or a single
+photo. Panel sets are the deck's most photographic, premium-feeling layouts
+and are consistently under-used: aim for 2–3 per deck when the content
+supports them. A list with icon rows is for abstract points; when the items
+are THINGS a camera can show, use the panels.
+
+## Reach for data graphics
+
+Whenever a beat carries a number, a share, a comparison, growth over time, a
+count of something or a sequence of steps, say so in the intent — "big stat
+with a dot grid", "animated bar chart of the three figures", "progress ring",
+"numbered steps across the bottom", "timeline". The design pass draws these as
+native animated graphics in the brand colours, and they are the deck's most
+convincing evidence. Only figures the client actually gave.
 
 ## Questions carry real choices (binding)
 

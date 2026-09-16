@@ -1,13 +1,14 @@
 > **Reference for the myiDecide Presentation Builder skill.** The plain-English
-> troubleshooting KB shared with the Chrome extension: one entry per situation
-> under a stable code (`KEY-01`, `TAB-04`, …) — what the user sees, what it
-> means, what to do. Read it when the user reports an error or asks what a
-> message means; answer from it before retrying anything. The `KEY-*` entries
-> concern the extension's API key and do not apply to this skill.
+> troubleshooting KB shared with the myiDecide AI Presentation Extension: one
+> entry per situation under a stable code (`KEY-01`, `TAB-04`, …) — what the
+> user sees, what it means, what to do. Read it when the user reports an error
+> or asks what a message means; answer from it before retrying anything. The
+> `KEY-*` entries concern the Extension's API key and do not apply to this
+> skill.
 
-# Troubleshooting — myiDecide Presentation Builder
+# Troubleshooting — myiDecide AI Presentation Extension
 
-Plain-English help for the messages the builder can show while it writes,
+Plain-English help for the messages the myiDecide Builder can show while it writes,
 builds or edits a myiDecide presentation. Each entry has a short code
 (`KEY-01`, `TAB-02`, …) that the side panel quotes next to an error, so you can
 jump straight to the matching section. Nothing here needs technical knowledge;
@@ -27,12 +28,12 @@ key and never shows those — every other entry applies to both.
 | `KEY-04` | `404 not_found_error` "model: …" · `403 permission_error` | The chosen model isn't available to this key — pick another model |
 | `KEY-05` | "anthropic-workspace-id is required when authenticating with an identity-linked API key" | The key was created with no workspace chosen — paste its Workspace ID in Settings, or make a key with a workspace |
 | `KEY-06` | "anthropic-workspace-id header must be a valid workspace ID" | The Workspace ID in Settings is mistyped or belongs to another organisation |
-| `TAB-01` | "Open your presentation in the builder first" · "I'm not seeing a myiDecide tab in front" | The panel can't find the builder tab it should work in |
-| `TAB-02` | "The builder tab hasn't finished loading its editor" · "The builder reloaded but its tools never came up" | The editor never finished booting, usually because the tab was in the background |
-| `TAB-03` | "builder error dialog detected" · "The editor crashed N times … mid-update" | The myiDecide editor showed its Unknown Error dialog |
+| `TAB-01` | "Open your presentation in the myiDecide Builder first" · "I'm not seeing a myiDecide tab in front" | The panel can't find the myiDecide Builder tab it should work in |
+| `TAB-02` | "The myiDecide Builder tab hasn't finished loading" · "The myiDecide Builder reloaded but its tools never came up" | The myiDecide Builder never finished booting, usually because the tab was in the background |
+| `TAB-03` | "builder error dialog detected" · "The myiDecide Builder crashed N times … mid-update" | The myiDecide Builder showed its Unknown Error dialog |
 | `TAB-04` | "slides.changeSlide did not answer in 30s" · "could not open <slide> — skipped" · "export timed out after 20s" | The tab lost focus or the computer slept during a long pass |
 | `TAB-05` | "This presentation is open in another tab" · `409 SESSION_MISMATCH` | The same presentation is open somewhere else and holds the lock |
-| `BUILD-01` | "A build is running in your builder tab right now" | Edits wait until the running build finishes |
+| `BUILD-01` | "A build is running in your myiDecide Builder tab right now" | Edits wait until the running build finishes |
 | `BUILD-02` | "I couldn't read any text out of <file>" | The uploaded script or brochure has no readable text |
 | `BUILD-03` | "wire: unknown target" | A button pointed at a slide that doesn't exist — repaired automatically since 1.1.0 |
 | `BUILD-04` | "(NO VOICEOVER)" is spoken aloud | A silent-slide marker was narrated — fixed in 1.1.0; older decks can be cleared |
@@ -79,7 +80,7 @@ things is true:
 
 1. Sign in at **platform.claude.com** and, on the dashboard, press
    **Get API Key**.
-2. Name it (e.g. "myiDecide builder"), choose an expiry you'll remember —
+2. Name it (e.g. "myiDecide Builder"), choose an expiry you'll remember —
    *Never* if you're happy to rotate it yourself — and press **Create key**.
    Made from the dashboard, the key is tied to your workspace and works in
    the extension as-is. (A key made some other way, with no workspace, needs
@@ -87,7 +88,7 @@ things is true:
 3. **Copy the full key from the confirmation dialog straight away** and paste
    it into the extension's ⚙ Settings. You can't come back for it later —
    only the masked preview remains.
-4. Press **Test key**. It runs the real calls the builder makes and tells you
+4. Press **Test key**. It runs the real calls the myiDecide Builder makes and tells you
    in plain English what passed and what didn't.
 5. Save. If a build had failed, open 🕘 History and press **Resume build** —
    progress is kept.
@@ -241,7 +242,7 @@ Either of these works; the first keeps the key you have.
 1. In the extension open ⚙ **Settings** and press **"Key needs a Workspace
    ID?"** under the key (after a failed test the box is already showing).
 2. In the Claude Console open **Settings → Workspaces** and copy the ID from
-   the **ID** column of the workspace you want the builder to use. It starts
+   the **ID** column of the workspace you want the myiDecide Builder to use. It starts
    with `wrkspc_`. Paste it into the **Workspace ID** box.
 3. Press **Test key** — every row should turn green and the first row names
    the workspace — then **Save**.
@@ -295,33 +296,33 @@ it belongs to a different organisation than the key.
 
 ---
 
-## The builder tab
+## The myiDecide Builder tab
 
-### TAB-01 — "Open your presentation in the builder first" / "I'm not seeing a myiDecide tab in front"
+### TAB-01 — "Open your presentation in the myiDecide Builder first" / "I'm not seeing a myiDecide tab in front"
 
 **What you'll see**
 
 - While connecting: *"I'm not seeing a myiDecide tab in front. Switch to the
-  tab with your presentation open in the builder, then tell me again."*
-- *"That's myiDecide, but not the builder. Open the presentation itself (the
+  tab with your presentation open in the myiDecide Builder, then tell me again."*
+- *"That's myiDecide, but not the myiDecide Builder. Open the presentation itself (the
   editing view)…"*
-- When resuming or editing: *"Open your presentation in the builder first
+- When resuming or editing: *"Open your presentation in the myiDecide Builder first
   (the tab I built it in), then try again."*
-- Older versions: *"Builder tab not found"*.
+- Older versions: *"myiDecide Builder tab not found"*.
 
 **What it means**
 
 The panel reads whichever tab is **active** when you confirm, and it needs
-that tab to be the myiDecide **editor** — the address looks like
+that tab to be the myiDecide **Builder** — the address looks like
 `my.idecide.com/builder/create/<number>`. The dashboard, the presentation
 list or the player don't count, and neither does a tab in another window.
 
 **What to do**
 
 1. In the same Chrome window as the side panel, click the tab with your
-   presentation open in the builder (you should see the slides).
+   presentation open in the myiDecide Builder (you should see the slides).
 2. If you haven't opened one yet: sign in at my.idecide.com and open (or
-   create) the presentation so you're looking at the slide editor. When you
+   create) the presentation so you're looking at the myiDecide Builder. When you
    start a new build the panel can also make a blank one for you — choose
    **Make me a new one**.
 3. Back in the panel, press **Try again**.
@@ -329,27 +330,27 @@ list or the player don't count, and neither does a tab in another window.
 **If it keeps happening**
 
 - Make sure you're signed in — a signed-out tab lands on the login page,
-  which is "myiDecide, but not the builder".
+  which is "myiDecide, but not the myiDecide Builder".
 - Chrome side panels belong to a window. If the presentation is open in a
   different window, either move the tab into this window or open the panel
   from that window.
 
-### TAB-02 — "The builder tab hasn't finished loading its editor" / "The builder reloaded but its tools never came up"
+### TAB-02 — "The myiDecide Builder tab hasn't finished loading" / "The myiDecide Builder reloaded but its tools never came up"
 
 **What you'll see**
 
-- *"The builder tab hasn't finished loading its editor."* (versions before
-  1.1.0 said *"builder page never mounted (engine present but no current
+- *"The myiDecide Builder tab hasn't finished loading."* (versions before
+  1.1.0 said *"myiDecide Builder page never mounted (engine present but no current
   page after 45s)"*.)
-- *"The builder reloaded but its tools never came up. Give the tab a moment,
+- *"The myiDecide Builder reloaded but its tools never came up. Give the tab a moment,
   make sure the presentation has finished loading and that its tab is in
   front, then tell me again."*
 
 **What it means**
 
 To work in your presentation the panel adds a small switch (`aiagent`) to the
-tab's address and reloads it. The editor then has to finish starting up — and
-the myiDecide editor **does not finish starting while its tab is in the
+tab's address and reloads it. The myiDecide Builder then has to finish starting up — and
+the myiDecide Builder **does not finish starting while its tab is in the
 background**. If you switched to another tab, another window or another app
 while it was reloading, it sat half-loaded and the panel gave up waiting.
 
@@ -358,38 +359,38 @@ the message tells you which step it was waiting on.
 
 **What to do**
 
-1. Click the builder tab so it is the one you can see.
-2. Wait until the slides appear and the editor stops showing its loading
+1. Click the myiDecide Builder tab so it is the one you can see.
+2. Wait until the slides appear and the myiDecide Builder stops showing its loading
    state.
 3. In the panel, press **Try again** (or **Resume build** in 🕘 History).
 
 **If it keeps happening**
 
-- Reload the builder tab yourself (⌘R / F5), wait for the slides, then try
+- Reload the myiDecide Builder tab yourself (⌘R / F5), wait for the slides, then try
   again.
 - Check that the address still ends with `aiagent=`; if you navigated
   elsewhere and back, the switch is gone and the panel will add it again on
   the next attempt.
 - A very slow connection can take longer than the panel's ceiling — wait for
-  the editor to be fully idle before pressing Try again.
+  the myiDecide Builder to be fully idle before pressing Try again.
 
-### TAB-03 — "builder error dialog detected" / "The editor crashed N times … mid-update"
+### TAB-03 — "builder error dialog detected" / "The myiDecide Builder crashed N times … mid-update"
 
 **What you'll see**
 
 - In the build log: *"builder error dialog detected — refreshing the page"*,
   or a step name followed by *"builder error dialog detected"*.
-- In the builder tab: a grey box titled **Unknown Error** — *"The application
+- In the myiDecide Builder tab: a grey box titled **Unknown Error** — *"The application
   has encountered an unknown error. Please try to reload the page"* — with a
   single **Reload Page** button.
-- If it happens repeatedly: *"The editor crashed 3 times in the last 8
+- If it happens repeatedly: *"The myiDecide Builder crashed 3 times in the last 8
   minutes and isn't recovering. This usually means the myiDecide platform is
   mid-update. Wait a minute, then hit Resume on the History screen — the
   build continues from where it stopped."*
 
 **What it means**
 
-The myiDecide editor itself crashed. A single crash is normal on a long build
+The myiDecide Builder itself crashed. A single crash is normal on a long build
 — the panel notices, reloads the page and repeats the step it was on, so you
 don't have to do anything. Several crashes in a row almost always mean the
 platform is being updated underneath you (the page's files changed while the
@@ -426,8 +427,8 @@ In the build log, one or more of:
 
 **What it means**
 
-The editor stopped answering for a while. The usual cause is that its tab
-**lost focus**: the editor only renders — and only moves between slides —
+The myiDecide Builder stopped answering for a while. The usual cause is that its tab
+**lost focus**: the myiDecide Builder only renders — and only moves between slides —
 while its tab is visible, so switching to another tab, minimising Chrome,
 locking the screen or the computer going to sleep freezes it mid-step. The
 panel waits a fixed time, marks the slide as skipped and carries on, so one
@@ -435,7 +436,7 @@ stall can cost a slide its design, its wiring or its thumbnail.
 
 **What to do**
 
-1. **Keep the builder tab visible for the whole run.** Don't switch tabs in
+1. **Keep the myiDecide Builder tab visible for the whole run.** Don't switch tabs in
    that window; use a different window or a different device for other work.
    Keep the build overlay on — it's there to stop stray clicks.
 2. Stop the computer from sleeping during a build (the extension asks Chrome
@@ -450,7 +451,7 @@ stall can cost a slide its design, its wiring or its thumbnail.
 
 - A long deck on a slow machine can stall without any tab switching — close
   other heavy tabs and apps, then Resume.
-- If every slide stalls, the editor is not really loaded: see `TAB-02`.
+- If every slide stalls, the myiDecide Builder is not really loaded: see `TAB-02`.
 
 ### TAB-05 — "This presentation is open in another tab" / 409 SESSION_MISMATCH
 
@@ -463,16 +464,16 @@ stall can cost a slide its design, its wiring or its thumbnail.
 
 **What it means**
 
-myiDecide lets **one tab at a time** write to a presentation. Every editor tab
+myiDecide lets **one tab at a time** write to a presentation. Every myiDecide Builder tab
 gets its own session ticket, and the newest tab holds the lock. If the same
 presentation is open in a second tab, a second window, another browser or
-another device — or you duplicated the tab — the builder's tab is now the
+another device — or you duplicated the tab — the myiDecide Builder's tab is now the
 stale one and the platform rejects its saves.
 
 **What to do**
 
 1. Close every other tab, window and device that has this presentation open.
-2. Reload the builder tab (⌘R / F5) so it takes the lock back, and wait for
+2. Reload the myiDecide Builder tab (⌘R / F5) so it takes the lock back, and wait for
    the slides to show.
 3. In the panel, open 🕘 History → **Resume build** (or Try again). Slides
    that failed to save are rebuilt; the rest are kept.
@@ -487,17 +488,17 @@ stale one and the platform rejects its saves.
 
 ## During a build or an edit
 
-### BUILD-01 — "A build is running in your builder tab right now"
+### BUILD-01 — "A build is running in your myiDecide Builder tab right now"
 
 **What you'll see**
 
-*"A build is running in your builder tab right now — I can make changes as
+*"A build is running in your myiDecide Builder tab right now — I can make changes as
 soon as it finishes. Your message is safe to resend then."*
 
 **What it means**
 
 You asked for a change while the build (or a rebuild started by an earlier
-change) was still working in the tab. Only one thing can drive the editor at
+change) was still working in the tab. Only one thing can drive the myiDecide Builder at
 a time, so the panel parks the request rather than interrupting the build.
 
 **What to do**
@@ -604,7 +605,7 @@ those words as the narration and sent them to the voice service. **Fixed in
 
 **If it keeps happening**
 
-- Check the slide's Notes in the myiDecide editor — if the marker text is
+- Check the slide's Notes in the myiDecide Builder — if the marker text is
   still there, ask for the notes to be cleared as well.
 
 ### BUILD-05 — "iconify unreachable" / "display font unresolved"
@@ -620,10 +621,10 @@ In the build log:
 **What it means**
 
 Icons come from an online icon library (Iconify) and fonts are looked up in
-the editor's font catalogue. If the icon service can't be reached — a
+the myiDecide Builder's font catalogue. If the icon service can't be reached — a
 firewall, a captive Wi-Fi login page, or the service being down — the build
 uses the icon set bundled with the extension instead. If a font the brand
-asked for isn't in the catalogue, the editor's default font is used. The build
+asked for isn't in the catalogue, the myiDecide Builder's default font is used. The build
 completes either way; the slides just use the fallback.
 
 **What to do**
@@ -636,8 +637,8 @@ completes either way; the slides just use the fallback.
 
 **If it keeps happening**
 
-- A font that is never found is probably not one the myiDecide editor offers.
-  Pick a similar one from the editor's font list and name that instead.
+- A font that is never found is probably not one the myiDecide Builder offers.
+  Pick a similar one from the myiDecide Builder's font list and name that instead.
 
 ---
 
@@ -661,13 +662,13 @@ progress is saved in Chrome on your computer.
 1. Reopen the panel with the extension's button next to the address bar.
    Since 1.1.0 it returns to the screen you were on and offers to continue.
 2. If it doesn't offer, open 🕘 History, find the run, and press **Resume
-   build**. It reconnects to the builder tab (see `TAB-01` if it can't) and
+   build**. It reconnects to the myiDecide Builder tab (see `TAB-01` if it can't) and
    continues from the last finished slide.
 
 **If it keeps happening**
 
 - A side panel belongs to one Chrome window and isn't visible from the
-  others. Keep the panel and the builder tab in the same window and stay in
+  others. Keep the panel and the myiDecide Builder tab in the same window and stay in
   it.
 - Chrome's own updates can restart the browser mid-build; postpone them until
   the build finishes.
@@ -694,7 +695,7 @@ Email **hi@idecide.com** with:
 1. The build record file (⬇ from History).
 2. The code from this page that matches what you saw (for example `TAB-04`),
    or the exact message if it isn't listed.
-3. The presentation's address from the builder tab
+3. The presentation's address from the myiDecide Builder tab
    (`my.idecide.com/builder/create/<number>`).
 4. Roughly when it happened and what you were doing (building, resuming,
    asking for a change).

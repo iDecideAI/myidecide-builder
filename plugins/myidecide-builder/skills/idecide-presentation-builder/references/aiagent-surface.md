@@ -1,9 +1,9 @@
 > **Reference for the myiDecide Presentation Builder skill.** The complete
 > `window.aiagent` call surface with worked examples.
-> `window.aiagent.instructions` is the editor's live signature list — read it
-> each session and diff against this file; where a signature differs, the live
-> one is the accurate one. It describes calls, not conduct: the skill's
-> behaviour lives in SKILL.md and these references.
+> `window.aiagent.instructions` is the myiDecide Builder's live signature list
+> — read it each session and diff against this file; where a signature
+> differs, the live one is the accurate one. It describes calls, not conduct:
+> the skill's behaviour lives in SKILL.md and these references.
 
 # window.aiagent — complete call surface, with examples
 

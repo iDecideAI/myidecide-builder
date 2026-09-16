@@ -1442,3 +1442,89 @@ y, w, h, {contain, nativeAspect, name, radius, start, duration})`, and
 `SH.applyPexelImage(block, query, {upload | uploads})` preferring a
 pre-resolved upload. The lottie build step itself (which slides get one) is
 being implemented separately in the composer.
+
+## 2026-09-15 — template-free (2.0.0): what the test decks proved, and what the renderer must do
+
+Verified LIVE on decks 302 (28 demo slides across ten markets) and 303 (a
+25-slide Patagonia deck built without any template, narrated, wired, tracked)
+through `window.aiagent` — every finding below was reload-checked. The scene
+renderer that now automates them (`inject/scene.js`) is verified against the
+mock-engine gate (`scripts/smoke-scene.mjs`); its first live build through the
+panel is the next thing to verify, and this section says so rather than
+claiming it.
+
+- **Bespoke compositions persist through the aiagent save model exactly like
+  archetype ones.** Raw engine writes (createTextBox + setFont, rects,
+  gradients, opacity, corner radii, drop shadows, in-animations) persist when
+  the slide is committed by `changeSlide` after any documented api.*
+  mutation on it — the same rule as before; 302/303 added nothing new to the
+  save discipline, only to what is drawn.
+- **`api.slides.createMultiple(count, atIndex)` inserts at the exact index**,
+  and every NEW slide defaults `autoAdvanceAfterNarration: true` — an
+  interactive slide created that way must be set `autoAdvance(id, false,
+  nextId)` or it walks past its buttons (all 27 slides of 302 needed it).
+- **A transparent click plate carries the action for a backgroundless
+  button.** A rect with fill `{r:0,g:0,b:0,a:0}` inserted as the BACKMOST
+  child of the group, named for wiring (`btn:<target>`), works exactly like a
+  visible plate: the label and icon ride on top, the click never misses, the
+  editor renders nothing. Verified on the 303 Hamburger, the 302 city-planning
+  rows and the text links. scene.js builds every `style:"text"` button this way.
+- **Every button carries exactly ONE animated icon** (Bren, after a pass that
+  doubled arrows next to concept icons): the label's concept when it has one,
+  else `arrow-right`; a `check` on finish/agree labels; `arrow-left` on Back.
+  The panel uploads those three with every slide's icons.
+- **Native data graphics animate as parts.** Bars (rects growing upward from
+  a baseline, value above, label below), horizontal bars (track + fill growing
+  right), dot grids (ellipses, "on" in the accent), rings (charts.js SVG +
+  the figure as real text), stats (numeral + label). The finance / charity /
+  city-planning responses on 302 are the reference; the `graphic` element is
+  the contract.
+- **The edge rule reads as intent.** An element whose centre is on the right
+  half enters from the right (slide direction π), on the left half from the
+  left (0); text rises on its baseline; buttons grow; the stage never
+  animates. A SLIDE's direction is a FLOAT (radians) — `setFloat(anim,
+  'animation/slide/direction', θ)`; `setEnum` throws on it. `SH.applyInAnimation`
+  now takes a numeric direction for that; scene.js records the intent per
+  block on `idecide/anim` and `pipeline.animatePage` applies it after the
+  own-images (icons, logo, rings) have landed as real blocks (`transferDress`
+  carries the mark).
+- **Rub Your Screen on the Logo Reveal** is built by `assembleLogoReveal`
+  exactly as the hand-verified anatomy (VO1 0→D1, the full-canvas rect named
+  "Logo Reveal" timed 0→D1 with `idecide/rub-your-screen` + `block_type` +
+  `fallback-name` + `idecide/block-action-id`, the record pushed through
+  `ctx.getBlockActions()` + `markCustomDataDirty()` + `updateTiming`, reveal
+  layers shifted by D1, VO2 at D1, page = D1 + D2 + 0.5). The scene renderer
+  draws only the reveal composition; the assembler owns the beat.
+- **Track Choice by default.** Question answers `{store:true, valueType:'text',
+  varName:'<trackAs> - <answer>', value}`, menus `Topic Viewed - <topic>`, and
+  terminal CTAs the finish envelope — scene.js writes the `idecide/track`
+  mark, `wireSlideBlocks` writes the record (unchanged).
+- **Condensed display faces** (Oswald, Barlow Condensed) read 15–20% smaller
+  than their band: the playbook says so; the scene may pass `size`.
+- **Glyph coverage:** ★ renders in Nunito; ♡ does not in Fira Sans. Fold smart
+  quotes; do not rely on symbols the face may lack.
+- **The logo online (verified 2026-09-15, deck 303):** Wikimedia Commons
+  direct file URLs (`upload.wikimedia.org/wikipedia/commons/<h0>/<h0h1>/<File>`,
+  md5 of the file name) and the Commons API with `origin=*`,
+  `cdn.worldvectorlogo.com/logos/<slug>.svg`, and `cdn.brandfetch.io/<domain>`
+  are CORS-open to a my.idecide.com page; `api.brandfetch.io/v2/brands/<domain>`
+  answers 401 without a key (so the panel calls it with the packaged key, host
+  permission `https://api.brandfetch.io/*`); clearbit, Google favicons, the
+  client's own site and vectorlogo.zone are not fetchable in-page. An SVG's
+  fills recoloured in text (`#231f20` → `#FFFFFF`) upload through
+  `uploadAndInsertImage` and place as Contain on every slide; the container's
+  own egress is blocked for upload.wikimedia.org — the fetch must happen in the
+  page. `IDP.huntLogo` is that recipe, in order: Brandfetch's files → the
+  Brandfetch CDN → a Commons search → worldvectorlogo slugs → URLs the planner
+  saw on the site; both tones (`IDP.logoUris.onDark / onLight`) upload and
+  `logoImg` picks by field.
+- **`idecide.com/lottie-library` sends no CORS header** — the page cannot fetch
+  it (the panel can, and does); `cdn.lordicon.com/<code>.json` is CORS-open,
+  `media.lordicon.com` is not. Unchanged since 2026-09-06; recorded because the
+  test builds tripped on it.
+- **A rejected tool call may already have run** (built-in browser, 45 s
+  javascript_tool timeout): a long in-page script keeps running after the call
+  is cut off. Audit the page before re-running a mutation — the "add arrows"
+  pass doubled every icon that way. The same discipline applies to the
+  extension's `exec()`: never re-issue a mutation on a timeout without reading
+  the page first.

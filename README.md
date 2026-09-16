@@ -8,7 +8,8 @@ menus open into topics, questions branch on the answer, and every path ends at a
 call to action. This plugin teaches Claude to design for that, then build it —
 writing the script, composing the slides, sourcing stock footage, generating the
 narration and wiring the menus and buttons, working directly in the myiDecide
-editor while you watch.
+Builder — the platform's own authoring app at my.idecide.com — while you
+watch. Every slide is designed for its own content; there are no templates.
 
 ## Install
 
@@ -54,8 +55,8 @@ why the steps above use a marketplace.
   `https://my.idecide.com/builder/create/<sessionId>`
 - **Cowork, in the Claude desktop app** for Mac or Windows, on a paid plan —
   Pro, Max, Team or Enterprise. Cowork is not on the Free plan. Claude builds by
-  driving the myiDecide editor in a browser, through the editor's own agent API
-  in the page.
+  driving the myiDecide Builder in a browser, through the Builder's own agent
+  API in the page.
 - **No Anthropic API key.** It runs on your own Claude subscription.
 
 ## Using it
@@ -76,8 +77,8 @@ To change a deck you already have, give it that deck's address and say what you
 want different. It reads the slide before it touches it, and it never redraws
 something it did not design.
 
-Claude re-reads the editor's API reference at the start of every session, so it
-builds against the platform as it is today rather than a frozen snapshot.
+Claude re-reads the Builder's API reference at the start of every session, so
+it builds against the platform as it is today rather than a frozen snapshot.
 
 ## What it reads and writes
 
@@ -87,12 +88,17 @@ read — and nothing it reads at runtime changes them.
 
 While a build runs, in the browser tab you opened:
 
-- **Reads the editor's API reference** at `window.aiagent.instructions`: the
-  method names and signatures published by the myiDecide editor. A call
+- **Reads the Builder's API reference** at `window.aiagent.instructions`: the
+  method names and signatures published by the myiDecide Builder. A call
   inventory. It carries no guidance about how Claude should behave.
 - **Reads and writes the one presentation you pointed it at**, through that
   same API and your existing myiDecide login. Nothing else in your browser,
   and no other site.
+- **Looks the brand up online** when you give it a website: the site itself,
+  the brand's public page on brandfetch.com for its colours and logo files
+  when you gave no colours of your own, and Wikimedia Commons / worldvectorlogo
+  for a vector copy of the logo when you attached none. Plain web reads; no
+  account, no key.
 - **Sends narration text and footage searches to myiDecide**, which generates
   the audio and fetches the clips server-side and saves them onto your
   presentation — the platform doing what it does when you build by hand.
@@ -108,7 +114,8 @@ nowhere else. Data handling on the myiDecide side is covered by the
 | File | What it covers |
 |---|---|
 | `SKILL.md` | The session flow, and the build and edit procedures |
-| `references/aiagent-surface.md` | The editor's agent API, with worked examples |
+| `references/aiagent-surface.md` | The Builder's agent API, with worked examples |
+| `references/scene-contract.md` | The slide design contract — the vocabulary every slide is designed in |
 | `references/composition.md` | Element contract and the design playbook |
 | `references/deck-outline.md` | The per-slide plan contract |
 | `references/platform-facts.md` | Verified platform behaviour and footguns |
