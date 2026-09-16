@@ -1550,3 +1550,28 @@ browser pane that cannot zoom (an `<img>` overlay in the page, then a
 screenshot). `logoUris.aspect` (w/h) now travels with the logo uploads:
 `IDP.setLogo` reads an SVG's viewBox / width+height or decodes a raster,
 and `composer.logoImg` / `scene.placeLogo` size every placement from it.
+
+## 2026-09-16 — the engine's grow direction is Horizontal / Vertical / All; the text animations exist; a page keeps its block id across changeSlide
+
+- `//ly.img.ubq/animation/grow` takes `animation/grow/direction` ∈
+  Horizontal | Vertical | All. `Up` / `Down` / `Left` / `Right` throw and the
+  animation keeps its default — every scene grow before 2.1.0 landed there.
+  `wipe` and `baseline` take Up / Down / Left / Right; `block_swipe_text`
+  takes Left / Right / Up / Down; `spread_text` and `typewriter_text` take
+  no direction; `slide` takes a float angle in radians (0 = travels right,
+  π = travels left). Read off the exemplar slides' own animation blocks
+  (decks 302/303, `window.__dump()`).
+- `spread_text`, `block_swipe_text`, `typewriter_text`, `pan` and
+  `ken_burns` are real animation types (SH.ANIM_TYPES) and the exemplar
+  headlines use the first three; only text blocks accept the text kinds.
+- `api.slides.changeSlide(id)` on the aiagent route REUSES the page block id
+  (always 3 on decks 302/303): a wait for "the page id changed" never
+  returns. Wait on content instead — the child blocks' name+x signature —
+  then settle ~2s before reading. The first pass of the exemplar dump
+  recorded 42669 as a copy of 42660 because of this.
+- `engine.block.setTextColor(id, color, from, to)` colours a character range
+  (the two-tone wordmarks); `engine.block.getTextColors(id)` returns the
+  ranges' colours. The typeface object from `SH.availableFont` keeps every
+  clean variant in `fonts[]` by `subFamily`, so a weight is one
+  `setFont(id, font.uri, tf)` away.
+

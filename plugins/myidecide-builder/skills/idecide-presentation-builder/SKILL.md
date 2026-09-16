@@ -502,11 +502,15 @@ contract the Extension's designer model writes and the Extension draws:
   centred), stacked eyebrow → headline → support → list → buttons, spaced by
   measured heights;
 - **the elements, back to front** — text by role (hero · headline · longline ·
-  subhead · body · eyebrow · fine · numeral · button), rects and panels, media
-  panels with their own clip, icons, the logo, buttons (pill · rect · card ·
-  text · circle), lists (rows · cards · chips · steps · timeline · numbers), a
-  data graphic (bars · hbars · dots · ring · stat · progress, or a chart
-  drawn as one image), the sender block on a terminal CTA;
+  subhead · body · eyebrow · fine · numeral · stat · button) with its weight,
+  line-height, letter-spacing, deliberate breaks and two-tone runs; rects,
+  ellipses and lines (plates, rules, strikes, discs, rings, bars, swatches);
+  media panels with their own clip and a stroke; icons; the logo; buttons
+  (pill · ghost · rect · card · text · circle); the `repeat` — one designed
+  cell of loose parts stamped per item (the menu rows, listing cards, tile
+  grids, bar rows, legends and stat trios of the exemplar decks), each cell
+  one unit and one click target when its item is wired; the canned lists
+  and native data graphics as shortcuts; the sender block on a terminal CTA;
 - **a family name** for the composition — variety is judged on it.
 
 Then draw it with the API: page colour and footage for the stage, one text
@@ -535,14 +539,22 @@ corner of every slide after the reveal and large, centred, on the reveal.
 Never size text below its role's band to make room — widen the box, shorten
 the words or move the neighbour.
 
-The compositions that proved themselves on the test builds, and that a deck
-should show a dozen of: full-bleed footage with a left scrim and a hero; a
-split with a 42–46% media column; a centred statement on a darkened clip; a
-stat with a dot grid or an animated bar chart beside a short headline; three
-or four photo cards under a headline; numbered steps across the lower half; a
-quote centred with a fine attribution; a menu of pills over a tinted clip; a
-hamburger of text-style rows on a quiet field; a bento of tiles for a menu
-with one featured topic.
+**Compose from parts (binding, after the anatomy of the exemplar slides,
+2026-09-16).** The thirteen slides the client named as the standard are
+14–38 blocks each and none is a canned composite: two or three weights of the
+body face on one slide (Regular subheads, Medium row labels, Bold eyebrows,
+SemiBold captions), spaced caps, headlines with deliberate breaks at
+line-height 0.82–0.95, the accent everywhere it means something (numerals
+AND chevrons AND the rule on one menu), substance built as a `repeat` of
+designed cells or a native graphic, a detail that says designed (a struck
+old price, a ticker line, an axis, a glow strip, a soft disc behind a
+lottie), ghost buttons for the secondary action with the arrow typed into
+the label, and four fields alternated — footage under the field tint with a
+scrim, footage under the brand colour at 0.85+, a framed clip with a stroke,
+a clean solid light field with no footage at all. `references/scene-contract.md`
+carries the five worked scenes transcribed from those slides; compose to
+that standard, and never let a template-era rule (accent once, one figure
+per slide, footage on every slide, 40–60% air) talk you out of it.
 
 **Animation follows position (the edge rule).** Heroes rise on their
 baseline; buttons grow; panels and rows slide in from the nearer edge — an

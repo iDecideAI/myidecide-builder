@@ -1,10 +1,10 @@
 > **Reference for the myiDecide Presentation Builder skill.** Two documents:
 > the ELEMENT CONTRACT (the binding rules every drawn slide obeys — grouping,
 > the cover, axis, buttons, graphics in the flow, shortcodes, measuring)
-> followed by the DESIGN PLAYBOOK (2.0, template-free: type roles sized by
-> content, colour roles, footage, interactive units, the composing procedure,
-> rhythm across a long deck, the polish checklist, and what the test builds
-> taught). Read when composing or re-aligning slides.
+> followed by the DESIGN PLAYBOOK (2.1, template-free: type roles and weights, colour
+> roles, the four fields, interactive units, the composing procedure, rhythm
+> across a long deck, the polish checklist, and what the test builds and the
+> exemplar slides taught). Read when composing or re-aligning slides.
 
 # Element contract — the binding rules the builder enforces
 
@@ -514,7 +514,7 @@ The sample string uses mid-width letters, so it is neither the widest case
 ---
 
 # myiDecide Slide Design System — Composition Playbook
-**2.0 — template-free. The designer composes every slide as a SCENE; the builder draws it, measures it, animates it.**
+**2.1 — template-free. The designer composes every slide as a SCENE from loose parts; the builder draws it, measures it, animates it.**
 
 **Purpose.** This document is the design source of truth for every slide the
 extension builds. Since 2026-09-15 there is no template library: the design
@@ -526,11 +526,13 @@ what the builder guarantees so the designer does not have to.
 
 > **The one rule that matters:** *Anything that must move or disappear together
 > is ONE element with several parts — never two separate things.* A button is
-> its plate, its icon and its label; a list row is its well, icon, title and
-> detail; a stat is its numeral and its label. The builder groups these for
-> you when you use the button / list / graphic / sender elements — draw a
-> composite from loose rects and texts only when no element fits, and then
-> give its parts one `group` id.
+> its plate, its icon and its label; a menu row is its numeral, icon, label,
+> chevron and divider; a stat is its figure and its caption. Compose these
+> units from loose parts — a `repeat` stamps one designed cell per item and
+> makes each cell one unit (and one click target when the item is wired);
+> a `group` id does the same for a one-off composite. The button / list /
+> graphic / sender elements are the builder's own looks — shortcuts, not
+> the standard (2.1, after the exemplar decks).
 >
 > **The second rule:** *Design for a phone.* The deck plays full-screen,
 > landscape, on a screen about 7 inches wide. Big type, one idea, generous
@@ -548,7 +550,7 @@ what the builder guarantees so the designer does not have to.
 ### 1. Canvas, units, margins
 - Canvas **1558 × 720** (mobile landscape, full-screen on a phone, paired with voiceover). Slides are **visual aids**, not documents.
 - Scenes state geometry in **pixels** on that canvas (or "NN%" of it). The builder clamps to the canvas and measures every text height itself.
-- **Safe inset 86px** (M, 5.5% of the width) for all text and buttons. Full-bleed *media* reaches the edge; readable content never does.
+- **Safe inset 72–86px** for all text and buttons (the exemplar decks sit their left column at x=72 and end the right column at 1490). Full-bleed *media* reaches the edge; readable content never does.
 - **Two gaps, both always in play:** the STACK gap (37px) between slots, the TIGHT gap (16px) between parts inside one slot (a title and its detail, a numeral and its label, [sender-name] and [sender-email]). Never one uniform gap — equal spacing makes a detail read as its own item. Stacks (`stack` on the elements) space a column on the STACK gap for you.
 - **Panel seams** in multi-panel layouts are hairline or a consistent 16–24px — panels read as one composition, not separate cards.
 - **Spacing inside a container is measured against the container**, not the canvas: a card, a tile, a 2×2 cell states the same two gaps and the same inset against the room it actually has (`metrics(box)` in the composer; `gridCells` hands each cell its inner rect). Pass the canvas and you get the numbers above; pass a cell and you get that cell's.
@@ -562,14 +564,17 @@ Assign a **role**; the builder picks a size inside its band from the text's actu
 | hero | 92–200 | ≤ 28 chars (160+ only for 1–2 words) |
 | headline | 54–80 | 28–70 chars |
 | longline | 44–58 | 70–130 chars (a quote, a long sentence) |
-| numeral | 110–260 | ≤ 6 glyphs |
+| numeral (the hero figure) | 110–260 | ≤ 6 glyphs |
+| stat (a figure inside a unit: a value, a price, a row numeral, a chevron glyph) | 40–96 | ≤ 8 glyphs |
 | subhead | 34–46 | ≤ 70 chars |
 | body | 28–40 | ≤ 160 chars per block |
 | button (item titles, chips, labels) | 28–34 | ≤ 22 chars, 1–3 words, never wraps |
 | eyebrow | 27–34 | ≤ 24 chars, UPPERCASE |
 | fine (detail, attribution, captions) | 28–32 | ≤ 80 chars |
 
-**Hard floor 28px.** Headlines ≤ 3 lines, body ≤ 4 lines, no orphan last word (the builder binds the last two). A three-word line in a body-sized box is wrong: promote it to hero. A 90-character headline is a longline, not a wrapped hero.
+**Hard floor 28px — and 28 is the WORKING size of every secondary line** (eyebrows, captions, meta, button labels) in the exemplar decks; subheads and row labels 30–34; figures in units 44–72; headlines 56–110. **Write the size you mean**: a `size` inside the role's band is honoured exactly. Headlines ≤ 3 lines (4 for a stacked one-word-per-line hero), body ≤ 4 lines, no orphan last word (the builder binds the last two). A three-word line in a body-sized box is wrong: promote it to hero. A 90-character headline is a longline, not a wrapped hero.
+
+**Weights.** The body face has weights and the exemplars use two or three on one slide: eyebrows BOLD (the default), row labels MEDIUM, captions and button labels SEMIBOLD, subheads REGULAR. `weight` on any text element; `lh` (line-height 0.82–0.95 for a headline that breaks, 1.05 for a subhead), `ls` (letter-spacing 0.2–0.3 on spaced caps), a `"\n"` for a deliberate break (one thought per line), `runs` for a two-tone line.
 
 **Condensed display faces** (Oswald, Barlow Condensed, Roboto Condensed, Stint Ultra Condensed) run about 15–20% narrower and read smaller: give them a size at the top of the band or a `size` override, and check the phone.
 
@@ -577,15 +582,15 @@ Assign a **role**; the builder picks a size inside its band from the text's actu
 
 **Stacks are flex columns.** Elements stacked vertically — eyebrow, headline, subhead, list, buttons, contact block — sit on ONE repeated gap and the finished column is placed in the space it actually has (`stacks.<id>.valign` + `box`). When the room runs short, shed the least load-bearing line (the support line, a detail) before anything overlaps — the builder pushes lower elements down rather than let text collide, so a column written too long runs off the bottom.
 
-**Typefaces:** one DISPLAY face (headlines, numerals, quotes; 600–800) + one clean BODY face (body, labels, UI). The pairing is a per-brand design decision. Never a third family. Numerals always in the display face — that is what makes stats feel designed. A display face may lack a glyph: smart quotes fold to straight ones; ★ renders in most faces, ♡ does not.
+**Typefaces:** one DISPLAY face (headlines, numerals, stats, quotes; 600–800) + one clean BODY face (body, labels, UI — in its weights). The pairing is a per-brand design decision. Never a third family. Numerals and stats always in the display face — that is what makes figures feel designed. A display face may lack a glyph: smart quotes fold to straight ones; ★ renders in most faces, ♡ does not.
 
 ### 3. Color roles
 Map the brand palette onto: **ink** (text on light) · **surfaceLight** (default light field) · **surfaceTint** (cards/wells on light) · **primary** (solid fields, featured buttons, key numerals) · **primaryDeep** (dark fields, photo tints/scrims) · **accent** (warm secondary — featured item, one underline, one numeral, bars in a chart, the "on" dots) · **onDark** / **onDarkMuted**.
 
-Max **2 background field colors** per presentation (plus footage). **Accent on ≤1 element per slide** (a data graphic counts as one). Never mid-tone text on mid-tone fill. A single 2-stop gradient is allowed for scrims and occasional fields; nothing more elaborate. Use the role TOKENS in scenes; a hex only for a colour the theme has no role for.
+Two field colours per presentation, plus footage, plus the BRAND colour as a tinted field (footage under primary at 0.85+). **The accent is the brand's voice — use it wherever it means something** (2.1, the exemplars): the numerals AND the chevrons AND the rule on one menu, the stat values, the eyebrow, the bar that wins, one word of a two-tone line. A status colour (a green "// CORRECT", a coral "NOT QUITE") is a hex. Never mid-tone text on mid-tone fill; mute white by alpha (0.8–0.92), not by grey. A single 2-stop gradient is allowed for scrims, dashes, glow strips, bar fills and occasional fields. Use the role TOKENS in scenes; a hex for a colour the theme has no role for.
 
 ### 4. Footage and photography
-- **The imagery floor: at most FOUR slides in the whole deck may carry no image or video.** These play full-screen on a phone, where a slide with nothing behind the type reads as one that failed to load. Everything else, menus and questions included, gets a full-bleed motion background or a framed panel — and the builder ghosts the hint behind a solid design anyway.
+- **Four premium fields, alternated:** full-bleed footage under a tint of the field colour (0.55–0.72) with a scrim under the copy; footage under the BRAND colour at 0.85+; a framed clip panel (radius 28, a tint, a 2px accent stroke at 0.33); and a clean SOLID light field with no footage at all where a big soft disc + lottie, a stat trio or tiles carry the slide. A designed solid field stays solid — the builder no longer ghosts a clip behind it (2.1). What reads as "failed to load" is a bare headline over nothing; a designed solid slide does not. The outline still gives every slide a hint, so footage is always one word away.
 - **Every hint unique** — no repeats, and watch for near-duplicates from one shoot.
 - **Fit:** people/scenes → cover-crop (faces out from under text). Logos, product, diagrams → contain on a contrasting field.
 - **Casting** matches the audience the script implies, consistently. A named person is never a stock face.
@@ -606,6 +611,8 @@ Always **one grouped unit** of stacked layers: plate (fill + corner radius = the
 - **EXACTLY ONE animated icon per button** — the label's concept, else an arrow (a check on finish/agree labels, a left arrow on Back). Never two.
 - **Text-style (backgroundless) buttons** are legitimate on quiet designs: the builder lays a fully transparent plate under the whole box and puts the action on it, so the click never misses. Give them a clear 64px row and an underline or a leading icon so they read as actions.
 - **Padding is non-negotiable:** ≥ 24px horizontal inside a plate, label never touching the edge, label never wrapping — widen the plate or shorten the label. Buttons in a set share ONE width; a solo pill may `fit:true` to hug its label.
+- **Two button voices (2.1):** the primary action is a SOLID pill (accent or white plate, dark label, 64–84 tall); the secondary is a GHOST (`style:"ghost"` — fill off, a 2px accent stroke, label in the accent). The exemplars type the arrow into the label ("Buy now  →", "Try again  ↺") with `icon:false`; either the typed glyph or the one animated icon — never both.
+- **A designed row is a button too:** a `repeat` of wired items makes every cell one click target (an invisible plate under the whole cell carries the wiring and the track mark) — a menu row of numeral · icon · label · chevron · divider is a button, and nothing in it can separate.
 - **Sizes:** 68–84px tall (the builder raises anything under 64; 72–84 for menu rows), 520–680px wide in a column, ≥ 490px for full rows, 14–18px between rows. Glass plates carry a hairline stroke on both fields; the icon inside a 72px+ plate is 40px.
 - **Featured** = solid primary (accent on a primary field) + onDark text — only for Move Ahead / Finish Up / Continue / Next. Question answers are all equal.
 - **The cover has exactly one action element**, the static "Click anywhere to Begin" pill; the platform advances slide 1 on any click.
@@ -613,7 +620,7 @@ Always **one grouped unit** of stacked layers: plate (fill + corner radius = the
 ### 7. Composing a slide (procedure)
 1. **Read the content** — counts, numbers, items, whether a choice is being made, what the footage can show.
 2. **Classify the beat** — open · divider · emotional · explanation · proof/stat · list · story/quote · person · process · choice · close.
-3. **Read the outline's layout intent** and decide the composition: the stage (field, background footage or a panel, tint, scrim), where the copy column sits, whether the beat's substance is a list, cards, a graphic, a quote, a stat.
+3. **Read the beat's shape** (the outline's intent names it — never a composition) and decide the composition yourself: the stage (footage + tint + scrim, a brand-colour field, a framed clip, a clean solid field), where the copy column sits, and what the substance is built from — a `repeat` of designed cells (rows, tiles, listings, bar rows, a stat trio, a legend), a native graphic, a quote, a hero figure.
 4. **Assign type roles**, size by actual length (§2). Put the copy column in a stack.
 5. **Place every element**: back-to-front, pixels on the canvas, safe inset kept. Buttons for every wired item on a slide that waits for the viewer.
 6. **Icons** for every discrete item (§5).
@@ -628,7 +635,7 @@ Always **one grouped unit** of stacked layers: plate (fill + corner radius = the
 - **Alternate value:** no more than 2 footage-heavy slides consecutively without a solid or light-panel slide between, and vice versa.
 - **Alternate density:** dense (cards, rows, graphic) → sparse (hero, statement, stat).
 - **Parallel beats stay identical:** one section-intro composition, one menu composition (First and Return share footage and layout), one CTA family per deck. Orientation where the viewer needs it; variety everywhere else.
-- **At most 4 bare slides** in the deck — count before delivering.
+- **A bare slide is a headline over nothing** — none of those. A designed solid field (disc + lottie, a stat trio, tiles) is not bare; use two or three per deck for rhythm.
 - **Voiceover pairing:** on-screen text ≈ one third of what is spoken. If the slide reads like a transcript, cut it.
 
 ### 9. Polish checklist (fail any → fix before moving on)
@@ -639,8 +646,8 @@ Always **one grouped unit** of stacked layers: plate (fill + corner radius = the
 - Every list/menu/button item has a distinct, relevant icon.
 - All text over footage sits on a tint/scrim or a solid panel and passes contrast.
 - One primary action per interactive slide; question answers equal.
-- No duplicate or soft footage; one data graphic at most, from real figures.
-- Accent used once; ≤ 2 background field colors deck-wide.
+- No duplicate or soft footage; every graphic from real figures (a graphic may share a slide with a stat trio or a legend).
+- The accent used where it means something; a status colour is a hex; ≤ 2 field colours deck-wide plus the brand-colour tint.
 - Composition differs from the previous slide; family not already used 4×.
 
 ### 10. Building in myiDecide (img.ly CE.SDK v1.74.1) — what the builder does with a scene
@@ -695,3 +702,18 @@ The renderer worked; the designs were thin. Thirty-seven slides came out as a he
 - **Glyphs persist as Contain.** The engine resets an icon's fill mode on load exactly as a photo's; the in-visit guard now re-asserts Contain on glyphs, so the byte-level verify stops counting them and no slide pays a corrective revisit for its animated icons.
 - **The sender block keeps its lead line** ("For more information, contact") — a 110px box used to drop it; the default is 140.
 - **The review edits by element.** The reviewer sees the element list (index · type · role · text fragment · box) and matches by role family or text; a redesign is a full scene under the same contract and anatomy, never three text blocks in a corner.
+
+---
+## PART IV — WHAT THE EXEMPLAR SLIDES ARE MADE OF (decks 302/303, dumped block by block, 2026-09-16)
+
+Bren named thirteen slides as the standard. Every one was dumped from the engine and read; `updates-findings/anatomy/2026-09-16-deck-302-303-exemplars.json` is the record. What they share, and is now the rule:
+
+- **Loose parts, not composites.** 14–38 blocks a slide; nothing canned. A menu row is five parts (numeral · icon · label · chevron · divider) on a transparent 100px plate; a listing card is a plate + stripe + price + meta + area; a bar row is label + track + fill + value; a stat is a figure + caption. The `repeat` element stamps one designed cell per item; the contract's five worked scenes are these slides transcribed.
+- **Three weights on one slide.** Regular subheads, Medium row labels, Bold eyebrows and SemiBold captions — in the body face. The display face for headlines, figures and the wordmark.
+- **28 is the working size** of every secondary line; 30–34 subheads and labels; 44–72 figures in units; 56–110 headlines with deliberate breaks at lh 0.82–0.95; spaced caps at ls 0.2–0.3.
+- **The accent is everywhere it means something** — numerals, chevrons, rules, values, the winning bar, one word of a two-tone wordmark. Muted white is alpha 0.8–0.92.
+- **Four fields**: footage under the field tint + a 900px scrim; footage under the brand colour at 0.85+; a framed clip with a stroke; a clean solid light field with a 440px disc and a 300px lottie. Three of the thirteen carry no footage at all.
+- **Chosen motion**: swipe / spread / typewriter on text, wipe on rules, strikes, dashes and bars, grow horizontal on pills and tiles, vertical on tall cards, all on discs and rings, slide from the near edge on rows and panels; a product still slides in over 2.4s.
+- **Geometry**: the left column at x 72 (wordmark 44–52 · eyebrow 130–190 · headline 148–232 · subhead 340–450 · action 540–630); the right column 780–900 → 1490, filled top to bottom by its unit.
+- **Ghost buttons** for the secondary action; the arrow typed into the label.
+- **The rules that had to go**: accent-once, one-figure-per-slide, footage-on-every-slide with a ghost clip behind solid fields, "40–60% air", one-graphic-per-slide. They were written to stop templates misfiring; against the exemplars they read as the opposite of designed.
