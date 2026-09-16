@@ -371,7 +371,7 @@ native blocks, each grouped with its labels.
   base word (`calendar-check` → `calendar`, `shopping-bag` → `bag`);
   directions are meaningful (`arrow-left` is not `arrow`). The detail prompt
   tells the copy model the vocabulary is the Lordicon wired collection with
-  exact names. The files are the `layers` loop build — the editor's player
+  exact names. The files are the `layers` loop build — the Builder's player
   freezes a time-remapped loop after its first cycle. The library step never
   fails silently: the log says how many icons animated and which source,
   what stayed SVG, and when the remote catalogue was unreachable (the cached
