@@ -1560,7 +1560,11 @@ and `composer.logoImg` / `scene.placeLogo` size every placement from it.
   takes Left / Right / Up / Down; `spread_text` and `typewriter_text` take
   no direction; `slide` takes a float angle in radians (0 = travels right,
   π = travels left). Read off the exemplar slides' own animation blocks
-  (decks 302/303, `window.__dump()`).
+  (decks 302/303, `window.__dump()`) and CONFIRMED LIVE on deck 304's page
+  the same day: `setEnum(grow, 'animation/grow/direction', 'Up')` throws
+  "Invalid enum value Up"; Horizontal / Vertical / All are accepted; wipe
+  Down and block_swipe_text Right are accepted; spread_text and
+  typewriter_text animations create and attach.
 - `spread_text`, `block_swipe_text`, `typewriter_text`, `pan` and
   `ken_burns` are real animation types (SH.ANIM_TYPES) and the exemplar
   headlines use the first three; only text blocks accept the text kinds.
@@ -1571,7 +1575,16 @@ and `composer.logoImg` / `scene.placeLogo` size every placement from it.
   recorded 42669 as a copy of 42660 because of this.
 - `engine.block.setTextColor(id, color, from, to)` colours a character range
   (the two-tone wordmarks); `engine.block.getTextColors(id)` returns the
-  ranges' colours. The typeface object from `SH.availableFont` keeps every
-  clean variant in `fonts[]` by `subFamily`, so a weight is one
-  `setFont(id, font.uri, tf)` away.
+  ranges' colours — confirmed live on deck 304's page (two ranges back).
+  The typeface object from `engine.asset.findAssets('ly.img.typeface', …)`
+  (what `SH.availableFont` wraps) keeps every variant in `fonts[]` by
+  `subFamily` (Source Sans Pro: Black, Bold, ExtraLight, Light, Regular,
+  SemiBold + italics), and `setFont(id, variant.uri, typeface)` switches the
+  file — confirmed live: `text/fontFileUri` reads
+  `SourceSansPro-SemiBold.ttf` and `getTextFontWeights` reports `semiBold`.
+  `text/lineHeight` and `text/letterSpacing` take floats; a "\n" in
+  `text/text` is a line (`getTextVisibleLineCount` = 2). One footgun:
+  `findAssets` called in the first seconds after the page loads threw a
+  WASM BindingError ("parameter 1 has unknown type … FindAssetsResult") —
+  transient; the same call succeeded a few seconds later.
 
