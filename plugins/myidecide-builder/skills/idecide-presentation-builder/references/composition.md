@@ -1,10 +1,11 @@
 > **Reference for the myiDecide Presentation Builder skill.** Two documents:
 > the ELEMENT CONTRACT (the binding rules every drawn slide obeys — grouping,
 > the cover, axis, buttons, graphics in the flow, shortcodes, measuring)
-> followed by the DESIGN PLAYBOOK (2.1, template-free: type roles and weights, colour
-> roles, the four fields, interactive units, the composing procedure, rhythm
-> across a long deck, the polish checklist, and what the test builds and the
-> exemplar slides taught). Read when composing or re-aligning slides.
+> followed by the DESIGN PLAYBOOK (2.1.1, template-free: type roles and weights, colour
+> roles, the fields, interactive units, the composing procedure, rhythm of
+> compositions and of devices across a long deck, the polish checklist, and
+> what the test builds, the exemplar slides and decks 305/306 taught). Read
+> when composing or re-aligning slides.
 
 # Element contract — the binding rules the builder enforces
 
@@ -514,7 +515,7 @@ The sample string uses mid-width letters, so it is neither the widest case
 ---
 
 # myiDecide Slide Design System — Composition Playbook
-**2.1 — template-free. The designer composes every slide as a SCENE from loose parts; the builder draws it, measures it, animates it.**
+**2.1.1 — template-free. The designer composes every slide as a SCENE from loose parts, in the deck's own design language; the builder draws it, measures it, animates it.**
 
 **Purpose.** This document is the design source of truth for every slide the
 extension builds. Since 2026-09-15 there is no template library: the design
@@ -538,11 +539,15 @@ what the builder guarantees so the designer does not have to.
 > landscape, on a screen about 7 inches wide. Big type, one idea, generous
 > air, strong contrast. Anything that only reads on a laptop is a defect.
 >
-> **The third rule:** *Vary the deck.* No two neighbouring slides share a
-> composition; a composition family appears at most four times in a deck;
-> the axis, the photo side, the field and the density alternate. Consistency
-> where the viewer needs orientation (section intros, the menu pair, the
-> button style on menus) — variety everywhere else.
+> **The third rule:** *Vary the deck — in composition AND in detail.* No two
+> neighbouring slides share a composition; a composition family appears at
+> most four times in a deck; the axis, the photo side, the field and the
+> density alternate. Each deck invents its own DESIGN LANGUAGE (the outline's
+> `theme.language`: the brand's world, four to six devices, its fields, type
+> and motion) and composes from it; a signature detail appears on at most two
+> slides unless that language names it (2.1.1). Consistency where the viewer
+> needs orientation (type, colours, the button voice, section intros, the
+> menu pair) — variety everywhere else.
 
 ---
 ## PART I — GLOBAL SYSTEM
@@ -587,7 +592,7 @@ Assign a **role**; the builder picks a size inside its band from the text's actu
 ### 3. Color roles
 Map the brand palette onto: **ink** (text on light) · **surfaceLight** (default light field) · **surfaceTint** (cards/wells on light) · **primary** (solid fields, featured buttons, key numerals) · **primaryDeep** (dark fields, photo tints/scrims) · **accent** (warm secondary — featured item, one underline, one numeral, bars in a chart, the "on" dots) · **onDark** / **onDarkMuted**.
 
-Two field colours per presentation, plus footage, plus the BRAND colour as a tinted field (footage under primary at 0.85+). **The accent is the brand's voice — use it wherever it means something** (2.1, the exemplars): the numerals AND the chevrons AND the rule on one menu, the stat values, the eyebrow, the bar that wins, one word of a two-tone line. A status colour (a green "// CORRECT", a coral "NOT QUITE") is a hex. Never mid-tone text on mid-tone fill; mute white by alpha (0.8–0.92), not by grey. A single 2-stop gradient is allowed for scrims, dashes, glow strips, bar fills and occasional fields. Use the role TOKENS in scenes; a hex for a colour the theme has no role for.
+Two field colours per presentation, plus footage, plus the BRAND colour as a tinted field (footage under primary at 0.85+). **The accent is the brand's voice — use it wherever it means something** (2.1): several parts of one unit may carry it, the figures, the eyebrow, the bar that wins, one word of a two-tone line. A status colour (a green "// CORRECT", a coral "NOT QUITE") is a hex. Never mid-tone text on mid-tone fill; mute white by alpha (0.8–0.92), not by grey. A single 2-stop gradient is allowed for scrims, dashes, glow strips, bar fills and occasional fields. Use the role TOKENS in scenes; a hex for a colour the theme has no role for.
 
 ### 4. Footage and photography
 - **Four premium fields, alternated:** full-bleed footage under a tint of the field colour (0.55–0.72) with a scrim under the copy; footage under the BRAND colour at 0.85+; a framed clip panel (radius 28, a tint, a 2px accent stroke at 0.33); and a clean SOLID light field with no footage at all where a big soft disc + lottie, a stat trio or tiles carry the slide. A designed solid field stays solid — the builder no longer ghosts a clip behind it (2.1). What reads as "failed to load" is a bare headline over nothing; a designed solid slide does not. The outline still gives every slide a hint, so footage is always one word away.
@@ -620,7 +625,7 @@ Always **one grouped unit** of stacked layers: plate (fill + corner radius = the
 ### 7. Composing a slide (procedure)
 1. **Read the content** — counts, numbers, items, whether a choice is being made, what the footage can show.
 2. **Classify the beat** — open · divider · emotional · explanation · proof/stat · list · story/quote · person · process · choice · close.
-3. **Read the beat's shape** (the outline's intent names it — never a composition) and decide the composition yourself: the stage (footage + tint + scrim, a brand-colour field, a framed clip, a clean solid field), where the copy column sits, and what the substance is built from — a `repeat` of designed cells (rows, tiles, listings, bar rows, a stat trio, a legend), a native graphic, a quote, a hero figure.
+3. **Read the beat's shape** (the outline's intent names it — never a composition) and decide the composition yourself, from the deck's DESIGN LANGUAGE: the stage (one of the fields the language alternates), the grid (one column, an unequal split, equal cells, a shift), where the copy sits, what the substance is built from — a `repeat` of designed cells, a native graphic, a quote, a hero figure — and which of the language's devices supplies the detail.
 4. **Assign type roles**, size by actual length (§2). Put the copy column in a stack.
 5. **Place every element**: back-to-front, pixels on the canvas, safe inset kept. Buttons for every wired item on a slide that waits for the viewer.
 6. **Icons** for every discrete item (§5).
@@ -635,6 +640,7 @@ Always **one grouped unit** of stacked layers: plate (fill + corner radius = the
 - **Alternate value:** no more than 2 footage-heavy slides consecutively without a solid or light-panel slide between, and vice versa.
 - **Alternate density:** dense (cards, rows, graphic) → sparse (hero, statement, stat).
 - **Parallel beats stay identical:** one section-intro composition, one menu composition (First and Return share footage and layout), one CTA family per deck. Orientation where the viewer needs it; variety everywhere else.
+- **Rhythm of devices (2.1.1):** a signature detail (a rule beside a headline, a badge, a numbered row, a glyph eyebrow, a struck figure, stacked rings) appears on at most two slides unless the deck's language names it — and then never on neighbours and on no more than a third of the deck. Habits (a framed clip, a light field, a divider, one headline entrance) stay under a quarter to a third of the deck. The design pass receives a ledger of what the deck has spent before every batch.
 - **A bare slide is a headline over nothing** — none of those. A designed solid field (disc + lottie, a stat trio, tiles) is not bare; use two or three per deck for rhythm.
 - **Voiceover pairing:** on-screen text ≈ one third of what is spoken. If the slide reads like a transcript, cut it.
 
@@ -648,7 +654,7 @@ Always **one grouped unit** of stacked layers: plate (fill + corner radius = the
 - One primary action per interactive slide; question answers equal.
 - No duplicate or soft footage; every graphic from real figures (a graphic may share a slide with a stat trio or a legend).
 - The accent used where it means something; a status colour is a hex; ≤ 2 field colours deck-wide plus the brand-colour tint.
-- Composition differs from the previous slide; family not already used 4×.
+- Composition differs from the previous slide; family not already used 4×; no signature device past its two uses, no headline entrance on a quarter of the deck.
 
 ### 10. Building in myiDecide (img.ly CE.SDK v1.74.1) — what the builder does with a scene
 - Page **1558 × 720**, one page per slide. The stage's solid field is the page colour itself; footage is placed through the platform's api (device-adaptive renditions), never as a raw fill.
@@ -693,7 +699,7 @@ Twenty-eight demo slides across ten markets and a full 25-slide Patagonia deck w
 
 The renderer worked; the designs were thin. Thirty-seven slides came out as a headline over darkened footage, a headline beside a hard-cornered panel, three grey rows with empty wells — competent and generic — and the client said so. What changed, and is now binding:
 
-- **A slide is layered — six to twelve elements.** Stage · eyebrow or accent rule · headline · ONE substance element (cards on stroked plates with icons in tinted wells, rows with wells, a dot grid, an animated bar chart, photo tiles with captions, a pull-quote and its attribution) · ONE detail (a badge, a divider, a soft disc behind a numeral, a legend). Two-element slides are for section intros and closing lines, at most four per deck. The design contract carries three worked scenes; compose to that standard.
+- **A slide is layered — six to twelve elements.** Stage · eyebrow or accent rule · headline · ONE substance element (cards on stroked plates with icons in tinted wells, rows with wells, a dot grid, an animated bar chart, photo tiles with captions, a pull-quote and its attribution) · ONE detail (a badge, a divider, a soft disc behind a numeral, a legend). Two-element slides are for section intros and closing lines, at most four per deck. The design contract's worked scenes show how such a slide is written; compose to that standard in the deck's own language.
 - **Every slide is designed.** The menus never reached the design pass (the outline had given them their items, so the template-era shortcut skipped them) and fell back to a flat row list. In 2.0 a slide without a scene is a slide that still needs designing, whatever copy it already has.
 - **The band is binding and the builder sizes by length.** Headlines were written at 40 and 34, support at 26, a figure as body at 104. `size` is honoured only inside the role's band; a figure is a numeral; a two-to-four-word headline is one line (the box widens before the words break).
 - **The corner mark is the builder's.** The real logo, small, top-left (or the first free corner) on every slide after the reveal — the way deck 303 carried it — unless the scene places a logo or says `logoMark:false`. The reveal draws the mark large and centred from its real proportions (`logoUris.aspect`), whatever box the scene gave.
@@ -704,16 +710,26 @@ The renderer worked; the designs were thin. Thirty-seven slides came out as a he
 - **The review edits by element.** The reviewer sees the element list (index · type · role · text fragment · box) and matches by role family or text; a redesign is a full scene under the same contract and anatomy, never three text blocks in a corner.
 
 ---
-## PART IV — WHAT THE EXEMPLAR SLIDES ARE MADE OF (decks 302/303, dumped block by block, 2026-09-16)
+## PART IV — WHAT THE EXEMPLAR SLIDES ARE MADE OF (decks 302/303, dumped block by block, 2026-09-16) — THE CRAFT, NOT THE MOTIFS
 
-Bren named thirteen slides as the standard. Every one was dumped from the engine and read; `updates-findings/anatomy/2026-09-16-deck-302-303-exemplars.json` is the record. What they share, and is now the rule:
+Bren named thirteen slides as the standard. Every one was dumped from the engine and read; `updates-findings/anatomy/2026-09-16-deck-302-303-exemplars.json` is the record. What they share is CRAFT, and that is the rule; the motifs they happen to use (a vertical accent rule, numbered rows, a struck price, stacked rings, a two-tone wordmark, a colour key) belonged to those brands and are not a kit (2.1.1, below):
 
-- **Loose parts, not composites.** 14–38 blocks a slide; nothing canned. A menu row is five parts (numeral · icon · label · chevron · divider) on a transparent 100px plate; a listing card is a plate + stripe + price + meta + area; a bar row is label + track + fill + value; a stat is a figure + caption. The `repeat` element stamps one designed cell per item; the contract's five worked scenes are these slides transcribed.
+- **Loose parts, not composites.** 14–38 blocks a slide; nothing canned. A row, a card, a bar, a stat are each built from three to six parts on a plate (visible or not) and move as one. The `repeat` element stamps one designed cell per item; the contract's worked scenes show the mechanics.
 - **Three weights on one slide.** Regular subheads, Medium row labels, Bold eyebrows and SemiBold captions — in the body face. The display face for headlines, figures and the wordmark.
 - **28 is the working size** of every secondary line; 30–34 subheads and labels; 44–72 figures in units; 56–110 headlines with deliberate breaks at lh 0.82–0.95; spaced caps at ls 0.2–0.3.
 - **The accent is everywhere it means something** — numerals, chevrons, rules, values, the winning bar, one word of a two-tone wordmark. Muted white is alpha 0.8–0.92.
-- **Four fields**: footage under the field tint + a 900px scrim; footage under the brand colour at 0.85+; a framed clip with a stroke; a clean solid light field with a 440px disc and a 300px lottie. Three of the thirteen carry no footage at all.
-- **Chosen motion**: swipe / spread / typewriter on text, wipe on rules, strikes, dashes and bars, grow horizontal on pills and tiles, vertical on tall cards, all on discs and rings, slide from the near edge on rows and panels; a product still slides in over 2.4s.
-- **Geometry**: the left column at x 72 (wordmark 44–52 · eyebrow 130–190 · headline 148–232 · subhead 340–450 · action 540–630); the right column 780–900 → 1490, filled top to bottom by its unit.
-- **Ghost buttons** for the secondary action; the arrow typed into the label.
+- **Several fields**: footage under the field tint + a scrim; footage under the brand colour at 0.85+; a framed clip on a solid field; a clean solid field carried by its own unit. Three of the thirteen carry no footage at all.
+- **Chosen motion, varied**: each slide's entrance picked for what it shows — wipes on rules and bars, grows on pills, tiles and discs, slides from the near edge on rows and panels, and a different text entrance on different slides.
+- **Geometry on a grid**: columns of different widths on purpose, each filled top to bottom by its unit; a shift in the grid between two levels of content (two cells over three).
+- **Two button voices**: a solid primary and a ghost secondary; an arrow may be typed into the label.
 - **The rules that had to go**: accent-once, one-figure-per-slide, footage-on-every-slide with a ghost clip behind solid fields, "40–60% air", one-graphic-per-slide. They were written to stop templates misfiring; against the exemplars they read as the opposite of designed.
+
+---
+## PART V — WHAT DECKS 305 AND 306 TAUGHT (Patagonia, Opus and Fable, 2026-09-16/17)
+
+The same outline built on two models came out "noticeably better" and nearly identical in its faults — so the faults were the builder's and the contract's, not the model's:
+
+- **The exemplars became a kit.** A vertical accent rule on 9 and 12 of 45 slides, a headline swipe on 25 and 30, short accent dashes on 12 and 27, numbered rows, "// " eyebrows and stroked badges on slide after slide. The client: "each build should be choosing unique elements for each presentation's specific needs." Now the outline invents the deck's DESIGN LANGUAGE (`theme.language`), the design pass composes from it, a ledger of spent devices rides with every batch (signatures spent at two uses; habits rested at their share of the deck), and the reviewer checks device rhythm.
+- **A framed clip's corners are its SHAPE's.** The radius was written on the graphic block, where the engine ignores it — square footage inside a rounded plate. The builder now writes it on the shape, and a plate drawn on the same box shares it.
+- **Measured text moves its column.** Headlines that wrapped landed on the line under them; half a row of cells moved without the other half. Units (a stack, a repeat's cells, a plate and what sits on it) are now measured and pushed as wholes; a repeat's cells grow to hold a label that wrapped; a column that still runs long rises into its own top margin, then takes the difference from its display line — never by stacking type on type.
+- **A line meant as one line gets its width.** A row label, an eyebrow or a name line with a token widens toward its column (never under the part beside it); running copy wraps where the designer's column says.

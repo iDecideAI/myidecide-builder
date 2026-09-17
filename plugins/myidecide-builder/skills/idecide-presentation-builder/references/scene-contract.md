@@ -1,10 +1,12 @@
 > **Reference for the myiDecide Presentation Builder skill.** The SLIDE DESIGN
-> CONTRACT (2.1, template-free — compose from parts): the vocabulary a slide
-> is designed in — the stage, the stacks, the elements back to front (text
-> with weights and breaks, rects, media, icons, buttons, the `repeat` of
-> designed cells, the shortcuts), the animation kinds, what each slide kind
-> must contain, the icon and copy rules, and five worked scenes transcribed
-> from the exemplar decks. Written as instructions to the designer model of the myiDecide AI
+> CONTRACT (2.1.1, template-free — compose from parts, in the deck's own
+> design language): the vocabulary a slide is designed in — the stage, the
+> stacks, the elements back to front (text with weights and breaks, rects,
+> media, icons, buttons, the `repeat` of designed cells, the shortcuts), the
+> animation kinds, the composing method and the rhythm of devices, what each
+> slide kind must contain, the icon and copy rules, and five worked scenes
+> from five other brands (read them for the mechanics, never copy their
+> look). Written as instructions to the designer model of the myiDecide AI
 > Presentation Extension, whose scenes the Extension draws automatically. In
 > this skill YOU are designer and builder both: design every slide in this
 > vocabulary, then draw it with the calls in `aiagent-surface.md` under the
@@ -33,6 +35,13 @@
   loose parts, one unit per item, wired when the items are). The worked
   scenes below are those slides, transcribed. Compose from parts; the canned
   list / graphic elements are shortcuts, not the standard.
+  2.1.1 (2026-09-17, after decks 305/306): the exemplars teach CRAFT, not a
+  kit. Both builds reused their motifs deck-wide (a vertical accent rule on
+  9-12 slides, a headline swipe on 25-30 of 45) and read as one template
+  again. Each deck now carries its own DESIGN LANGUAGE (outline
+  theme.language, stated in the deck constants), each batch gets a ledger of
+  the devices already spent, the worked scenes are framed as five OTHER
+  brands, and a repeat's layout key is `flow` (`dir` is motion).
 -->
 
 You are the deck designer detailing a BATCH of slides. The composition
@@ -50,6 +59,12 @@ their right column ends at 1490). Nothing readable sits closer to an edge
 than 72 unless it is a full-bleed panel. The deck plays full-screen on a phone
 at about 7 inches wide: big type, strong contrast, one idea per slide — but
 a DESIGNED idea, with the layers a designer would give it.
+
+THIS DECK'S OWN LOOK (binding, 2.1.1): the deck constants carry a DECK DESIGN
+LANGUAGE — the brand's world, the devices invented for it, the fields, type
+and motion it keeps to. Compose every slide from it. The construction notes
+and worked scenes below show HOW parts become units; their particular motifs
+belong to other brands and are not this deck's to reuse (see COMPOSING).
 
 ## The plan (one per slide, same order, names verbatim)
 
@@ -177,34 +192,40 @@ RECT / ELLIPSE / LINE  {"el":"rect"|"ellipse"|"line", "x","y","w","h", "color":"
        "stroke":{"color":"accent","width":2,"alpha":0.33}, "gradient":{"colors":["accent","primary"],"direction":"horizontal"},
        "fill":false, "opacity":0.9, "shadow":true, "name":"headline-rule", "group":"card1", "anim":"wipe", "dir":"down"}
   - plates, wells, rules, dividers, strikes, discs, rings, bars, swatches,
-    glow strips. A LINE is a thin rect (h = thickness). `fill:false` draws an
-    outline only. THE EXEMPLAR RECIPES: a tile plate = the accent at alpha
-    0.12 with a 2px stroke of the accent (radius 18); a listing card = white
-    at 0.08 with a 20% white hairline (radius 20) and a 6px accent stripe on
-    its left; a badge = a status colour at 0.16-0.18 with a 2px stroke of it
-    and the label in it; a divider = white at 0.28, 2px; a vertical accent
-    rule beside a headline = 10 × 270, wipe down; a soft disc behind a
-    lottie = 440px ellipse of the accent at 0.22; sonar = four ellipses
-    420 → 300 → 180 → 140 with a 5px lighter stroke and alpha 0.16 → 0.26 →
-    0.36 → 1; a bar track = white at 0.06, radius 8; a bar fill = the accent
-    (or a 50% grey for the losers), wipe right; a strike = 3px over the old
-    price, wipe right.
+    stripes, frames, ticks, stamps, tracks — whatever the deck's language is
+    drawn from. A LINE is a thin rect (h = thickness). `fill:false` draws an
+    outline only.
+  - CONSTRUCTION — proportions that read at phone scale (what you build with
+    them is the deck language's call): a plate = a colour at alpha 0.08-0.2,
+    radius 16-28, with a 1.5-2px stroke of a related colour when it sits on
+    footage; a stripe on a card = 4-8px of the accent along one edge; a
+    divider = white (or ink) at 0.2-0.3, 2px; a rule beside type = 6-12px
+    wide and as tall as the type it marks; a disc behind an icon = an
+    ellipse 1.4-1.6× the icon; rings = concentric ellipses stepping 25-35%
+    in size; a bar = a track (alpha 0.06, radius 8) and a fill on top that
+    wipes; a strike = 3px across the middle of the struck text, wipe right;
+    a label on a plate = the plate's box, the text centred in it, both in
+    one `group`. A detail drawn the same way on slide after slide stops
+    meaning anything — see RHYTHM OF DEVICES.
 MEDIA  {"el":"media", "role":"bg"|"panel", "kind":"video"|"still", "hint":"<search>", "x","y","w","h", "radius":28, "tint":0.62, "tintColor":"<token|#hex>", "scrim":"bottom",
         "stroke":{"color":"accent","alpha":0.33,"width":2}, "anim":"slide", "from":"right"}
   - role "bg" = the full-canvas background (or just use stage.bg — same thing).
   - "panel" = footage/photo in a frame: a side column, a band, a card, a tile.
-    Every panel gets its OWN clip, keyed in element order. A FRAMED clip (the
-    exemplars): 640 × 552 or 700 × 480 at radius 28, a tint of the field
-    colour at 0.62 (or a two-colour gradient wash) and a 2px accent stroke at
-    0.33. A product STILL: a 710 × 600 rounded panel that slides in from its
-    edge. `still` only when the subject is a photograph by nature. Never a
-    stock face for a named person (see below).
+    Every panel gets its OWN clip, keyed in element order. Size and shape
+    come from the composition — a tall column, a wide band, a square tile, a
+    half that bleeds off one edge (radius 0 on a bleed). A framed panel's
+    `radius` (16-32) clips the footage itself; a rect drawn on the same box
+    is given the same corners. A tint of the field colour around 0.4-0.65
+    keeps it alive; a `stroke` only where the deck language uses one. A
+    product STILL: a large rounded panel that slides in from its edge.
+    `still` only when the subject is a photograph by nature. Never a stock
+    face for a named person (see below).
 ICON  {"el":"icon", "concept":"shield", "x","y", "size":60, "tone":"white"|"ink"|"accent"|"#hex", "well":true, "anim":"grow", "dir":"all"}
   - a standalone animated icon (the library's wired outline drawing, painted
-    in the brand colours). Sizes the exemplars use: 36 in a trust row, 60 in
-    a menu row, 70-90 in a tile, 120 in an answer card, 180-300 as the
-    slide's feature inside a soft disc or a rounded panel. `well:true` puts a
-    soft square behind it.
+    in the brand colours). A size scale that reads on a phone: 32-40 beside a
+    label, 56-64 in a row, 70-90 in a tile, 110-130 on a card, 180-300 when
+    the icon is the slide's feature. `well:true` puts a soft square behind
+    it.
 LOGO  {"el":"logo", "x":479, "y":40, "w":600, "h":72, "align":"center"}
   - the client's mark; the builder picks the light or dark drawing for the
     field and keeps its real proportions inside the box. Only where the
@@ -223,7 +244,7 @@ BUTTON  {"el":"button", "item":0, "style":"pill"|"rect"|"card"|"text"|"circle"|"
   - `item` = the index into copy.items. EVERY wired item on a slide that waits
     for the viewer has a button element OR a wired `repeat` cell (below); a
     wired item you leave out gets a plain default row appended.
-  - styles: pill (rounded — the exemplars' primary action: 64-84 tall, a
+  - styles: pill (rounded — a usual primary action: 64-84 tall, a
     SOLID accent or white plate with a dark label), ghost (outline only —
     the secondary action: fill off, a 2px accent stroke, label and icon in
     the accent — "Try again ↺", "Open a vault →"), rect (a row / tile with
@@ -232,22 +253,23 @@ BUTTON  {"el":"button", "item":0, "style":"pill"|"rect"|"card"|"text"|"circle"|"
     misses), circle (a round icon-only button, e.g. a Back arrow).
   - SIZE: 64-84px tall (never under 64 — the builder raises it), one width
     per group, 14-18px apart. The label and its one icon sit centred as a
-    pair; `icon:false` draws no icon block — the exemplars type the arrow
-    INTO the label ("Buy now  →", "Give monthly  →", "Back to menu  ↩",
-    "Try again  ↺"), which reads lighter than an icon. Either way, never two
-    icons.
+    pair; `icon:false` draws no icon block — an arrow can be typed INTO the
+    label instead ("Buy now  →", "Back to menu  ↩", "Try again  ↺"), which
+    reads lighter than an icon. Either way, never two icons.
   - the cover has exactly one button: {"el":"button","static":true,"label":"Click anywhere to Begin","style":"pill",...}.
     Never wire anything on the cover.
   - question answers are ALL EQUAL — never colour or feature the correct one.
     A Move Ahead / Finish Up / Continue / Next button may be featured.
-REPEAT  {"el":"repeat", "x":820, "y":96, "w":670, "h":100, "dir":"down"|"right"|"grid", "cols":2, "gap":0, "rowGap":24, "colGap":24,
+REPEAT  {"el":"repeat", "x":820, "y":96, "w":670, "h":100, "flow":"down"|"across"|"grid", "cols":2, "gap":0, "rowGap":24, "colGap":24,
          "items":[...]|omit, "wired":true, "plate":{"color":"onDark","alpha":0.08,"radius":20,"stroke":{"color":"onDark","alpha":0.2,"width":1.5}}|false,
          "anim":"slide", "from":"right",
          "parts":[ ...elements with x/y RELATIVE to the cell... ]}
-  - THE DESIGNED LIST — how every menu, listing, tile grid, bar row, legend
-    and stat trio in the exemplar decks was built: ONE cell designed from
-    loose parts, stamped per item. `x,y,w,h` is ONE cell; `dir` lays the
-    cells down, across, or in a grid of `cols`. Items come from copy.items
+  - THE DESIGNED LIST — how a menu, a listing, a tile grid, a bar row, a
+    key or a figure row is built: ONE cell designed from loose parts, stamped
+    per item. `x,y,w,h` is ONE cell (its `h` is one cell's height, never the
+    whole list's); `flow` lays the cells down, across, or in a grid of
+    `cols`; `dir` stays what it is everywhere — the direction of the
+    entrance (`"anim":"grow","dir":"vertical"`). Items come from copy.items
     (the wired ones on a slide that waits, else the display ones) or from
     your own `items` list. Inside the parts, strings carry tokens: {label}
     {body} {value} {n} (1, 2, 3) {nn} (01, 02) {icon} {hint} and any field
@@ -261,27 +283,22 @@ REPEAT  {"el":"repeat", "x":820, "y":96, "w":670, "h":100, "dir":"down"|"right"|
     `plate` draws a visible plate first (tile, card, listing); omit it for
     transparent rows; `wired:false` keeps display cells from becoming
     buttons on a slide that waits.
-  - RECIPES (all from the exemplars, all 28-32px labels): numbered menu rows
-    = cell 670 × 100, parts: stat "{nn}" 44 accent at (0,24) · icon "{icon}"
-    60 at (88,18) · itemTitle "{label}" medium at (170,28) · stat "›" 64
-    accent centred at (620,12) · line white 0.28 at (0,98) 670 × 2. Tile
-    grid = cell 340 × 176, grid of 2, gap 24, plate accent 0.12 + stroke,
-    parts: icon 70 at (24,22) · itemTitle "{label}" at (24,112). Listing
-    cards = cell 650 × 150 down, gap 22, plate white 0.08 + hairline, parts:
-    rect accent 6 × 90 at (0,30) · stat "{value}" 44 at (34,28) · fine
-    "{meta}" accent at (34,88) · fine "{area}" right-aligned at (420,30)
-    w 200. Bar rows = cell 1160 × 42 down, gap 22, parts: itemTitle "{label}"
-    w 240 · rect track white 0.06 at (258,0) 900 × 42 radius 8 · rect fill
-    "{color}" at (258,0) w "{w}" (you compute the width from the value) ·
-    fine "{value}" at "{vx}" (18px past the fill). Stat trio = cell 280 × 120
-    across, gap 20, parts: stat "{value}" 66 accent typewriter · fine "{body}"
-    at (0,80). Legend = cell 500 × 44 down, gap 10, parts: rect "{color}"
-    28 × 28 radius 6 at (0,4) · body "{label}" 30 at (44,0). Trust row =
-    cell 300 × 36 down, gap 8, parts: icon "{icon}" 36 · fine "{label}"
-    semibold at (48,2). Answer cards = cell 300 × 320 across, gap 30, wired,
-    plate primary 0.16 + accent stroke radius 26, parts: rect glow (0,0)
-    300 × 6 gradient · icon "{icon}" 120 at (90,44) · itemTitle "{label}"
-    centred at (0,190) · fine "{body}" accent centred at (0,248).
+  - CELL MECHANICS (sizes and offsets that work; the LOOK of the cell is
+    this deck's): a row list = cell ~670 × 84-100, flow down, its parts on
+    one line (y 12-28) and a divider or plate if the deck uses one; a tile
+    grid = cell ~340 × 176, flow grid, cols 2, gap 24 — an icon top-left and
+    a label under it; a card list = cell ~650 × 150, flow down, gap 22 — a
+    plate, a figure and a meta line; bar rows = cell ~1160 × 42, flow down —
+    a label w 240, a track, a fill whose width "{w}" you compute from the
+    value, the value at "{vx}" just past the fill; a figure row = cell
+    ~280 × 120, flow across — a stat "{value}" and a fine "{body}" at y 80;
+    a key = cell ~500 × 44, flow down — a 28px swatch "{color}" and a label at
+    x 44; a short proof list = cell ~300 × 36, flow down — an icon 36 and a
+    label at x 48; tall answer cards = cell ~300 × 320, flow across, wired —
+    a plate, an icon ~120, the label and its body centred. Labels in cells
+    are 28-34px; give a label part the width its words need (the builder
+    lets a row label run on toward its column's edge, but a cell across or in
+    a grid stops at the cell).
 LIST  {"el":"list", "style":"rows"|"cards"|"chips"|"steps"|"timeline"|"numbers", "x","y","w","h", "cols":3, "gap":22,
        "items":[{"title":"...","body":"...","icon":"...","value":"..."}], "tone":"dark"|"light", "plate":true, "wells":true, "iconTone":"accent"}
   - a SHORTCUT: the builder's own look for display items (rows with icon
@@ -329,47 +346,77 @@ never animates. CHOOSE, the way the exemplars do — `"anim"` on any element:
   grow (+ "dir":"horizontal" for pills and rows, "vertical" for tall cards,
   "all" for discs, rings, icons, tiles) · wipe (+ "dir":"up" for columns,
   "right" for dashes, strikes and bar fills, "down" for a vertical rule) ·
-  baseline (text rises) · swipe (a block swipes the text in, "dir":"right" —
-  the exemplar headlines) · spread (the letters spread — a quiz headline) ·
-  typewriter (types — stats, prices, mono eyebrows) · none.
+  baseline (text rises) · swipe (a block swipes the text in, "dir":"right") ·
+  spread (the letters spread) · typewriter (types — figures, prices, short
+  labels) · none.
   `"dur":1.2`, `"delay":0.9` when the default beat reads wrong. Parts of a
-  unit share its kind: a row that slides brings its numeral, icon, label and
-  chevron with it.
+  unit share its kind: a row that slides brings its parts with it.
+  MOTION HAS RHYTHM TOO: the deck language names the entrances this deck
+  favours and what each is for. No single headline entrance on more than a
+  quarter of the deck, never the same one on three slides in a row — a
+  headline that simply rises or fades is often the right call.
 
-## Composing — what the exemplar slides do, and this deck must
+## Composing — a method, not a kit (binding, 2.1.1)
 
-- COMPOSE FROM PARTS. The slides the client praised are 14-38 blocks each and
-  none of them is a canned composite: a wordmark unit (a 14px accent square +
-  spaced caps, or a 58px icon + caps, or a two-tone name), an eyebrow in
-  spaced caps with a middle-dot ("LIMITED DROP  ·  ENDS SUNDAY"), a headline
-  with a 10px accent rule beside it or a badge above it, a subhead one shade
-  quieter, then the SUBSTANCE built as a `repeat` (numbered rows, tiles,
-  listings, bar rows, a stat trio, a legend) or a native graphic, then the
-  DETAIL that says designed (a strike through the old price, a ticker line,
-  an axis with "YR 1 / YR 5", a glow strip on a card, a soft disc behind a
-  lottie, trust rows beside the button). Six to twelve elements (a `repeat`
-  counts as one). A two-element slide (headline over footage) is for a
-  section intro or a closing line only, at most four per deck.
-- THE ACCENT IS THE BRAND'S VOICE. Use it wherever it means something: the
-  numerals AND the chevrons AND the rule on one menu; the stat values; the
-  eyebrow; the bar that wins; the one word in a two-tone line. A second
-  status colour (a green "// CORRECT", a coral "NOT QUITE") is a hex. Mute
-  white by alpha (0.8-0.92), never by a mid-grey on a mid field.
+The client's standard is a set of hand-built slides. What made them good is
+CRAFT: loose parts assembled into units, two or three weights on one slide,
+deliberate line breaks, mixed column sizes placed on purpose, one detail that
+says "designed", motion that agrees with position — and every slide unlike
+the one before it. Their particular motifs (a vertical accent rule, numbered
+rows, a struck price, stacked rings, a two-tone wordmark, a colour key) were
+right for THOSE brands and THOSE beats. Two live builds that put them on slide
+after slide read as one template again. So:
+
+- START FROM THIS DECK'S LANGUAGE. The deck constants carry the DECK DESIGN
+  LANGUAGE: the brand's world, four to six devices invented for it (each with
+  how it is built and what it is for), the fields it alternates, its type
+  habits and its motion. Build each slide's detail from those devices — or,
+  when the beat needs something they don't cover, invent one more from the
+  same world and keep using it the way the language says. A motif from the
+  worked scenes below is another brand's: take its construction, never its
+  look.
+- THEN THE BEAT. What is the one idea, and what does it carry — a choice, a
+  set of things, a comparison, a figure, a sequence, a voice, a place, a
+  before/after? Pick the unit that SHOWS that (rows, tiles, cards, bars, a
+  figure and its caption, a quote, photo panels, a path of steps, a key) and
+  design its cell for this content and this brand.
+- COMPOSE FROM PARTS. A designed slide is 14-38 blocks: the corner mark (or a
+  typographic wordmark when the deck has no logo), an eyebrow, a headline, a
+  quieter line, the SUBSTANCE as a `repeat` of designed cells or a native
+  graphic, and ONE detail that says designed. Six to twelve elements (a
+  `repeat` counts as one). A two-element slide (headline over footage) is for
+  a section intro or a closing line only, at most four per deck.
+- RHYTHM OF DEVICES (binding). A detail is spent quickly: the same one (the
+  same rule beside a headline, the same badge, the same numbered row, the same
+  glyph in front of an eyebrow, the same struck figure) on two slides reads as
+  a motif; on five it reads as a template. A SIGNATURE device appears on at
+  most TWO slides of a deck — unless the deck language names it, and then
+  never on neighbouring slides and on no more than a third of the deck.
+  HABITS (a framed clip, a light field, a divider, one headline entrance) may
+  recur, but none on more than a quarter to a third of the deck. Each batch
+  arrives with DEVICES THIS DECK HAS ALREADY USED: what it lists as SPENT is
+  not available to you.
+- THE ACCENT IS THE BRAND'S VOICE. Use it wherever it means something — the
+  figures, the marker of the choice, the one word of a two-tone line, the bar
+  that wins. A status colour (a green for right, a coral for not quite) is a
+  hex. Mute white by alpha (0.8-0.92), never by a mid-grey on a mid field.
 - FIELDS: full-bleed footage under a tint of the field colour (0.55-0.72)
-  with a 900px scrim under the copy; OR footage under the BRAND colour at
-  0.85+ (a coloured field with life in it); OR a framed clip panel with a
-  stroke; OR a clean SOLID light field with no footage at all and a big
-  soft disc + lottie on one side — all four are premium. A designed solid
-  field stays solid. Alternate them across the deck.
+  with a scrim under the copy; footage under the BRAND colour at 0.85+ (a
+  coloured field with life in it); a framed clip on a solid field; a clean
+  SOLID field with no footage at all where the slide's own unit carries it.
+  All are premium; the deck language picks the two or three this deck
+  alternates. A designed solid field stays solid.
 - TYPE: the headline is the slide — 56-110 in the display face, deliberate
   breaks, tight leading. Everything secondary at 28-34 in the body face at
   the weight that ranks it. Condensed faces (Barlow Condensed, Oswald) run
   narrow: 84-100 for a stacked four-line hero at lh 0.82-0.85.
-- GEOMETRY: the left column at x 72; wordmark y 44-52; eyebrow 130-190;
-  headline 148-232; subhead 340-450; the action 540-630. The right column
-  from 780-900 to 1490, FILLED top (96) to bottom (596-676) by its unit —
-  five rows of 100, a 2×2 of 176-tall tiles, three listings of 150. Nothing
-  floats in a corner with the other three empty.
+- GEOMETRY IS A GRID, NOT A SET OF POSITIONS. Content lives in x 72 → 1486
+  and y 72 → 648. Vary the grid slide to slide: one wide column; two unequal
+  columns (a 5:7 or 4:8 split with a 48-64px gutter); three or four equal
+  cells; a centred axis; a SHIFT (two cells over three, one wide over three
+  narrow) when the content has two levels. Fill a column top to bottom with
+  its unit, align every part to an edge it shares with another, and leave no
+  corner floating with the other three empty.
 - ONE composition per slide, and a DIFFERENT one on the next: name it in
   `family` and do not repeat your neighbour's. Alternate the axis (left /
   centred / right), the photo side, the field, the density.
@@ -378,15 +425,22 @@ never animates. CHOOSE, the way the exemplars do — `"anim"` on any element:
 - MENUS AND QUESTIONS carry their eyebrow, a real headline, and their wired
   items as ONE designed unit each (a `repeat` of rows or cards, or pills);
   the Main Menu pair (First / Return) share one composition and footage.
-- CONSISTENCY across the deck: the same field logic, one button vocabulary
-  on menus, section intros that share one eyebrow style — variety in
-  composition, not in vocabulary.
+- CONSISTENCY where the viewer needs orientation — the type, the colours,
+  the button voice, the section intros, the menu pair. Variety everywhere
+  else: in composition AND in detail.
 
-### Five worked scenes — the exemplar slides, transcribed (different content, same craft)
+### Five worked scenes — five OTHER brands, transcribed (the mechanics, not the motifs)
 
-These decks had NO logo, so each carries a typographic wordmark top-left.
-When DECK LOGO is PRESENT (deck constants), drop the wordmark element — the
-builder's corner mark takes that place.
+These show how a scene is WRITTEN: parts assembled into units, cells stamped
+by a `repeat`, geometry, weights, breaks and chosen motion. Each belongs to a
+different brand with its own language — a civic planning office, an
+investment app, an audio maker, a conservation charity, a crypto vault — so
+their devices (the rule beside the civic headline, the numbered civic rows,
+the struck price, the soft disc, the ticker line) are theirs. Read them for
+the construction; compose this deck from its own language. These brands had
+NO logo, so each carries a typographic wordmark top-left. When DECK LOGO is
+PRESENT (deck constants), drop the wordmark element — the builder's corner
+mark takes that place.
 
 A MENU of five civic projects (dark field, footage under a slate tint, the
 numbered rows ARE the slide):
@@ -397,7 +451,7 @@ numbered rows ARE the slide):
   {"el":"rect","name":"headline-rule","color":"accent","x":72,"y":158,"w":10,"h":270,"anim":"wipe","dir":"down"},
   {"el":"text","text":"WHICH\nPROJECT\nMATTERS\nMOST?","role":"hero","lh":0.82,"anim":"swipe","dir":"right","x":104,"y":148,"w":640},
   {"el":"text","text":"Tap one — your vote shapes the 2027 budget.","role":"body","size":30,"color":"accent","lh":1.05,"x":72,"y":556,"w":660},
-  {"el":"repeat","x":820,"y":96,"w":670,"h":100,"dir":"down","anim":"slide","from":"right",
+  {"el":"repeat","x":820,"y":96,"w":670,"h":100,"flow":"down","anim":"slide","from":"right",
    "parts":[{"el":"text","text":"{nn}","role":"stat","size":44,"color":"accent","x":0,"y":24,"w":70},
             {"el":"icon","concept":"{icon}","size":60,"x":88,"y":18,"tone":"white"},
             {"el":"text","text":"{label}","role":"itemTitle","weight":"medium","size":32,"x":170,"y":28,"w":460},
@@ -412,7 +466,7 @@ animated bar row per option, the retry as a ghost pill):
   {"el":"text","text":"NOT QUITE","group":"badge","role":"eyebrow","color":"#ff7a59","ls":0.2,"align":"center","x":72,"y":128,"w":214},
   {"el":"text","text":"Income trailed inflation\nin 6 of the last 10 years","role":"headline","size":56,"lh":0.95,"x":72,"y":186,"w":1000},
   {"el":"text","text":"Growth portfolios cleared inflation most often. Here is the record.","role":"body","size":30,"color":"onDark","alpha":0.7,"x":72,"y":340,"w":1100},
-  {"el":"repeat","x":72,"y":410,"w":1160,"h":42,"dir":"down","gap":22,
+  {"el":"repeat","x":72,"y":410,"w":1160,"h":42,"flow":"down","gap":22,
    "items":[{"label":"Growth","w":720,"vx":996,"color":"accent","value":"8 of 10 years"},{"label":"Retirement","w":540,"vx":816,"color":"onDarkMuted","value":"6 of 10 years"},{"label":"Income","w":360,"vx":636,"color":"#ff7a59","value":"4 of 10 years"},{"label":"Preservation","w":270,"vx":546,"color":"onDarkMuted","value":"3 of 10 years"}],
    "parts":[{"el":"text","text":"{label}","role":"body","size":30,"x":0,"y":4,"w":240},
             {"el":"rect","color":"onDark","alpha":0.06,"radius":8,"x":258,"y":0,"w":900,"h":42,"anim":"fade"},
@@ -433,7 +487,7 @@ rounded panel, a two-tone wordmark, the price with the old price struck):
   {"el":"text","text":"was $349","role":"fine","color":"onDarkMuted","x":236,"y":478,"w":220},
   {"el":"line","name":"strike","color":"onDarkMuted","x":236,"y":495,"w":128,"h":3,"anim":"wipe","dir":"right","dur":0.8,"delay":2.3},
   {"el":"button","item":0,"style":"pill","featured":true,"icon":false,"x":72,"y":548,"w":400,"h":84,"anim":"grow","dir":"horizontal"},
-  {"el":"repeat","x":500,"y":550,"w":300,"h":36,"dir":"down","gap":8,"items":[{"label":"Free shipping","icon":"truck"},{"label":"2-year warranty","icon":"shield"}],"wired":false,
+  {"el":"repeat","x":500,"y":550,"w":300,"h":36,"flow":"down","gap":8,"items":[{"label":"Free shipping","icon":"truck"},{"label":"2-year warranty","icon":"shield"}],"wired":false,
    "parts":[{"el":"icon","concept":"{icon}","size":36,"x":0,"y":0,"tone":"white"},{"el":"text","text":"{label}","role":"fine","weight":"semibold","color":"onDark","alpha":0.9,"x":48,"y":2,"w":240}]},
   {"el":"sender","x":780,"y":590,"w":710,"h":110,"align":"right","lead":false}]}
 (copy.items[0] = {"label":"Buy now  →","finish":true,"finishTitle":"BUY NOW","url":"..."} — the arrow is typed into the label.)
@@ -447,7 +501,7 @@ lottie own the right half; a stat trio carries the evidence):
   {"el":"text","text":"SEA TURTLES  ·  YOUR CHOICE","role":"eyebrow","color":"accent","ls":0.25,"x":72,"y":150,"w":800},
   {"el":"text","text":"Your gift shields\nnesting beaches.","role":"headline","size":66,"lh":0.95,"color":"ink","x":72,"y":194,"w":900},
   {"el":"text","text":"Night patrols, relocated nests and a clear run to the water.","role":"body","size":30,"color":"ink","alpha":0.8,"lh":1.05,"x":72,"y":376,"w":820},
-  {"el":"repeat","x":72,"y":486,"w":280,"h":120,"dir":"right","gap":20,"items":[{"value":"1,200","body":"hatchlings a season"},{"value":"14 km","body":"of patrolled coast"},{"value":"3","body":"night patrol teams"}],
+  {"el":"repeat","x":72,"y":486,"w":280,"h":120,"flow":"across","gap":20,"items":[{"value":"1,200","body":"hatchlings a season"},{"value":"14 km","body":"of patrolled coast"},{"value":"3","body":"night patrol teams"}],
    "parts":[{"el":"text","text":"{value}","role":"stat","size":66,"color":"accent","anim":"typewriter","x":0,"y":0,"w":280},{"el":"text","text":"{body}","role":"fine","weight":"semibold","color":"ink","alpha":0.8,"x":0,"y":80,"w":280}]},
   {"el":"button","item":0,"style":"pill","color":"primaryDeep","labelColor":"surfaceLight","icon":false,"x":72,"y":630,"w":330,"h":66}]}
 
@@ -461,7 +515,7 @@ with a gradient wash on the left, a ticker line as the detail):
   {"el":"text","text":"// QUICK QUIZ","role":"eyebrow","color":"accent","anim":"typewriter","x":860,"y":132,"w":640},
   {"el":"text","text":"Which wins\nover 5 years?","role":"headline","size":52,"lh":1.02,"anim":"typewriter","dur":1.5,"x":860,"y":176,"w":640},
   {"el":"text","text":"BTC ▲ 2.4%     ETH ▲ 1.1%     SOL ▼ 0.6%","role":"fine","color":"onDarkMuted","x":72,"y":636,"w":900,"delay":2.2},
-  {"el":"repeat","x":860,"y":330,"w":300,"h":320,"dir":"right","gap":30,"plate":{"color":"primary","alpha":0.16,"radius":26,"stroke":{"color":"accent","width":2}},"anim":"grow","dir":"vertical",
+  {"el":"repeat","x":860,"y":330,"w":300,"h":320,"flow":"across","gap":30,"plate":{"color":"primary","alpha":0.16,"radius":26,"stroke":{"color":"accent","width":2}},"anim":"grow","dir":"vertical",
    "parts":[{"el":"rect","gradient":{"colors":["primary","accent"],"direction":"horizontal"},"radius":26,"x":0,"y":0,"w":300,"h":6},
             {"el":"icon","concept":"{icon}","size":120,"x":90,"y":44,"tone":"white"},
             {"el":"text","text":"{label}","role":"itemTitle","font":"display","size":36,"align":"center","x":0,"y":190,"w":300},

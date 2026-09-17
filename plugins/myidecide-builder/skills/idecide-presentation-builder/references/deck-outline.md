@@ -59,6 +59,31 @@ Output ONE JSON object (no fences, no commentary):
                                                       // Bold where the family has them)
     "sans":    {"family": "...", "variant": "..."},   // the body/UI face — same rule:
                                                       // catalog family + closest weight
+    "language": {                // THE DECK'S OWN DESIGN LANGUAGE (2.1.1) — invented for THIS
+                                 // brand, never borrowed. The design pass composes every slide
+                                 // from these devices; a device it did not get here is one it
+                                 // must invent from the brand's world, not from another deck.
+      "world": "...",            // one line: the materials, shapes, marks and textures of this
+                                 // brand's world (route maps and platform signs; ledger rules
+                                 // and stamps; riveted steel; neon tubes; waveforms; seed
+                                 // packets …) — what a designer would draw FROM
+      "devices": [               // FOUR to SIX named devices, each built from the scene
+                                 // primitives (text · rect · ellipse · line · icon · media ·
+                                 // repeat), each specific to this brand, each with its job
+        // e.g. for a TRANSIT AGENCY (not your brand — the shape of an entry):
+        {"name": "route line", "build": "a 6px accent line with 20px ring stops (ellipses, fill off, 4px stroke) at each item", "use": "steps, menus, timelines"},
+        // e.g. for a COFFEE ROASTER:
+        {"name": "roast scale", "build": "a repeat of five 28px discs from tan to near-black, the chosen one ringed in the accent", "use": "comparisons, answers"},
+        ...
+      ],
+      "fields": "...",           // the two or three field treatments this deck alternates
+                                 // (e.g. "footage under a navy tint + left scrim · clean
+                                 // ivory solid · the brand teal at 0.9 over footage")
+      "type": "...",             // how headlines break and which weights carry labels,
+                                 // captions and eyebrows in THIS deck
+      "motion": "..."            // the two or three entrance kinds this deck favours, and
+                                 // what each is for — never one kind on every headline
+    },
     "voiceName": "...",          // EXACT name from the voice catalog provided
     "casting": "...",            // one line: who appears in photos, deck-wide
     "brandEvidence": "..."       // REQUIRED when a website was researched: what
@@ -192,6 +217,24 @@ kind-"cta" slide; (6) all sectionIntro slides share one intent; (7) every
 topic chapter's last beat carries `advanceTo: "Main Menu - Return"`; (8) a
 Finish Up chapter exists and ends on the outcome question; (9) every outcome
 has its own chapter ending on a terminal CTA.
+
+## The deck's design language — invented, not borrowed (binding, 2.1.1)
+
+Two live builds reused one set of devices deck-wide — a vertical accent
+rule, a framed clip with an accent stroke, a "// " eyebrow, a stroked badge —
+because the design contract's worked examples carried them. The client:
+"each build should be choosing unique elements for each presentation's
+specific needs." So `theme.language` is where THIS deck's devices are
+decided, once, from the brand's own world, before any slide is designed:
+what a designer who knew only this brand would reach for. Name four to six.
+Each is built from the scene primitives (say how), does one job (say
+which), and would look out of place in another brand's deck. A device that
+could sit in any deck (a vertical rule, a badge, a dash under an eyebrow) is
+not a device of this brand — it is a default; replace it with something
+drawn from the world line. The two example entries above are other brands'
+(a transit agency, a coffee roaster): never copy them — invent this brand's.
+Name the `motion` too: two or three entrance kinds and what each is for, so
+the headlines of this deck do not all arrive the same way.
 
 ## Typeface pairing — a DESIGN DECISION, made fresh per brand
 

@@ -1588,3 +1588,28 @@ and `composer.logoImg` / `scene.placeLogo` size every placement from it.
   WASM BindingError ("parameter 1 has unknown type … FindAssetsResult") —
   transient; the same call succeeded a few seconds later.
 
+## 2026-09-17 — a graphic's corner radius lives on its SHAPE; `export` waits for a painted window
+
+- `shape/rect/cornerRadiusTL` / `TR` / `BL` / `BR` are properties of the
+  block's **shape** (`engine.block.getShape(id)` → a `//ly.img.ubq/shape/rect`
+  that lists the four keys in `findAllProperties`). On the graphic block
+  itself `getFloat(id, key)` throws *"Component ubq/designblocks/RectShape is
+  not set on entity 16"* and `setFloat(id, key, v)` throws *"Entity ID 16 of
+  type //ly.img.ubq/graphic doesn't have component
+  ubq/designblocks/RectShape"* — so a write wrapped in `try { } catch { }`
+  does nothing and says nothing. CONFIRMED LIVE on deck 306 ("Why We Repair -
+  1", 2026-09-17): the api-placed `photo-panel` (video fill) had shape radius
+  0 while the `scrim` and `photo-panel/stroke` drawn over it by `rect()` read
+  28 — the "square video inside a rounded frame" Bren reported on decks
+  305/306. Writing the shape of the panel took; the value was restored and
+  the page reloaded without a commit (the saved slide still reads 0/28/28).
+  2.1.1 writes every radius on the shape (`composer.shapeRadius`,
+  `pipeline.setRadius`, `transferDress`, `SH.placeUploadedImage`), and
+  inspect reads it from the shape.
+- `engine.block.export(block, { mimeType, targetWidth, targetHeight })` needs
+  the editor to be drawing: with the Claude desktop window MINIMIZED the
+  promise never settles (a 45s check timed out; the same call returned a
+  frame on deck 304 with the window up). A page script that changes a value
+  and then awaits an export can therefore time out with the value still
+  changed — after any timed-out script, read the state back, restore it,
+  and reload to discard.

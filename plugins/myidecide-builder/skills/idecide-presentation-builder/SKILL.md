@@ -507,10 +507,10 @@ contract the Extension's designer model writes and the Extension draws:
   ellipses and lines (plates, rules, strikes, discs, rings, bars, swatches);
   media panels with their own clip and a stroke; icons; the logo; buttons
   (pill · ghost · rect · card · text · circle); the `repeat` — one designed
-  cell of loose parts stamped per item (the menu rows, listing cards, tile
-  grids, bar rows, legends and stat trios of the exemplar decks), each cell
-  one unit and one click target when its item is wired; the canned lists
-  and native data graphics as shortcuts; the sender block on a terminal CTA;
+  cell of loose parts stamped per item (rows, cards, tiles, bar rows, keys,
+  figure rows — laid out by `flow`: down, across or grid), each cell one
+  unit and one click target when its item is wired; the canned lists and
+  native data graphics as shortcuts; the sender block on a terminal CTA;
 - **a family name** for the composition — variety is judged on it.
 
 Then draw it with the API: page colour and footage for the stage, one text
@@ -528,8 +528,8 @@ hand-designed decks. Every content slide carries at least: the stage · an
 eyebrow or an accent rule · the headline · ONE substance element (cards on
 stroked plates with icons in tinted wells, rows with wells, a dot grid, an
 animated bar chart, photo tiles with captions, a pull-quote with its
-attribution) · ONE detail that says designed (a badge, a divider, a soft disc
-behind a numeral, a legend). Six to twelve elements is the normal range; a
+attribution) · ONE detail that says designed, drawn from the deck's own
+design language (below). Six to twelve elements is the normal range; a
 two-element slide is for a section intro or a closing line, at most four per
 deck. Menus and questions carry an eyebrow and a real headline above their
 buttons; a CTA its headline, support line, buttons, sender block and footage
@@ -544,17 +544,33 @@ the words or move the neighbour.
 14–38 blocks each and none is a canned composite: two or three weights of the
 body face on one slide (Regular subheads, Medium row labels, Bold eyebrows,
 SemiBold captions), spaced caps, headlines with deliberate breaks at
-line-height 0.82–0.95, the accent everywhere it means something (numerals
-AND chevrons AND the rule on one menu), substance built as a `repeat` of
-designed cells or a native graphic, a detail that says designed (a struck
-old price, a ticker line, an axis, a glow strip, a soft disc behind a
-lottie), ghost buttons for the secondary action with the arrow typed into
-the label, and four fields alternated — footage under the field tint with a
-scrim, footage under the brand colour at 0.85+, a framed clip with a stroke,
-a clean solid light field with no footage at all. `references/scene-contract.md`
-carries the five worked scenes transcribed from those slides; compose to
-that standard, and never let a template-era rule (accent once, one figure
-per slide, footage on every slide, 40–60% air) talk you out of it.
+line-height 0.82–0.95, the accent wherever it means something, substance
+built as a `repeat` of designed cells or a native graphic, one detail that
+says designed, a solid primary and a ghost secondary button, columns of
+different widths placed on purpose, and fields alternated — footage under
+the field tint with a scrim, footage under the brand colour at 0.85+, a
+framed clip, a clean solid field with no footage at all. Never let a
+template-era rule (accent once, one figure per slide, footage on every
+slide, 40–60% air) talk you out of it.
+
+**The deck's own design language — craft, not a kit (binding, 2.1.1).**
+What the exemplars teach is how to BUILD; their motifs (a vertical accent
+rule, numbered rows, a struck price, stacked rings, a two-tone wordmark, a
+colour key) belonged to those brands. Two Extension builds that reused them
+deck-wide read as one template again, and the client asked that each deck
+choose its own elements for its own needs. So before the first slide,
+decide this deck's language and write it into the plan's theme as
+`language`: the brand's WORLD in one line (its materials, marks, shapes),
+FOUR to SIX devices invented from that world — each with how it is built
+from the primitives and what it is for — the two or three FIELDS the deck
+alternates, its TYPE habits, and its MOTION (two or three entrance kinds and
+what each is for). Compose every slide's detail from those devices.
+`references/scene-contract.md` carries five worked scenes from five OTHER
+brands: read them for the mechanics, never copy their look. Keep a tally as
+you build: a signature detail appears on at most two slides unless the
+language names it (and then never on neighbours, on no more than a third of
+the deck); a habit — a framed clip, a light field, a divider, one headline
+entrance — stays under a quarter to a third of the deck.
 
 **Animation follows position (the edge rule).** Heroes rise on their
 baseline; buttons grow; panels and rows slide in from the nearer edge — an
@@ -562,6 +578,15 @@ element on the right half enters from the right, on the left half from the
 left; bars grow upward; everything else fades; slots arrive 0.18s apart
 bottom-to-top, parts of one object 0.08s apart; the background never
 animates. Every layer runs to the slide's end (narration + 0.5s tail).
+Vary the text entrances by the deck language's motion note: no one headline
+entrance on more than a quarter of the deck.
+
+**Corners belong to the shape.** A rounded media panel or plate takes its
+radius on its SHAPE (`engine.block.getShape(id)`, then
+`shape/rect/cornerRadiusTL` / `TR` / `BL` / `BR` on that shape); written on the
+graphic block itself the value is refused or ignored and the footage stays
+square inside a rounded frame. A plate drawn on the same box as a framed
+clip gets the same radius.
 
 **Drawing a data graphic.** Bars: one rect per value on a shared baseline,
 equal widths, heights in proportion to the largest, the value in a fine line
