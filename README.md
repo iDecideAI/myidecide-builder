@@ -9,7 +9,9 @@ call to action. This plugin teaches Claude to design for that, then build it —
 writing the script, composing the slides, sourcing stock footage, generating the
 narration and wiring the menus and buttons, working directly in the myiDecide
 Builder — the platform's own authoring app at my.idecide.com — while you
-watch. Every slide is designed for its own content; there are no templates.
+watch. Every slide is designed for its own content — this plugin composes
+from scratch and uses no layout library, so each presentation looks like
+itself rather than like a template.
 
 ## Install
 
@@ -102,6 +104,10 @@ While a build runs, in the browser tab you opened:
 - **Sends narration text and footage searches to myiDecide**, which generates
   the audio and fetches the clips server-side and saves them onto your
   presentation — the platform doing what it does when you build by hand.
+- **Puts a picture or clip you attach into that presentation's own media
+  library**, through the same upload the Builder uses when you add one by
+  hand, and places it where you asked. It lives with your presentation on
+  myiDecide; the plugin stores nothing of its own.
 
 It needs **no API key** and holds no credentials of its own. Your questionnaire
 answers, and any script, brochure or logo you attach, reach Claude in your

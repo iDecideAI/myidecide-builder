@@ -40,7 +40,7 @@
   9-12 slides, a headline swipe on 25-30 of 45) and read as one template
   again. Each deck now carries its own DESIGN LANGUAGE (outline
   theme.language, stated in the deck constants), each batch gets a ledger of
-  the devices already spent, the worked scenes are framed as five OTHER
+  the devices already spent, the worked scenes are framed as OTHER
   brands, and a repeat's layout key is `flow` (`dir` is motion).
 -->
 
@@ -59,6 +59,22 @@ their right column ends at 1490). Nothing readable sits closer to an edge
 than 72 unless it is a full-bleed panel. The deck plays full-screen on a phone
 at about 7 inches wide: big type, strong contrast, one idea per slide — but
 a DESIGNED idea, with the layers a designer would give it.
+TWO ELEMENTS NEVER SHARE A SPOT (2.1.4, deck 307 "Not Right Now - 1": a
+240px six-line body column was drawn starting 8px ABOVE the eyebrow in the
+same margin). Text over a plate, a panel or footage is layering and is right;
+two lines of COPY on the same rectangle is a mistake the builder can only
+shove sideways. Add up your own boxes before you write them: a text box is
+about `size × 1.3` tall per line, and a line holds about `w / (size × 0.55)`
+characters. Where the builder finds such a collision it moves the lower line
+down if the slide has room, and where it has none it tells the reviewer the
+slide was drawn wrong.
+THE BOTTOM EDGE IS AN EDGE TOO (2.1.3, Bren on deck 307: "elements'
+placements are getting close to the edge without enough padding"): the LAST
+line of a column, the last row of a menu, the sender block — nothing readable
+ends below y=664, and a stack designed to the bottom of the canvas is a stack
+that will be crowded once its text is measured. Leave the bottom 56px empty
+and let the column breathe; if the content does not fit, cut a line rather
+than run it to the edge.
 
 THIS DECK'S OWN LOOK (binding, 2.1.1): the deck constants carry a DECK DESIGN
 LANGUAGE — the brand's world, the devices invented for it, the fields, type
@@ -161,13 +177,25 @@ TEXT  {"el":"text", "text":"...", "role":"eyebrow"|"hero"|"headline"|"longline"|
   - ROLES and their bands: hero 92-200 · headline 54-80 · longline 44-58 ·
     numeral 110-260 (THE hero figure) · stat 40-96 (a figure INSIDE a unit —
     a stat value, a price, a row numeral "01", a chevron glyph) · subhead
-    34-46 · body 28-40 · itemTitle 30-40 · eyebrow 27-34 · button 28-34 ·
-    fine 28-32. WRITE THE SIZE YOU MEAN: a `size` inside the role's band (10%
-    slack) is honoured exactly; outside it the builder sizes by length. The
-    exemplar slides use 28 as the WORKING size of every secondary line
-    (eyebrows, captions, meta, button labels), 30-34 for subheads and row
-    labels, 44-72 for figures in units, 56-110 for headlines. Height is
-    measured, never given.
+    34-46 · body 30-40 · itemTitle 32-40 · eyebrow 30-34 · button 32-36 ·
+    fine 29-33. WRITE THE SIZE YOU MEAN: a `size` inside the role's band (10%
+    slack) is honoured exactly; a size UNDER the band is raised to the band's
+    floor, never re-sized by length.
+    **28px is the floor of the canvas, not the working size of a line**
+    (2.1.3, deck 307: Bren — "some text is getting close to too small to be
+    viewed well on mobile devices" — 33 of that deck's blocks were written at
+    28-29). This canvas is ~7 inches wide in the viewer's hand: 28 is for a
+    true footnote (a source line, an asterisked rate), 30-33 for captions,
+    meta and support lines under a row label, 32-36 for eyebrows, button
+    labels and row labels, 34-46 for a subhead, 44-96 for figures in units,
+    54-110 for headlines. Height is measured, never given.
+  - A LABEL IS ONE LINE, AND ITS BOX HAS TO BE (2.1.3): an eyebrow, a row
+    label, a button label, a stat caption, a tag line — give it a `w` with
+    real room (measure by eye: ~0.55 × size per character, then add a fifth),
+    because the builder measures the drawn frame after the fonts settle and,
+    if it broke in two, widens it to its own ink or brings the size down to
+    hold one line. Neither is as good as a box you drew wide enough. A line
+    you WANT broken carries its own "\n".
   - FACE and WEIGHT: hero / headline / longline / numeral / stat take the
     DISPLAY face; everything else the body face (a wordmark in the display
     face is a `subhead` with `font:"display"`). The body face has weights —
@@ -189,20 +217,65 @@ TEXT  {"el":"text", "text":"...", "role":"eyebrow"|"hero"|"headline"|"longline"|
     numeral (hero) or a stat (in a unit); the builder promotes a figure
     written as body.
 RECT / ELLIPSE / LINE  {"el":"rect"|"ellipse"|"line", "x","y","w","h", "color":"<token|#hex>", "alpha":0.12, "radius":18|"max",
-       "stroke":{"color":"accent","width":2,"alpha":0.33}, "gradient":{"colors":["accent","primary"],"direction":"horizontal"},
-       "fill":false, "opacity":0.9, "shadow":true, "name":"headline-rule", "group":"card1", "anim":"wipe", "dir":"down"}
+       "stroke":{"color":"accent","width":2,"alpha":0.33}, "gradient":{"colors":["primaryDeep@0.96","primaryDeep@0.69","primaryDeep@0"],"stops":[0,0.5,1],"direction":"horizontal"},
+       "rotate":45, "fill":false, "opacity":0.9, "shadow":true, "name":"headline-rule", "group":"card1", "anim":"wipe", "dir":"down"}
   - plates, wells, rules, dividers, strikes, discs, rings, bars, swatches,
     stripes, frames, ticks, stamps, tracks — whatever the deck's language is
-    drawn from. A LINE is a thin rect (h = thickness). `fill:false` draws an
-    outline only.
+    drawn from. A LINE is a thin rect (h = thickness).
+  - HOLLOW MEANS HOLLOW: `"fill":"none"` (or `false`) with a `stroke` draws
+    the outline and NOTHING inside. Write it on every ring — a ring without
+    it is a solid disc, which is what deck 307's three "contour rings" became
+    (the reviewer: "the ring unit reads as a solid disc swallowing the
+    figure"). Stroke width is `stroke.width` (or `w`); 2px reads at phone
+    scale, 1.5 on a light field.
+  - NO DECORATIVE DOTS ON A PLATE (2.1.3, Bren on deck 307: "a handful of
+    circle shapes I'm not sure what the intent was … the black circles … part
+    of the eyebrow"). A 12-18px disc on a tag — a "punch hole", a bullet, a
+    marker — reads as a speck of dirt beside the label, and one per cell of a
+    repeat reads as a rash. The builder now DROPS any small disc that sits
+    inside a plate. A tag reads as a tag from its shape, its shadow and the
+    stitch line above it; a list reads from its rule or its icon.
+  - MARK WHAT YOU BELONG TO — `"under"` / `"pin"` (2.1.5). A rule under a
+    headline, a cap on that rule, an underline as wide as the figure over it:
+    you compute a y for them from type you have not seen measured, and when
+    the measured type lands 40px lower the rule cuts through it. Say what the
+    thing marks instead and the builder puts it there after measuring:
+      "under": "<name|role|the first words of the line>"  — my TOP sits at
+               that block's measured BOTTOM, `"gap"` px below it (default 16)
+      "pin":   "<same>"  — keep the offset I was drawn at from that block's
+               top-left, wherever it ends up
+      "match": "ink"     — and take that block's measured width ("box" takes
+               its frame). An underline written `"match":"ink"` is exactly as
+               wide as the figure, at any size the figure lands on.
+    Any element that owns its own y may bind — a text line too (a footer that
+    follows a fitted pill: `"under":"Click anywhere to Begin"`), but not one
+    inside a `stack` or a `repeat` cell, which own their y already. A button
+    answers to its own label. Bindings resolve in three passes, so a cap
+    pinned to a rule that is itself under a headline lands right. Draw the
+    element at the y you mean anyway — that drawn offset IS the gap when you
+    give no `gap`, and it is what ships if the marker is not on the slide.
+  - A COLOUR CARRIES ITS OWN ALPHA (2.2.3): `primaryDeep@0.96`, `#0b1b3a@0`,
+    `white@0.7`, `surfaceLight@1` — anywhere a colour is written, and above
+    all in a `gradient`, where each stop may fade differently. `stops` places
+    them (0-1 along `direction`: vertical, horizontal, diagonal, up, left).
+    This is how the demo decks' stage is shaped: a designer's SCRIM = a rect
+    over the footage, `["primaryDeep@0.96","primaryDeep@0.69","primaryDeep@0"]`
+    horizontal across 1180px (or a bottom one `0.2 → 0.7 @0.55 → 0.98` plus a
+    left one — two directions on one slide); a PHOTO FADE = a 240-320px rect
+    on the panel's inner edge from the field colour at 0 to the field colour
+    at 1, so the photo melts into the field; a GLOW = a 1000px ellipse
+    `["accent@0.25","accent@0"]` half off the canvas. `rotate` (degrees, about
+    the box's top-left corner) turns a 20px square into the tip under a value
+    bubble.
   - CONSTRUCTION — proportions that read at phone scale (what you build with
     them is the deck language's call): a plate = a colour at alpha 0.08-0.2,
     radius 16-28, with a 1.5-2px stroke of a related colour when it sits on
     footage; a stripe on a card = 4-8px of the accent along one edge; a
     divider = white (or ink) at 0.2-0.3, 2px; a rule beside type = 6-12px
     wide and as tall as the type it marks; a disc behind an icon = an
-    ellipse 1.4-1.6× the icon; rings = concentric ellipses stepping 25-35%
-    in size; a bar = a track (alpha 0.06, radius 8) and a fill on top that
+    ellipse 1.4-1.6× the icon; rings = concentric HOLLOW ellipses
+    (`"fill":"none"` + a stroke) stepping 25-35% in size, centred on the same
+    point so the set reads as contours; a bar = a track (alpha 0.06, radius 8) and a fill on top that
     wipes; a strike = 3px across the middle of the struck text, wipe right;
     a label on a plate = the plate's box, the text centred in it, both in
     one `group`. A detail drawn the same way on slide after slide stops
@@ -220,12 +293,23 @@ MEDIA  {"el":"media", "role":"bg"|"panel", "kind":"video"|"still", "hint":"<sear
     product STILL: a large rounded panel that slides in from its edge.
     `still` only when the subject is a photograph by nature. Never a stock
     face for a named person (see below).
+  - `"radius":"max"` on a SQUARE panel clips it to a CIRCLE (2.2.3): the
+    demo decks' circle photo 200-440 inside a ring 1.1× it at 0.25-0.7 (a
+    spa, a pizza, a product), a 120 circle portrait beside a quote, a 540
+    circle VIDEO in a 580 white ring beside the headline. A circle panel is a
+    feature object — see THE LAYOUTS below.
 ICON  {"el":"icon", "concept":"shield", "x","y", "size":60, "tone":"white"|"ink"|"accent"|"#hex", "well":true, "anim":"grow", "dir":"all"}
   - a standalone animated icon (the library's wired outline drawing, painted
-    in the brand colours). A size scale that reads on a phone: 32-40 beside a
-    label, 56-64 in a row, 70-90 in a tile, 110-130 on a card, 180-300 when
-    the icon is the slide's feature. `well:true` puts a soft square behind
-    it.
+    in the brand colours). A size scale that reads on a phone — measured from
+    the hand-built decks (2.2.3): 36 in a trust row · 44-52 in a chip or a
+    tab · 54-64 in a row, a band or beside the wordmark · 68-76 in a tile, a
+    stub or a timeline node · 84-104 as the one glyph in a circle button, a
+    ring core or beside a slider knob · 120 on a tall answer card or beside a
+    mega stat · 150-180 loose top-right or in a 320 panel · 280-300 on a
+    440 disc at 0.22 or alone · 320-480 when the drawing IS the slide's
+    right half, on a disc 1.5-1.75× its size that bleeds off the corner. The
+    disc behind a display lottie is 1.45-1.75× the drawing. `well:true` puts
+    a soft square behind it.
 LOGO  {"el":"logo", "x":479, "y":40, "w":600, "h":72, "align":"center"}
   - the client's mark; the builder picks the light or dark drawing for the
     field and keeps its real proportions inside the box. Only where the
@@ -251,11 +335,33 @@ BUTTON  {"el":"button", "item":0, "style":"pill"|"rect"|"card"|"text"|"circle"|"
     16px corners), card (a taller tile, label centred), text (no background;
     the builder lays a transparent plate under the box so the click never
     misses), circle (a round icon-only button, e.g. a Back arrow).
-  - SIZE: 64-84px tall (never under 64 — the builder raises it), one width
-    per group, 14-18px apart. The label and its one icon sit centred as a
-    pair; `icon:false` draws no icon block — an arrow can be typed INTO the
-    label instead ("Buy now  →", "Back to menu  ↩", "Try again  ↺"), which
-    reads lighter than an icon. Either way, never two icons.
+  - SIZE IT TO WHAT IT HOLDS (Bren 2026-09-18 — this replaces the old "centre
+    everything inside a button" rule). Height 64-84px, never under 64 (the
+    builder raises it), 14-18px apart. WIDTH is the decision, and it comes
+    from the content and from what the button is:
+      · a STANDALONE action (a CTA pill, the cover's "Click anywhere to
+        Begin", a Back or Next) = icon + 18 + label + 24-28px padding either
+        side, and no wider. Estimate the label at ~0.56 × its size per
+        character (×1.1 for caps) and add the padding; the builder measures it
+        after the fonts load and corrects you either way.
+      · a SET (answers, a menu column, a pair of actions) = ONE width for all
+        of them, the widest member's. A ragged column of pills is a defect.
+      · a ROW = a plate sized by its COLUMN, not by its words: a full-bleed
+        answer bar, a menu row across a panel. Write it as one — the words on
+        the leading edge and, with `iconSide` at the far end, a chevron on the
+        opposite padding edge:
+        `"style":"rect","align":"left","iconSide":"right","icon":"arrow-right"`.
+        A 1386px bar with its label and arrow bunched in the middle is the
+        tell of a bar that should have been a pill.
+    A plate more than ~1.6× its content is brought in to it (rows excepted;
+    `"fit":false` pins one you mean to be that wide); a plate too narrow for
+    its content is grown, a set together. `"fit":true` asks for the hug
+    explicitly. `align` moves the content inside the plate when you want
+    something other than what the width implies; `anchor`
+    ("left"|"center"|"right") is the edge a re-sized plate keeps.
+  - `icon:false` draws no icon block — an arrow can be typed INTO the label
+    instead ("Buy now  →", "Back to menu  ↩", "Try again  ↺"), which reads
+    lighter than an icon. Either way, never two icons.
   - the cover has exactly one button: {"el":"button","static":true,"label":"Click anywhere to Begin","style":"pill",...}.
     Never wire anything on the cover.
   - question answers are ALL EQUAL — never colour or feature the correct one.
@@ -275,6 +381,30 @@ REPEAT  {"el":"repeat", "x":820, "y":96, "w":670, "h":100, "flow":"down"|"across
     {body} {value} {n} (1, 2, 3) {nn} (01, 02) {icon} {hint} and any field
     you put on an item ({meta}, {color}, {w}). An icon part's concept "{icon}"
     is the item's icon. A part with no `w` takes the cell's width from its x.
+    A part may sit out the end cells: `"skip":"last"` (or "first", or
+    "first last").
+  - CELLS THAT HUG THEIR LABEL AND WRAP — `"flow":"wrap"` (2.2.3): each cell
+    is as wide as its own label (the label part's x + its ink + `pad`, default
+    28; an item's own `w` overrides; `cellW` fixes one width that still
+    wraps), laid across the repeat's `w` 16 apart and wrapping to a new row
+    16 below. The demo pet-shop menu: five 80-tall r40 chips 250-351 wide
+    from their labels, a 60 disc + 52 lottie at the left, the featured one
+    solid navy by `"color":"{color}"` on the item. Three 112-tall stat chips
+    of 237-293 sized to label + value are the same flow.
+  - A REPEAT MAY SIT INSIDE A CELL (2.2.3): a part `{"el":"repeat", "count":6,
+    "flow":"down", "x":140,"y":12,"w":3,"h":9,"gap":9, "parts":[{"el":"rect",
+    "color":"primaryDeep@0.33"}]}` stamps six perforations on every ticket;
+    it joins the cell (one unit, one click, one slot). A `count` with parts
+    that carry no {token} stamps literal parts that many times.
+  - A DIVIDER BETWEEN ROWS IS BETWEEN THEM — `"skip":"last"` (binding, 2.1.5).
+    A rule drawn on every cell puts one under the LAST row too, hanging off
+    the bottom of the list with nothing beneath it: the oldest tell of a
+    generated deck, and both of deck 308's main menus shipped with it. If a
+    part is a SEPARATOR — a divider, a hairline, a rule between items — it
+    carries `"skip":"last"`. A part that belongs to the cell itself (its
+    plate, its icon, its label, its chevron) does not. The same applies to a
+    list drawn as `list` rows: the line goes between the rows, never after
+    the last one.
   - EACH CELL IS ONE UNIT: one group, one slot in the animation (its parts
     trail 0.08s), and — when the items are wired and the slide waits — ONE
     CLICK TARGET: an invisible plate under the whole cell carries the wiring
@@ -396,6 +526,21 @@ after slide read as one template again. So:
   recur, but none on more than a quarter to a third of the deck. Each batch
   arrives with DEVICES THIS DECK HAS ALREADY USED: what it lists as SPENT is
   not available to you.
+- RHYTHM OF ARRANGEMENT (binding, 2.1.5 — this is the one that gets missed).
+  Deck 308 came back with 44 distinct families out of 45 devices and still
+  read as a template, because 31 of its 45 slides put the headline on the
+  LEFT, six runs of three to five in a row, and 17 slides shared one recipe:
+  left axis · dark field · video background. Varying the DEVICES is not
+  enough. Vary the canvas:
+    · **no more than TWO consecutive slides share an axis** (where the
+      headline's centre sits: left, centre or right). Three in a row is a
+      defect, not a style;
+    · no axis/field/background RECIPE on more than a quarter of the deck;
+    · a deck wants roughly half its slides off the left axis.
+  Each batch arrives with ARRANGEMENT THIS DECK HAS ALREADY SPENT — the axis
+  split so far, the run you are continuing, and any recipe already over its
+  share. When it says the first slide of your batch must not be left-axis,
+  that is binding, not advice.
 - THE ACCENT IS THE BRAND'S VOICE. Use it wherever it means something — the
   figures, the marker of the choice, the one word of a two-tone line, the bar
   that wins. A status colour (a green for right, a coral for not quite) is a
@@ -416,7 +561,8 @@ after slide read as one template again. So:
   cells; a centred axis; a SHIFT (two cells over three, one wide over three
   narrow) when the content has two levels. Fill a column top to bottom with
   its unit, align every part to an edge it shares with another, and leave no
-  corner floating with the other three empty.
+  corner floating with the other three empty. THE LAYOUTS below has the
+  measured families the hand-built decks shift between — use them.
 - ONE composition per slide, and a DIFFERENT one on the next: name it in
   `family` and do not repeat your neighbour's. Alternate the axis (left /
   centred / right), the photo side, the field, the density.
@@ -429,16 +575,106 @@ after slide read as one template again. So:
   the button voice, the section intros, the menu pair. Variety everywhere
   else: in composition AND in detail.
 
-### Five worked scenes — five OTHER brands, transcribed (the mechanics, not the motifs)
+### THE LAYOUTS — what the hand-built decks shift between (binding, 2.2.3)
+
+Forty-six hand-built slides (the client's demo decks 302 and 311) were
+measured block by block. What makes them read as designed is not their
+type or their wordmarks — it is that NO TWO NEIGHBOURS SHARE A STRUCTURE,
+a third of them carry a FEATURE OBJECT, and the stage is often not a
+rectangle. Their families, with the numbers (canvas 1558×720, x margin
+72, y 48-60 top / 56-72 bottom; "pitch" = start to start):
+
+- **Copy-left · unit-right** (≈46:54): copy 72→740, the unit from x 780-850
+  to 1490 — rows 650-670 wide at pitch 100-172 (numeral · lottie 60 ·
+  label · chevron · divider; or glass rows 650×150 r20 white@0.08 + stroke
+  1.5 white@0.2 with a 6×90 accent stripe; or tickets 636×118 with a 128
+  stub; or bars 650×112 solid accent with a 76 lottie and a 50 display
+  label), level rows 746×112 r24, tabs 520×72 r16 with a 6×40 accent bar.
+- **Copy-left NARROW · grid-right WIDE** (32-40 : 60-68): copy 72→520/610,
+  the grid from 580/640 — 3×2 cards 290×200 r22 (72 disc + 48 lottie, label
+  30, sub 28; gaps 20), 3×2 photo tiles 270×280 r26 with a 120 bottom
+  scrim and a 226×46 label PILL inset 22, four TALL photo tiles 209×608 r18
+  with a 138 label BAND (lottie 54 + label 32) at the foot, or the 1-3-1
+  grid: one wide tile 790×220 (lottie 90 · label 60 display · sub · arrow
+  56), three 250×196 (lottie 76 · label 32), one wide pill 790×88 — the
+  hierarchy of the menu IS the grid. The narrow column's lower half takes a
+  448×304 r28 photo so the column is used top to bottom.
+- **Panel-left · copy + unit right** (≈47:53, gutter 68-88): a video panel
+  640-700 × 480-552 r28 with a tint and a 2px accent@0.33 stroke, a 200px
+  stat centred in it; on the right the eyebrow, a 52-60 headline and a 2×2
+  tile grid 340×176 r18 (accent@0.12 + stroke; lottie 70 top-left, label 32
+  under it) or two TALL answer cards 300×320 r26 (a 6px gradient strip
+  along the top, lottie 120, label 36, sub 28 centred).
+- **Photo column that bleeds**: left 0→700 or right 840/858/900→1558 (r56
+  on the inner corners is allowed), copy 700-760 wide on the other side; a
+  240-320 fade of the field colour on the photo's inner edge; a 116 avatar
+  ring (stroke 6) or a badge straddling the photo's edge.
+- **Centred axis**: a 1200-wide headline centred; the unit is a row of three
+  centred on x 779 — circle buttons (ring 216 stroke 2, hollow + disc 192 +
+  lottie 104 + label 34 under, pitch 390), two-line pills 380×108 r54 (pitch
+  410), a timeline (a 3px line + 108 nodes with a 48 figure inside, labels
+  under, pitch 479), three type columns 420 wide (num · title 34 · sub 28,
+  pitch 460, no plates), a circle photo 200-272 in a ring above the headline.
+- **One wide column**: the header row (wordmark · eyebrow · a LIVE pill, a
+  Back pill or a 150 lottie at the far right, same y) then the unit: three
+  cards 440-455 wide at pitch 472-481 (a 10px top stripe · a 52 figure · a
+  30 label · a 60×4 rule; or "01" 44 top-left · lottie 72 top-right · title
+  38 · sub 28; or a 429×224 r14 photo inset 12 + lottie 56 beside the name
+  38 + price 34 + a line 28), four tiles 340-342 at pitch 358 (6px strip ·
+  lottie 64 top-left · "01" 30 top-RIGHT · label 34 spaced), four KPI cards
+  340×150 r18 + a 1414×270 chart card under them, hbars (label w 240-380 ·
+  track 880-900×42-44 at 0.06 · fill · value 18px past the fill · pitch
+  64-66), a 4-node timeline 1060×6 with 116 nodes stroke 5 (numbers above,
+  names 44 below, dates 30 below that).
+- **Copy-left + FEATURE OBJECT right (no plate)**: copy 72→900, the object
+  centred ≈1180-1240 and tangent to the top/right margins or off the corner
+  — a lottie 300 on a 440 disc@0.22 · a lottie 280 alone · three FILLED
+  discs 420/300/180 at 0.16/0.26/0.36 + a 140 core + lottie 88 (contours by
+  rising opacity) · a 440 circle photo in a 480 ring@0.25 · a 540 circle
+  video in a 580 white ring with a 520 sun blob off the bottom-right · an
+  836 disc off the top-right with a 478 lottie · a 560×760 r56 phone mock
+  off the bottom · a mega stat 120-200 top-right with its label under. The
+  copy side carries a stat trio (cells 240-280 at pitch 250-300, value
+  44-66 over a 28 caption) and the CTA.
+- **A card on a photo**: a 700×330 r20 card at (72, 330) over a full-bleed
+  still with a bottom scrim, its tag 240×40 flush in the card's corner, name
+  48 · desc 28 · price 52 · a buy rect and a ghost beside it.
+
+SHIFTS THE DEMOS MAKE INSIDE A FAMILY (do these, not one cell repeated):
+one cell featured (the same size, a stroke 4 or the accent fill, a tag
+laid over its photo or a label above it); cells that hug their labels and
+wrap (`flow:"wrap"`); the first item wide and the rest small (1-3-1); the
+last item a different kind (a wide pill under three tiles, a text link with
+a 3px underline under four squares); a button laid OVER the media column
+(the CTA pill bottom-right on the video, Back over the photo); the header
+row carrying a second thing at the wordmark's y.
+
+THE STAGE IS NOT A RECTANGLE (binding): on at least a THIRD of the deck,
+and never on two neighbours, one of — a feature object (above), a
+field-shaping shape (a 520 blob off a corner, a 2160×700 wave ellipse
+across the lower half, a 200×1120 "panel curve" ellipse in the field
+colour on a media edge, a 1000 glow `accent@0.25 → accent@0`, a photo
+fade), or a composite object (a ticket with its stub and perforations, a
+phone, a slider with its bubble, a chat window, hand-drawn columns 64-176
+wide with the winner solid and its value inside, a 12×5 dot grid that
+counts). The batch ledger says how many the deck has spent; when it says
+this batch owes one, the first eligible slide carries it.
+
+CORNER-OVERLAPPING BADGES belong to the object they mark: a 100 disc on a
+ring's top-right, a 170 disc stroke 6 on a photo's bottom-right corner, a
+291×48 pill over a card's photo, a 44 count badge on a phone's corner, a
+214×44 / 250×48 verdict badge at accent@0.16-0.18 + stroke over the answer
+headline.
+
+### Two worked scenes — OTHER brands, transcribed (the mechanics, not the motifs)
 
 These show how a scene is WRITTEN: parts assembled into units, cells stamped
-by a `repeat`, geometry, weights, breaks and chosen motion. Each belongs to a
-different brand with its own language — a civic planning office, an
-investment app, an audio maker, a conservation charity, a crypto vault — so
-their devices (the rule beside the civic headline, the numbered civic rows,
-the struck price, the soft disc, the ticker line) are theirs. Read them for
-the construction; compose this deck from its own language. These brands had
-NO logo, so each carries a typographic wordmark top-left. When DECK LOGO is
+by a `repeat`, geometry, weights, breaks and chosen motion. One is dark with
+footage and a repeat, one is a clean light field — between them they cover the
+vocabulary. Both belong to OTHER brands, so their devices (the rule beside the
+civic headline, the numbered rows, the soft disc) are theirs. Read them for
+the construction; compose this deck from its own language. These brands had NO
+logo, so each carries a typographic wordmark top-left. When DECK LOGO is
 PRESENT (deck constants), drop the wordmark element — the builder's corner
 mark takes that place.
 
@@ -458,40 +694,6 @@ numbered rows ARE the slide):
             {"el":"text","text":"›","role":"stat","size":64,"color":"accent","align":"center","x":620,"y":12,"w":50},
             {"el":"line","color":"onDark","alpha":0.28,"x":0,"y":98,"w":670,"h":2}]}]}
 
-A RESPONSE with a comparison of four figures (dark solid field, a badge, an
-animated bar row per option, the retry as a ghost pill):
-{"family":"response-badge-bar-rows","stage":{"field":"dark","bg":{"kind":"solid","color":"primaryDeep"}},
- "elements":[
-  {"el":"rect","name":"badge","group":"badge","color":"#ff7a59","alpha":0.18,"stroke":{"color":"#ff7a59","width":2},"radius":22,"x":72,"y":120,"w":214,"h":44,"anim":"grow","dir":"horizontal"},
-  {"el":"text","text":"NOT QUITE","group":"badge","role":"eyebrow","color":"#ff7a59","ls":0.2,"align":"center","x":72,"y":128,"w":214},
-  {"el":"text","text":"Income trailed inflation\nin 6 of the last 10 years","role":"headline","size":56,"lh":0.95,"x":72,"y":186,"w":1000},
-  {"el":"text","text":"Growth portfolios cleared inflation most often. Here is the record.","role":"body","size":30,"color":"onDark","alpha":0.7,"x":72,"y":340,"w":1100},
-  {"el":"repeat","x":72,"y":410,"w":1160,"h":42,"flow":"down","gap":22,
-   "items":[{"label":"Growth","w":720,"vx":996,"color":"accent","value":"8 of 10 years"},{"label":"Retirement","w":540,"vx":816,"color":"onDarkMuted","value":"6 of 10 years"},{"label":"Income","w":360,"vx":636,"color":"#ff7a59","value":"4 of 10 years"},{"label":"Preservation","w":270,"vx":546,"color":"onDarkMuted","value":"3 of 10 years"}],
-   "parts":[{"el":"text","text":"{label}","role":"body","size":30,"x":0,"y":4,"w":240},
-            {"el":"rect","color":"onDark","alpha":0.06,"radius":8,"x":258,"y":0,"w":900,"h":42,"anim":"fade"},
-            {"el":"rect","color":"{color}","radius":8,"x":258,"y":0,"w":"{w}","h":42,"anim":"wipe","dir":"right","dur":1.4},
-            {"el":"text","text":"{value}","role":"fine","weight":"semibold","x":"{vx}","y":4,"w":260,"anim":"fade","delay":2.6}]},
-  {"el":"button","item":0,"style":"ghost","icon":false,"x":1236,"y":118,"w":250,"h":64}]}
-
-A CTA for a product (dark field, a still of the product sliding in as a
-rounded panel, a two-tone wordmark, the price with the old price struck):
-{"family":"cta-product-panel-right","stage":{"field":"dark","bg":{"kind":"solid","color":"#0b0f14"}},
- "elements":[
-  {"el":"media","role":"panel","kind":"still","hint":"premium over-ear headphones product studio","x":780,"y":60,"w":710,"h":500,"radius":32,"tint":0.1,"stroke":{"color":"accent","alpha":0.25,"width":2},"anim":"slide","from":"right","dur":2.4},
-  {"el":"text","runs":[{"text":"NOVA","color":"onDark"},{"text":"SOUND","color":"accent"}],"role":"subhead","font":"display","size":40,"ls":0.1,"x":72,"y":52,"w":600},
-  {"el":"text","text":"LIMITED DROP  ·  ENDS SUNDAY","role":"eyebrow","color":"accent","ls":0.25,"x":72,"y":150,"w":660},
-  {"el":"text","text":"Nova One.\nHear everything.","role":"headline","size":64,"lh":0.95,"x":72,"y":192,"w":680},
-  {"el":"text","text":"Adaptive noise cancelling, 40-hour battery, studio tuning.","role":"body","size":30,"color":"onDarkMuted","lh":1.05,"x":72,"y":370,"w":660},
-  {"el":"text","text":"$299","role":"stat","size":64,"anim":"typewriter","x":72,"y":452,"w":220},
-  {"el":"text","text":"was $349","role":"fine","color":"onDarkMuted","x":236,"y":478,"w":220},
-  {"el":"line","name":"strike","color":"onDarkMuted","x":236,"y":495,"w":128,"h":3,"anim":"wipe","dir":"right","dur":0.8,"delay":2.3},
-  {"el":"button","item":0,"style":"pill","featured":true,"icon":false,"x":72,"y":548,"w":400,"h":84,"anim":"grow","dir":"horizontal"},
-  {"el":"repeat","x":500,"y":550,"w":300,"h":36,"flow":"down","gap":8,"items":[{"label":"Free shipping","icon":"truck"},{"label":"2-year warranty","icon":"shield"}],"wired":false,
-   "parts":[{"el":"icon","concept":"{icon}","size":36,"x":0,"y":0,"tone":"white"},{"el":"text","text":"{label}","role":"fine","weight":"semibold","color":"onDark","alpha":0.9,"x":48,"y":2,"w":240}]},
-  {"el":"sender","x":780,"y":590,"w":710,"h":110,"align":"right","lead":false}]}
-(copy.items[0] = {"label":"Buy now  →","finish":true,"finishTitle":"BUY NOW","url":"..."} — the arrow is typed into the label.)
-
 A CONTENT beat on a clean light field (no footage: a soft disc and a big
 lottie own the right half; a stat trio carries the evidence):
 {"family":"light-disc-lottie-stat-trio","stage":{"field":"light","bg":{"kind":"solid","color":"surfaceLight"}},
@@ -504,23 +706,6 @@ lottie own the right half; a stat trio carries the evidence):
   {"el":"repeat","x":72,"y":486,"w":280,"h":120,"flow":"across","gap":20,"items":[{"value":"1,200","body":"hatchlings a season"},{"value":"14 km","body":"of patrolled coast"},{"value":"3","body":"night patrol teams"}],
    "parts":[{"el":"text","text":"{value}","role":"stat","size":66,"color":"accent","anim":"typewriter","x":0,"y":0,"w":280},{"el":"text","text":"{body}","role":"fine","weight":"semibold","color":"ink","alpha":0.8,"x":0,"y":80,"w":280}]},
   {"el":"button","item":0,"style":"pill","color":"primaryDeep","labelColor":"surfaceLight","icon":false,"x":72,"y":630,"w":330,"h":66}]}
-
-A QUESTION with two answers as tall cards (dark solid field, a framed clip
-with a gradient wash on the left, a ticker line as the detail):
-{"family":"quiz-clip-left-two-cards","stage":{"field":"dark","bg":{"kind":"solid","color":"#0b0d12"}},
- "elements":[
-  {"el":"text","text":"VAULTLINE","role":"subhead","font":"display","size":32,"ls":0.2,"x":72,"y":44,"w":500},
-  {"el":"rect","name":"wordmark-dash","gradient":{"colors":["primary","accent"],"direction":"horizontal"},"radius":3,"x":72,"y":94,"w":120,"h":5,"anim":"wipe","dir":"right"},
-  {"el":"media","role":"panel","kind":"video","hint":"stock ticker board glowing macro","x":72,"y":128,"w":700,"h":480,"radius":28,"tint":0.4,"tintColor":"primary","stroke":{"color":"accent","alpha":0.4,"width":2},"anim":"slide","from":"left","dur":2.6},
-  {"el":"text","text":"// QUICK QUIZ","role":"eyebrow","color":"accent","anim":"typewriter","x":860,"y":132,"w":640},
-  {"el":"text","text":"Which wins\nover 5 years?","role":"headline","size":52,"lh":1.02,"anim":"typewriter","dur":1.5,"x":860,"y":176,"w":640},
-  {"el":"text","text":"BTC ▲ 2.4%     ETH ▲ 1.1%     SOL ▼ 0.6%","role":"fine","color":"onDarkMuted","x":72,"y":636,"w":900,"delay":2.2},
-  {"el":"repeat","x":860,"y":330,"w":300,"h":320,"flow":"across","gap":30,"plate":{"color":"primary","alpha":0.16,"radius":26,"stroke":{"color":"accent","width":2}},"anim":"grow","dir":"vertical",
-   "parts":[{"el":"rect","gradient":{"colors":["primary","accent"],"direction":"horizontal"},"radius":26,"x":0,"y":0,"w":300,"h":6},
-            {"el":"icon","concept":"{icon}","size":120,"x":90,"y":44,"tone":"white"},
-            {"el":"text","text":"{label}","role":"itemTitle","font":"display","size":36,"align":"center","x":0,"y":190,"w":300},
-            {"el":"text","text":"{body}","role":"fine","color":"accent","align":"center","x":0,"y":248,"w":300}]}]}
-(copy.items = the two wired answers, each with a label, a body and an icon.)
 
 ## Slide kinds — what each must contain
 
@@ -582,7 +767,16 @@ bag), and common Lucide spellings are aliased ("users", "refresh-cw",
 A name outside the library still renders — as the static glyph. Every
 animated icon — standalone, above a line of text, or in a BUTTON or pill —
 is placed as the library's 2-tone wired outline drawing, painted in the
-brand colours; nothing to choose. (The flat and 1-tone system drawings
+brand colours; nothing to choose.
+A ROW OF ICONS IS A SET (2.1.4, deck 307: a menu drew a book, a ringed
+compass, a bar chart, a speech bubble, a planet and a checkered goal sign —
+"I'm not sure what the intent was"). The builder now keeps a set in one
+family — it prefers the 2-tone drawing for every member, takes the item
+NAMED for the word over one that merely lists it as a synonym, and answers a
+noun nothing is named for with a specialisation of it (a bar chart for
+"chart") — but it cannot rescue a set of six unrelated nouns. Choose icons
+that belong together: the same KIND of thing (all objects, or all symbols),
+plain and common, and no more than one per row of copy. (The flat and 1-tone system drawings
 exist and a client can ask for them in an edit turn.) Buttons: the arrows
 the builder adds ("arrow-right", "arrow-left", "check") are library icons
 too.
@@ -603,6 +797,16 @@ including a `copy.icon` accent and the icons on buttons. In the plan they
 are written as "iconAlts":["<2nd concept>","<3rd concept>"] beside "icon".
 
 ## Copy rules (binding)
+
+COPY THAT READS AS WRITTEN (2.2.2, graded on two live decks): the eyebrow
+frames the headline — never the section name ("FINISH UP"), never filler
+("CHAPTER"), never a word the headline already uses; questions carry ONE
+numbering scheme ("QUESTION 2 OF 3", digits); a figure is said once on its
+slide — the label under a numeral never restates it ("$100 / of $100" is a
+stutter) and the headline does not repeat the numeral; an answer slide says
+"Correct"/"Not quite" once, in the eyebrow, then the fact; quiz options
+carry no decorative icons (menu rows keep theirs); the first and return
+menus never share a headline.
 
 SAY IT IN FEWER WORDS. On-screen copy is read in a glance on a phone, over
 narration that already says the sentence — write the SHORT form and stop.
@@ -667,3 +871,28 @@ Photo hints: specific, matching the deck casting, UNIQUE across the deck
 Output ONE JSON object (no fences, no commentary):
   {"slides": [ <one complete plan per slide given, SAME ORDER, names verbatim> ]}
 (If given a single slide, a single bare plan object is also accepted.)
+
+## EVERY WORD ON SCREEN IS LANGUAGE A VIEWER READS AS MEANT (2.2.0)
+
+An eyebrow, a tag, a chip, a row label, a button — all of it is copy a person
+reads. The test before you write any of it: **could a viewer mistake this for
+something a developer forgot to replace?** If yes it is wrong, however neatly
+it fits the brand's world.
+
+Never, in ANY display role: an API-key shape (`sk_test_…`, `sk_live_…`,
+`pk_…`), a slug (`menu`, `main_menu`, `start_here`), a template variable
+(`{{name}}`, `<BRAND>`, `[PLACEHOLDER]`), `lorem`, `TODO`, `TBD`, `XXX`, or
+the slide's internal name.
+
+The ONE legitimate use of a machine-shaped token is as the **value in a
+labelled pair** — a row reading `Secret key · sk_test_51H…` is showing the
+viewer a specimen, and the label is what makes it legible. That is content.
+The same token standing alone where a section's name belongs is not.
+
+This rule exists because of a real build. A deck for a payments brand minted
+itself a device — *"key chip: a small pill holding a mono-styled tag
+(`sk_test_` style)"* — and the design pass obeyed it, filling five eyebrows
+with `sk_test_menu`, `sk_test_billing`, `sk_test_subs`, `sk_test_ready` and
+`sk_live_global`. Every one was deliberate. Every one read as junk left in the
+file. The review pass even repaired the chip's geometry without once
+questioning the words inside it.

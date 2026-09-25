@@ -1,6 +1,6 @@
 ---
 name: idecide-presentation-builder
-description: Build or edit interactive myiDecide presentations directly in the myiDecide Builder (my.idecide.com). Runs the full intake — asks whether you are building new or editing, creates the new presentation for you or takes the URL of the one to change, walks a questionnaire (accepting an existing script, brochure, PowerPoint or logo if you have one), researches the brand online (site, palette, the real logo), then writes the script, designs every slide for its own content — no templates — sources stock video, generates narration, wires menus and buttons, tracks viewer choices, and takes edit requests afterwards. Use when someone asks to build, create, design, revise, fix, restyle, recolour or add to a myiDecide presentation, or names a myiDecide Builder URL. Browser automation against the Builder's own agent API; no API key needed.
+description: Build or edit interactive myiDecide presentations directly in the myiDecide Builder (my.idecide.com). Runs the full intake — asks whether you are building new or editing, creates the new presentation for you or takes the URL of the one to change, walks a questionnaire (accepting an existing script, brochure, PowerPoint or logo if you have one), researches the brand online (site, palette, the real logo), then writes the script, designs every slide for its own content (always from scratch; this delivery has no template library) — sources stock video, generates narration, wires menus and buttons, tracks viewer choices, and takes edit requests afterwards. Use when someone asks to build, create, design, revise, fix, restyle, recolour or add to a myiDecide presentation, or names a myiDecide Builder URL. Browser automation against the Builder's own agent API; no API key needed.
 ---
 
 # myiDecide Presentation Builder
@@ -23,14 +23,26 @@ AI Presentation Extension** ("the Extension"). iDecide is the company;
 "iDecide presentations" are a different, custom-built product — never call the
 deck that.
 
-**There are no templates.** Since 2026-09-15 every slide is designed for its
-own content: you decide the stage, the column, the elements and where each one
-sits on the 1558×720 canvas, and you draw it with the API. The test builds that
-led here (twenty-eight bespoke demo slides across ten markets, then a full
-25-slide brand deck) all read better than the closest library layout, so the
-library is gone. The design system you compose within is
+**You have no templates — you design every slide.** You decide the stage, the
+column, the elements and where each one sits on the 1558×720 canvas, and you
+draw it with the API. The test builds that led here (twenty-eight bespoke demo
+slides across ten markets, then a full 25-slide brand deck) all read better
+than the closest library layout. The design system you compose within is
 `references/composition.md`; the vocabulary you design in is
 `references/scene-contract.md`.
+
+> **A deliberate difference from the Extension (2026-09-19).** The Extension
+> now offers TWO build modes — *Quick Build*, which lays a slide out from a
+> 375-layout library, and *Creative Build*, which designs each slide from
+> scratch. This skill has no layout library and always works the Creative
+> Build way, so a person who has used the Extension's Quick Build will find
+> this slower and more considered. That is the intended trade, not a gap: the
+> library is a code asset the Extension's renderer draws from, and you compose
+> by hand. Everything the two share — the scene vocabulary, the design system,
+> the element rules, the platform facts — is synced from the Extension's own
+> sources, with the library-only sections cut. If someone asks for "the quick
+> one", explain that this delivery designs every slide, and point them at the
+> Extension if speed matters more than originality.
 
 ## How a session runs
 
@@ -113,6 +125,22 @@ that already has a query string** (the `?slide=` from the address bar). Never
 append `?aiagent=` to a URL that already contains a `?`: the result is
 malformed, the page loads without the API, and the failure looks like the
 platform being broken rather than a bad URL.
+
+**And the tab has to be the one Chrome is DRAWING.** `window.aiagent` and
+`.engine` appear in a background tab too — that is the trap, because a
+readiness check that looks for them passes while nothing renders,
+`engine.scene.getCurrentPage()` stays `null` and `changeSlide` never settles.
+**Check `getCurrentPage()`, not the presence of `window.aiagent`.** Measured
+2026-09-18: a tab opened by a browser-automation tool sat hidden for 17
+seconds with both objects present, and `window.focus()`, a synthetic click and
+a window resize were all refused for it. So **use ONE tab and navigate it in
+place** — change its URL for every deck and every slide rather than opening a
+second one. If the myiDecide Chrome extension happens to be installed, the
+page may also ask to be raised:
+`window.postMessage({ __idp: "focus-tab" }, "*")`, then read
+`document.documentElement.dataset.idpFocus` (`ok` · `denied:not-an-agent-url` ·
+`denied:throttled`). Do not depend on it — this skill runs without the
+extension, and the one-tab habit works everywhere.
 
 **Read `window.aiagent.instructions` before you write anything.** It is the
 Builder's own API reference — the method names and signatures this session will
@@ -216,6 +244,29 @@ it: the palette and type, the real logo, and the facts of record.
 typefaces, proof, product names, prices. Facts come from here and from the
 questionnaire — never invented (see the rules below).
 
+**Spend the research on the script, not the palette (2.2.2).** Two live
+builds spent their one search on "<brand> brand colors hex font" — a question
+Brandfetch and the home page had already answered — and every figure in
+their scripts came from the questionnaire. The palette costs one page; the
+words need the pages behind it. So: after the home page, open the one or two
+pages that hold the deck's substance — pricing/plans, about/story/founders,
+proof (results, reviews, case studies, impact reports), the product or
+service named in the intake — and search only for what the script needs and
+the site did not say (a published statistic for a question slide, a customer
+quote, an industry number, a founding date, a price). Then record what the
+script leans on beside what the look rests on: `theme.brandEvidence` is the
+selectors and declarations the palette came from; `theme.scriptEvidence` is
+every figure, quote, date or claim the script states that came from the site
+or a search, each with where it was read. A figure in the script that is in
+neither the answers, the uploads nor `scriptEvidence` is a defect.
+
+**Where the wordmark comes from when there is no logo (2.2.2).** The
+Extension's renderers set the brand name as a typeset wordmark — the display
+face, 30 px, spaced caps (0.16 tracking), ink or white for the field — in the
+free corner of every content slide when the hunt below finds nothing. Do the
+same: the hand-built demo decks (302/311) carry exactly that line on every
+slide, and it is much of why they read as branded.
+
 **The palette — who decides.** If the person gave colours or fonts in
 `visual`, those win, full stop. If they gave none, look the brand up on
 Brandfetch — `https://brandfetch.com/<domain>` (the site's domain) reads as a
@@ -296,6 +347,12 @@ For an existing deck, skip the questionnaire entirely. Ask what they want
 different, read the deck before touching it, and follow **Editing a deck**
 below.
 
+**Read `api.slides.get()` first, every time** — before you ask, before you
+plan, before you promise. That list is what the presentation actually holds
+right now; anything you or the person remember from a previous session may
+have been deleted or renamed since. Name the slides back from that list when
+you confirm what you're about to change.
+
 ### 5. When the build finishes — stay open for edits
 
 Say what you built: how many slides, the menu structure, where the CTAs point,
@@ -313,6 +370,43 @@ built and play broken.
   ~7 inches wide in the viewer's hand. **28px is the absolute minimum font
   size**, hero type is 44px+, and touch targets are finger-sized (≥490px wide
   option cards). Pixel-perfect work that only reads on a laptop is a defect.
+  **28 is a footnote size, not a working one** (Bren, deck 307: "some text is
+  getting close to too small to be viewed well on mobile devices" — 33 blocks
+  in that build were written at 28-29). Source lines 28-30, captions and
+  support lines 30-33, eyebrows / button labels / row labels 32-36, subheads
+  34-46, figures in units 44-96, headlines 54-110.
+- **A label is one line.** An eyebrow, a row label, a button label, a tag
+  line, a stat caption: draw the box wide enough (≈0.55 × size per character,
+  plus a fifth), and when a line breaks anyway, widen the box or take the size
+  down one step — never leave a two-word label broken in two. A break you
+  WANT is a "\n" you wrote.
+- **A hollow shape says so.** A ring is `fill:"none"` with a stroke; without
+  it the platform draws a solid disc (deck 307's three "contour rings" came
+  out as one cream disc with the figure lost inside it).
+- **No decorative dots on a plate.** A 12-18px disc on a tag — a punch hole, a
+  bullet, a marker — reads as a speck of dirt beside the label, and one per
+  card of a row reads as a rash (Bren, deck 307, with four screenshots). A tag
+  reads as a tag from its shape, its shadow and its stitch line.
+- **A row of icons is a set.** Deck 307's menu drew a book, a compass in a
+  ring, a bar chart, a speech bubble, a planet and a checkered goal sign, and
+  Bren could not tell what they were for. Choose icons that belong together —
+  the same KIND of thing, plain common nouns — and take the library item
+  NAMED for the word over one that merely lists it as a synonym (a "flag" is
+  `transport/flag`, not `sport-and-fitness/goal-sign`; a "globe" is
+  `transport/globe`, not `nature-and-weather/planet`). Prefer the 2-tone wired
+  drawings (`class: "multicolour"`) throughout: a 1-tone system drawing in a
+  row of 2-tone ones reads as a different family. A noun the library names
+  nothing for can be answered by a specialisation of it — a bar chart is a
+  chart — but never by a different noun.
+- **Two elements never share a spot.** Text over a plate, a panel or footage
+  is layering and is right; two lines of COPY on the same rectangle is a
+  mistake (deck 307 drew a 240px six-line column 8px above the eyebrow beside
+  it). Add up your own boxes before you place them: about `size × 1.3` per
+  line, and about `w / (size × 0.55)` characters to a line.
+- **The bottom edge is an edge.** Nothing readable ends below y=664: not the
+  last row of a menu, not the sender block, not a footnote. A column designed
+  to the bottom of the canvas is a column that will be crowded once its text
+  is measured.
 - **Slide 1 is silent and never auto-advances.** The opener waits for a click.
   The platform refuses auto-advance there, and narration on it is wrong.
 - **The cover has exactly ONE action element: a static "Click anywhere to
@@ -404,9 +498,16 @@ built and play broken.
   put them in; a terminal CTA gets its targets; the cover its start
   affordance. A question drawn as display rows is a dead end in the deck's
   fork — check every fork's slides for real buttons before you wire.
-- **What sits inside a button is centred.** No icon → the label centred across
-  the plate; with an icon → icon + gap + label paired as one object and that
-  pair centred in the plate. On every button, stacked menu rows included.
+- **A button is sized to what it holds** (Bren 2026-09-18; this replaces the
+  2026-09-04 rule that everything inside a button is centred). A standalone
+  action is as wide as icon + gap + label + equal padding and no wider; a SET
+  — answers, a menu column, a pair of actions — takes ONE width, the widest
+  member's; a full-bleed ROW is the deliberate exception, a plate sized by its
+  column with its words on the leading edge and its chevron on the far one.
+  Where the content sits follows from the width: centred while it fills the
+  plate, at the leading edge once the plate is much wider than its content.
+  A button that looks wrong is a WIDTH problem — never fix it by setting the
+  label's text alignment or moving the label alone.
 - **No answer key.** Only a way-forward button (Move Ahead, Finish Up,
   Continue, Next) may wear the contrast colour, and never on a question slide:
   every answer gets the same plate colour. Buttons differ in colour only when
@@ -473,6 +574,18 @@ built and play broken.
 - **A `STOCK:` line is direction, never copy.** Shot lists in the On Screen
   cell — `STOCK:`, `4 PANELS:`, `3 tiles:`, `clips:` — describe footage; a
   grid whose copy is its panel labels needs no headline.
+- **The deck in the tab is the truth; your plan is not.** Slides get deleted,
+  renamed and re-ordered — by you in an earlier session, by the person in the
+  editor, by a build that stopped halfway. Before any structural work (adding,
+  removing, re-ordering, re-wiring) and before answering any question about
+  what the deck contains, read `api.slides.get()` and work from THAT list:
+  names, ids, order, `isMenuSlide`, `autoAdvanceSlideId`. Read it again after
+  every add and every removal. A slide in your notes that the live list does
+  not have is gone — do not "leave it alone because it already exists", do
+  not edit by its dead id (the call hangs, and the person waits through the
+  timeout), and never describe it to the person as present. A slide in the
+  live list that your notes don't have is real — adopt it under its own
+  name. When the two disagree, say so plainly and name the live deck.
 - **The ☰ opens the Hamburger Menu.** `api.slides.setMenuSlide(id, true)` is
   UNIQUE — setting it on a slide unsets every other — so set it on the
   Hamburger Menu slide only, never on menus in general, and re-check
@@ -520,6 +633,23 @@ block per string, rects and ellipses through `engine.block.create` +
 is the binding design system (type roles sized by content length, colour
 roles, footage rules, the interactive units, the rhythm rules across a long
 deck, the polish checklist) and the element contract the drawing must obey.
+
+**Some contract keys are instructions to the Extension's renderer; to you
+they describe a RESULT you produce yourself (2.1.5).** The contract is one
+vocabulary for two drawing methods — the Extension resolves these keys after
+measuring, you resolve them as you draw:
+
+| the key | what it means when YOU draw |
+|---|---|
+| `fit` on a button | measure the label (`setWidthMode('Auto')`, read `getFrameWidth`, put the mode and width back) and size the plate to ink + icon + equal padding |
+| `under` / `pin` / `match:"ink"` | place the rule, cap or underline AFTER the block it marks has been measured, from that block's real bottom / top-left / ink width — never from the y you computed for it |
+| a button's WIDTH | measure the label and give the plate icon + gap + label + equal padding; a set of buttons takes the widest member's width, all of them; a full-bleed row keeps its column's width |
+| `align` on a button (+ `iconSide` at the other end) | put the label on that padding edge; with the icon opposite, split them — label one edge, chevron the other. Say nothing and the content is centred while it fills the plate, leading-edge once the plate is much wider than it |
+| `skip:"last"` on a repeat part | stamp that part on every cell but the last (a divider between rows, not a rule hanging off the bottom of the list) |
+| `stacks` | flow the column on the heights you measured, not the ones you estimated |
+
+Everything else in the contract — roles, colours, geometry, motion — is drawn
+literally.
 
 **A slide is layered (binding, after the first live 2.0 build, 2026-09-16).**
 The Extension's first template-free deck drew a headline over darkened
@@ -571,6 +701,45 @@ you build: a signature detail appears on at most two slides unless the
 language names it (and then never on neighbours, on no more than a third of
 the deck); a habit — a framed clip, a light field, a divider, one headline
 entrance — stays under a quarter to a third of the deck.
+
+**The layouts the hand-built decks shift between (binding, 2.2.3).** The
+client's two demo decks (302 and 311, 46 slides) were measured block by
+block. What makes them read as designed is STRUCTURE, not type: no two
+neighbouring slides share a layout family, a third of them give the right
+half to one FEATURE OBJECT, and the stage is often not a rectangle.
+`references/scene-contract.md` § THE LAYOUTS carries the families with
+their numbers — copy-left · unit-right at ≈46:54 (rows 650-670 wide, pitch
+100-172); copy-left NARROW · grid-right WIDE at 32-40 : 60-68 (3×2 cards
+290×200, photo tiles 270×280 with a label pill, four tall tiles 209×608 with
+a label band, the 1-3-1 grid: one wide tile, three small, one wide pill);
+panel-left · copy + unit right (a 640-700 video panel with a 200px stat);
+a photo column that bleeds (0→700 or 840→1558) with a 240-320 fade into the
+field; a centred axis (a row of three centred on 779: circle buttons,
+two-line pills, a timeline, three type columns); one wide column (a header
+row with a LIVE pill or a Back pill at the far right, then three cards at
+pitch 472-481 or four tiles at pitch 358, hbars, a 4-node timeline, KPI
+cards + a chart); copy-left + a feature object right (a lottie 280-480 on
+a disc 1.5× it, a circle photo in a ring, three filled discs at rising
+opacity, a mega stat 120-200); a card on a photo. Write the deck's
+`language.layouts` (the three or four families it alternates) and
+`language.featureObject` (how THIS deck draws the object that owns a
+slide's right half) before the first slide, and put a feature object, a
+field-shaping shape (a 520 blob off a corner, a 2160×700 wave ellipse, a
+panel-curve ellipse on a media edge, a 1000 glow, a photo fade) or a
+composite object (a ticket with its stub and perforations, a phone, a
+slider with its bubble, a chat window, hand-drawn columns, a counting dot
+grid) on at least a third of the deck, never on two neighbours. When you
+draw these yourself: a colour may carry its own alpha (`primaryDeep@0.96`)
+so a gradient fades stop by stop (`stops` places them); a square media
+panel with `radius:"max"` is a circle (the radius goes on its SHAPE, r =
+half the side); a lottie may be drawn up to 520px; a shape or a panel may
+cross the canvas edge on purpose (keep 8px of it on the canvas — the
+Extension marks such a block `idecide/bleed` so its canvas guards leave
+it); `rotate` is degrees about the box's top-left corner; a `repeat` with
+`flow:"wrap"` sizes each cell to its own label (label x + ink + 28 pad,
+16 apart, wrapping) — the pet-shop chips; a `repeat` may sit inside a cell
+(six 3×9 perforations 9 apart on every ticket, `count:6`, no tokens), and
+joins the cell as one unit.
 
 **Animation follows position (the edge rule).** Heroes rise on their
 baseline; buttons grow; panels and rows slide in from the nearer edge — an
@@ -798,6 +967,28 @@ The same surface, one slide at a time. Read before you write:
   group marks, timing and stack position, write the new marks, destroy the
   old block, commit. Never say an animated icon cannot be changed, restyled
   or recoloured.
+- **A file the person attaches is theirs to place — upload it, don't
+  substitute.** When they attach a picture, a video or a document, use it:
+  never answer with stock in its place, and never send them off to upload it
+  in the editor themselves. A document is read for its real copy, figures and
+  wording. A picture or a clip is uploaded into THIS presentation's own media
+  library and placed from there — the platform stores it, so nothing has to
+  live anywhere else:
+  - picture → it is already in the library, so place it page-locally with
+    `insertUploadedImage({id, label, meta:{uri, thumbUri: uri, width, height}},
+    x, y, w, h, 0, null)` and fall back to
+    `uploadAndInsertImage(blob, x, y, w, h, 0, null)` (all seven arguments)
+    when that answers 0; then `setContentFillMode(id, 'Contain')` so a logo or
+    a product shot is never cropped;
+  - video → upload with `SH.uploadAsset(file)` and place the returned uri with
+    `insertPexelBatchVideo({id, label, meta:{uri, sourceSet:[{uri,width,height}]}}, x, y, w, h, 0, null)`
+    — the placement call the platform sanctions; a raw r2 URL handed to a
+    plain fill freezes the renderer (`references/platform-facts.md` § 9).
+  Size the box from the file's own proportions: take one side from the layout
+  and let the other follow, never both from the grid. To REPLACE something,
+  delete that layer and place the upload in its box. An uploaded file stays in
+  the library for the rest of the session — "put the logo on slide 3" later
+  needs no second copy.
 - **The logo can be swapped deck-wide.** A new file (theirs, or a better
   hit from the hunt in 3d) is uploaded once and every placement re-pointed
   through `insertUploadedImage` in the old block's box, at the old z-index,
@@ -876,11 +1067,21 @@ Load these as needed — do not read them all up front.
   under-reports it — walk the prototype chain.
 - **A change didn't persist** → you didn't commit. A documented `api.*`
   mutation plus `changeSlide`.
-- **A navigation or call just hangs** → the Builder tab has to be open and in
-  focus for browser tooling to reach it, and the Builder itself does not boot
-  or render in a background tab. If something has been pending for more than
-  a moment, ask the user to click into that tab, then retry. Do not keep
-  waiting, and do not conclude the platform is down.
+- **A navigation or call just hangs** → nine times in ten this is the tab,
+  not the platform. Chrome does not draw a tab nobody is looking at, and the
+  Builder does not boot, render or change slides while it is not being drawn
+  — minimised window, window behind another app, or another tab in front of
+  it all count. So: **name the cause, fix what you can, and say the rest out
+  loud.** Bring the tab back yourself first (activate it / focus its window
+  with the browser tooling you have) and retry once. If it still hangs, stop
+  — do not keep waiting, do not retry in a loop, and do not conclude the
+  platform is down or that the presentation is broken. Tell the person in
+  plain words: their presentation's tab has to be the one they can see, it
+  only has to stay visible while a change runs, and **nothing in the deck was
+  changed** by the failure. Then say what you were about to do, and do it when
+  they say the tab is back. Never leave them watching a spinner with no
+  explanation, and never blame "a connection issue" without checking the tab
+  first.
 - **The user asks what a message means** → answer from
   `references/troubleshooting.md` (match the wording, or the code the
   Extension quoted), in plain English, *before* retrying anything. A question

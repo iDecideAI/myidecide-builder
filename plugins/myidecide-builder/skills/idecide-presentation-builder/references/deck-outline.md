@@ -70,6 +70,16 @@ Output ONE JSON object (no fences, no commentary):
       "devices": [               // FOUR to SIX named devices, each built from the scene
                                  // primitives (text · rect · ellipse · line · icon · media ·
                                  // repeat), each specific to this brand, each with its job
+                                 //
+                                 // A DEVICE IS A SHAPE, NEVER A SCRIPT (2.2.0). `build`
+                                 // describes FORM — geometry, colour, weight, stroke,
+                                 // rhythm, where it sits. It must NOT prescribe the WORDS
+                                 // that go inside it. A payments deck minted "key chip — a
+                                 // small pill holding a mono-styled tag (sk_test_ style)",
+                                 // the design pass obeyed, and five eyebrows shipped reading
+                                 // sk_test_menu / sk_live_global. A device that holds text
+                                 // holds the slide's REAL copy — a section's name, in words.
+                                 // Borrow a brand's MATERIALS, never its identifiers.
         // e.g. for a TRANSIT AGENCY (not your brand — the shape of an entry):
         {"name": "route line", "build": "a 6px accent line with 20px ring stops (ellipses, fill off, 4px stroke) at each item", "use": "steps, menus, timelines"},
         // e.g. for a COFFEE ROASTER:
@@ -81,8 +91,19 @@ Output ONE JSON object (no fences, no commentary):
                                  // ivory solid · the brand teal at 0.9 over footage")
       "type": "...",             // how headlines break and which weights carry labels,
                                  // captions and eyebrows in THIS deck
-      "motion": "..."            // the two or three entrance kinds this deck favours, and
+      "motion": "...",           // the two or three entrance kinds this deck favours, and
                                  // what each is for — never one kind on every headline
+      "layouts": "...",          // 2.2.3: the three or four LAYOUT FAMILIES this deck
+                                 // alternates and what each carries (e.g. "copy-left ·
+                                 // ticket rows right for menus; a circle photo in a ring
+                                 // for answers; one wide column of three cards for steps;
+                                 // centred axis for the covers and the closing line") —
+                                 // the design contract's THE LAYOUTS lists the families
+      "featureObject": "..."     // 2.2.3: how THIS deck draws the object that owns a
+                                 // slide's right half — a lottie 280-480 on a disc 1.5×
+                                 // it, a circle photo in a ring, a blob or a wave that
+                                 // bleeds off the canvas, a mega figure — and which
+                                 // beats get one (a third of the deck, never neighbours)
     },
     "voiceName": "...",          // EXACT name from the voice catalog provided
     "casting": "...",            // one line: who appears in photos, deck-wide
@@ -94,6 +115,18 @@ Output ONE JSON object (no fences, no commentary):
                                  //  body {color:#1B1F23} · fonts.googleapis:
                                  //  Poppins,Inter'. Name anything you INFERRED
                                  // rather than saw. "" if no site was given.
+    "scriptEvidence": "..."      // REQUIRED when a website was given or a search
+                                 // ran: every figure, quote, date or claim the
+                                 // SCRIPT states that came from the site or a
+                                 // search, each with where it was read —
+                                 // '$20/month = six people a year
+                                 //  (charitywater.org/donate/the-spring) ·
+                                 //  100% model (homepage) · 171,000+ projects
+                                 //  (search: "charity water projects funded")'.
+                                 // brandEvidence is what the LOOK rests on;
+                                 // this is what the WORDS rest on. "" only when
+                                 // the script uses nothing beyond the answers
+                                 // and uploads.
   },
   "slides": [
     {
@@ -234,7 +267,15 @@ not a device of this brand — it is a default; replace it with something
 drawn from the world line. The two example entries above are other brands'
 (a transit agency, a coffee roaster): never copy them — invent this brand's.
 Name the `motion` too: two or three entrance kinds and what each is for, so
-the headlines of this deck do not all arrive the same way.
+the headlines of this deck do not all arrive the same way. And name the
+`layouts` and the `featureObject` (2.2.3): the client's hand-built decks
+read as designed because their slides SHIFT STRUCTURE — rows beside the
+copy, then a grid on the wide side, then a framed panel, then a centred
+axis, then one wide column — and because a third of them give the right
+half to one OBJECT (a lottie 280-480 on a disc, a circle photo in a ring, a
+blob or a wave off the canvas, a figure at 120-200). A deck whose devices
+vary but whose structure is "copy left, list right" on every slide still
+reads as a template.
 
 ## Typeface pairing — a DESIGN DECISION, made fresh per brand
 
@@ -288,6 +329,42 @@ month — a count to show"). The design pass draws these as native animated
 graphics in the brand colours — bars, a dot grid, rings, a stat trio — and
 they are the deck's most convincing evidence. Only figures the client
 actually gave; never name the graphic, name the data.
+
+## Copy that reads as written, not assembled (binding, 2.2.2)
+
+Two live decks for the same brand were graded slide by slide against
+hand-built ones. Every copy fault below appeared in BOTH builds, and the
+reviewer had to spend its one fix on it — or missed it. Write it right the
+first time:
+
+- THE EYEBROW FRAMES THE HEADLINE. It is never the section or chapter name
+  ("FINISH UP", "OUR STORY", "WAYS TO GIVE"), never filler ("CHAPTER",
+  "SECTION", "INTRO"), and never a word that is already in the headline
+  ("TWO ACCOUNTS, ONE PURPOSE" over "Two accounts. One promise." is the same
+  thing twice). It names the moment, the claim or the category the headline
+  answers: "THE HONEST ANSWER", "WHAT PROOF MEANS", "YOUR TURN". Three or
+  four words; no eyebrow beats a weak one.
+- ONE NUMBERING SCHEME FOR QUESTIONS, deck-wide: "QUESTION 1 OF 3",
+  "QUESTION 2 OF 3", "QUESTION 3 OF 3" — digits, always the same shape.
+  "QUESTION ONE" beside "QUESTION 2" is a drift the viewer sees.
+- A FIGURE IS SAID ONCE ON ITS SLIDE. The label under a numeral never
+  restates it ("$100" over "of $100" is a stutter — "$100" over "of every
+  gift reaches the project"); the headline never carries the number the
+  numeral shows; "100%" appears once.
+- ANSWER SLIDES: "Correct" or "Not quite" appears ONCE (the eyebrow), then
+  the fact that makes the answer true. An answer slide with no eyebrow and
+  no headline — a bare figure over footage — leaves the viewer unsure
+  whether they were right.
+- QUIZ OPTIONS CARRY NO DECORATIVE ICONS. "60% · 80% · 90% · 100%" with a
+  pie, a bar, a badge and a drop beside them is noise; icons on options
+  only when every option names a THING with an obvious pictogram (Auto ·
+  Home · Life · Claims). Menu rows keep theirs.
+- MENU COPY DIFFERS BETWEEN FIRST AND RETURN: "Where would you like to
+  start?" on the first menu, "Where would you like to go next?" (and the
+  Finish Up nudge) on the return menu — never the same line twice.
+- THE FOOTAGE OF AN ANSWER BEAT FOLLOWS THE DECK'S CASTING, not the
+  emotion: no fireworks, confetti or party stock for "Correct". The clip
+  shows what the answer is ABOUT (the water point, the ledger, the crew).
 
 ## Questions carry real choices (binding)
 

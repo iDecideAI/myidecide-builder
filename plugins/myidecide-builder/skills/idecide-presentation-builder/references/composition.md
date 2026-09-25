@@ -129,8 +129,14 @@ fixed`). The builder does not re-pack it; it measures and protects it:
                text that wrapped taller pushes what sits below it in its
                column down by the difference
 4  separate    no two buttons may overlap; overlapping text pairs are pushed
-               apart by the measured overlap
+               apart by the measured overlap; a BUTTON also keeps 20px clear
+               of the copy above it (2.1.5 — flush is not overlapping, and
+               0px between a paragraph and a finger target is a mis-tap)
 5  fit         nothing leaves the canvas
+6  edge        nothing readable is left inside the 56px bottom margin: the
+               unit rises, and if something sits above it the whole COLUMN
+               rises with it into its top inset (2.1.5). What still cannot
+               clear is named in the log AND filed for the slide reviewer
 ```
 
 What that means for a design: a column written too long runs off the bottom,
@@ -190,15 +196,52 @@ gets exactly one static pill. A content slide that auto-advances gets no
 buttons: its wired items are drawn as display rows (logged) — the click lives
 on the slide after it.
 
-## What sits inside a button is centred (binding, 2026-09-04)
+## A button is sized to what it holds (binding, 2026-09-18)
 
-The label of a button with no icon is centred across the plate's inner width.
-With an icon, the icon + gap + label are paired as ONE object and that pair is
-centred inside the plate — on every button: pills, rect rows, stacked menu
-rows, K tiles. (Icons in a stacked menu therefore do not line up in a column;
-accepted.) Never set a label's text alignment to Left or Right to "align it
-with" its icon — the pair is measured (ink width, `Auto` width trick, position
-restored) and placed.
+**This replaces "what sits inside a button is centred" (2026-09-04).** Bren:
+"let's remove the centering rule, and instead let's just instruct it to size
+the buttons accordingly based off of their content and surrounding context."
+
+The centring rule was written to stop the constructor shoving labels against
+the right edge of plates that were far too wide for them. It fixed the
+symptom — the dead space moved to both sides instead of one — and left the
+cause, which is that a plate's width came from a number typed before the type
+existed and nothing ever checked it. A 700px bar around "Paul's Story" is
+wrong whether the words sit in the middle of it or at one end.
+
+**Give a button the width its content needs, in the context it sits in.**
+
+- **A standalone action** (a CTA pill, a cover's "Click anywhere to Begin", a
+  Back or Next) is as wide as its icon + gap + label + equal padding, and no
+  wider. Nothing else on the slide decides it.
+- **A set** — answers, a menu column, a pair of actions — takes **one** width,
+  the widest member's, so it reads as a set. Adding or removing a member
+  re-computes that width for all of them.
+- **A row** is the deliberate exception: a plate sized by its COLUMN rather
+  than by its words (a full-bleed answer bar, a menu row across a panel). Its
+  width is the design; what goes in it is a leading-edge label and, when it
+  has an icon on the far side, a chevron on the opposite padding edge. Never a
+  label floating in the middle of one.
+- **Height** is unchanged: 64–84px, never under 64.
+
+**Where the content sits follows from the width, and is not a rule of its
+own.** While the content fills the plate it reads centred; once the plate is
+much wider than its content it goes to the leading edge, because that gap
+means the plate is a row. `"align":"left"|"center"|"right"` on the element
+overrides that for a button that wants something else, and `"anchor"` says
+where a re-sized plate itself lands (left keeps its left edge, center keeps
+its centre, right keeps its right edge).
+
+**The builder measures, and only ever corrects a fault silently.** After the
+fonts settle, every button the scene placed is measured: a plate narrower than
+its content is grown (a set together, to its widest member) because a label
+that wraps or runs under its chevron is a defect; a plate at more than 1.6×
+its content is brought in to it, because that is not a proportion anyone
+chose. Neither touches a row (over 55% of the canvas) or a plate the scene
+pinned with `"fit":false`. Growth stops at the 72px safe inset, and the log
+says what moved. The measurement is the same one the old rule used — ink off
+the frame via the `Auto` width trick, position restored — it just no longer
+throws the number away.
 
 ## No answer key (binding, 2026-09-04)
 
@@ -577,7 +620,7 @@ Assign a **role**; the builder picks a size inside its band from the text's actu
 | eyebrow | 27–34 | ≤ 24 chars, UPPERCASE |
 | fine (detail, attribution, captions) | 28–32 | ≤ 80 chars |
 
-**Hard floor 28px — and 28 is the WORKING size of every secondary line** (eyebrows, captions, meta, button labels) in the exemplar decks; subheads and row labels 30–34; figures in units 44–72; headlines 56–110. **Write the size you mean**: a `size` inside the role's band is honoured exactly. Headlines ≤ 3 lines (4 for a stacked one-word-per-line hero), body ≤ 4 lines, no orphan last word (the builder binds the last two). A three-word line in a body-sized box is wrong: promote it to hero. A 90-character headline is a longline, not a wrapped hero.
+**Hard floor 28px — and 28 is a FOOTNOTE size, not a working one** (2.1.3, Bren on deck 307: "some text is getting close to too small to be viewed well on mobile devices", with 33 blocks written at 28–29). On a canvas that is ~7 inches wide in the hand: a source line or an asterisked rate 28–30; captions, meta and support lines 30–33; eyebrows, button labels and row labels 32–36; subheads 34–46; figures in units 44–96; headlines 54–110. A size written under a role's band is raised to the band, never re-sized by length. **Write the size you mean**: a `size` inside the role's band is honoured exactly. Headlines ≤ 3 lines (4 for a stacked one-word-per-line hero), body ≤ 4 lines, no orphan last word (the builder binds the last two). A three-word line in a body-sized box is wrong: promote it to hero. A 90-character headline is a longline, not a wrapped hero.
 
 **Weights.** The body face has weights and the exemplars use two or three on one slide: eyebrows BOLD (the default), row labels MEDIUM, captions and button labels SEMIBOLD, subheads REGULAR. `weight` on any text element; `lh` (line-height 0.82–0.95 for a headline that breaks, 1.05 for a subhead), `ls` (letter-spacing 0.2–0.3 on spaced caps), a `"\n"` for a deliberate break (one thought per line), `runs` for a two-tone line.
 
@@ -645,7 +688,7 @@ Always **one grouped unit** of stacked layers: plate (fill + corner radius = the
 - **Voiceover pairing:** on-screen text ≈ one third of what is spoken. If the slide reads like a transcript, cut it.
 
 ### 9. Polish checklist (fail any → fix before moving on)
-- Nothing below 28px · headline ≤ 3 lines · body ≤ 4 lines · no orphan last word.
+- Nothing below 28px, and nothing a viewer READS below 30 · headline ≤ 3 lines · body ≤ 4 lines · no orphan last word · a label (eyebrow, row label, button, caption) is one line · nothing readable ends below y=664.
 - Every unit's parts read as ONE object: label inside its plate, eyebrow with its headline, detail on the tight gap under its title.
 - Every wired item has its button; every button has its one icon; nothing readable within 86px of an edge.
 - Every text element's role matches its actual length; a headline never runs past the safe area.
@@ -684,7 +727,7 @@ Always **one grouped unit** of stacked layers: plate (fill + corner radius = the
 
 Twenty-eight demo slides across ten markets and a full 25-slide Patagonia deck were composed freehand against this canvas. What held up, and now is the rule:
 
-- **Bespoke beats templated.** Every slide composed for its own content read better than the closest library template. The compositions that worked: full-bleed footage with a left scrim and a hero; split with a 42–46% media column; a centred statement on a darkened clip; a stat with a dot grid or an animated bar chart beside a short headline; three or four photo cards under a headline; numbered steps across the lower half; a quote centred with a fine attribution; a menu of pills over a tinted clip; a hamburger of text-style rows on a quiet field.
+- **Bespoke beats templated.** Every slide composed for its own content read better than the closest library template. (This bullet used to list the nine compositions that "worked" — full-bleed hero, 42–46% split, centred statement, stat beside a dot grid, photo cards, numbered steps, centred quote, pills over a clip, text rows on a quiet field. That list was a KIT, and PART V records what a kit does to a deck: decks 305 and 306 came back leaning on the same handful of devices and the client asked that each build choose its own. Compose the arrangement this slide needs; the list is gone on purpose, 2.1.5.)
 - **Data graphics sell.** The finance response's animated bar graph, the charity response's dot grid and the city-planning response's rings made the point faster than any sentence. Where the script gives a figure, draw it.
 - **The edge rule.** An element on the right half enters from the right, on the left from the left; text rises; buttons grow; the stage never animates. Motion that agrees with position reads as intent.
 - **One icon per button, always animated.** Concept icon when the label has one; otherwise an arrow; a check on finish/agree; a left arrow on Back. Doubling an arrow next to a concept icon read as clutter.

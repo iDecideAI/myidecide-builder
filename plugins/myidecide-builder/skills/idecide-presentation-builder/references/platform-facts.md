@@ -293,6 +293,17 @@ above U+00FF, and the house style recommends em dashes and ellipses; `atob` on
 the way back gives latin-1 mojibake for the same text. Use `_b64enc` / `_b64dec`
 in `sh/rest.js`, which round-trip through `TextEncoder`/`TextDecoder`.
 
+## Rotation pivots at the block's TOP-LEFT (verified 2026-09-25, deck 311 / 44313)
+
+`block.setRotation(id, radians)` turns the block about its `getPositionX/Y`
+point — the untransformed top-left corner — not its centre. Read live on the
+demo mortgage slider's value-bubble tip: a 20×20 rect at (501.2, 417.1)
+rotated 45° reports a global bounding box of 487.1 → 515.4 (28.3 wide),
+centred on x = 501.2 = its own position x = the bubble's centre x. So a tip
+that must hang centred under a bubble is DRAWN with its x at the bubble's
+centre; a shape that must spin about its centre is drawn offset by the
+rotated corner. The scene contract's `rotate` (degrees) inherits this.
+
 ## Long operations expose their own "settled" flag
 
 `IDP.status()` reports `buildFinished`, `removeFinished`, `dupFinished`,
@@ -1445,13 +1456,19 @@ being implemented separately in the composer.
 
 ## 2026-09-15 — template-free (2.0.0): what the test decks proved, and what the renderer must do
 
+> **2026-09-19:** this section describes what is now the **Creative Build**
+> mode. It is no longer the only path — 2.2.0 reinstated the template library
+> as **Quick Build**, which is the default; see "2026-09-19 — two build modes"
+> at the end of this document. Every platform fact below is unchanged by that:
+> they are facts about the engine and the save model, not about which renderer
+> issues the calls.
+
 Verified LIVE on decks 302 (28 demo slides across ten markets) and 303 (a
 25-slide Patagonia deck built without any template, narrated, wired, tracked)
 through `window.aiagent` — every finding below was reload-checked. The scene
-renderer that now automates them (`inject/scene.js`) is verified against the
-mock-engine gate (`scripts/smoke-scene.mjs`); its first live build through the
-panel is the next thing to verify, and this section says so rather than
-claiming it.
+renderer that automates them (`inject/scene.js`) is verified against the
+mock-engine gate (`scripts/smoke-scene.mjs`), and has since been proven through
+the panel on live decks 304–309.
 
 - **Bespoke compositions persist through the aiagent save model exactly like
   archetype ones.** Raw engine writes (createTextBox + setFont, rects,
@@ -1613,3 +1630,260 @@ and `composer.logoImg` / `scene.placeLogo` size every placement from it.
   and then awaits an export can therefore time out with the value still
   changed — after any timed-out script, read the state back, restore it,
   and reload to discard.
+
+## 2026-09-17 — the `?aiagent` param is not proof of anything; a dead slide id HANGS; the tab's real state is readable
+
+Evidence: three build records from testers on the live store build (1.2.6 /
+1.2.7), read on 2026-09-17. These are field records, not a fresh live probe —
+where that matters it is said below.
+
+- **The Builder rewrites its own address.** Slide navigation writes
+  `?slide=<id>` and the `aiagent` key does not always survive it. In two of
+  the three records the panel's own probe reported `window.aiagent` LIVE
+  while the URL no longer carried the param — and `injectEngine`, which keyed
+  off the param alone, reloaded the tab for nothing (a 20-90s wait, and any
+  uncommitted slide discarded). **The live object is the test, the query
+  string is not.** 2.1.2: no reload when `state.agent` is true, whatever the
+  URL says. Adding the param is still right when the tools are genuinely
+  absent.
+- **Driving a slide id the deck no longer has does not throw — it hangs.**
+  A record shows `slides.changeSlide` on an id from a previous session's map
+  sitting until the panel's own 3-minute ceiling, with eleven slides already
+  built and the client told nothing had landed. So a stale id costs a
+  timeout, not an error: `api.slides.get()` before any structural work is the
+  only defence, and a carried id map must be REPLACED by it, never merged
+  into it (a merge keeps the dead entry, which is exactly how this happened).
+- **The panel can read why a tab is not being drawn**, without the page's
+  help: `chrome.tabs.get(id)` gives `active` and `status`,
+  `chrome.windows.get(tab.windowId)` gives `focused` and
+  `state === "minimized"`, and `chrome.scripting.executeScript` in the MAIN
+  world returns `document.visibilityState` **even while the page is not being
+  painted** — the script runs, the renderer does not. That is the whole
+  vocabulary needed to say *minimised* / *another tab in front* / *behind
+  another app* instead of a paragraph about background tabs, and to stop
+  waiting once the answer is known (2.1.2 gives up ~9s after the reason is
+  known, where it used to wait 90s).
+- **An uploaded file belongs to the presentation, not to us.** POST
+  `/api/builder/builderSession/{sid}/uploads?source=user_upload` (the call
+  behind `SH.uploadAsset`) takes the client's own picture or clip and the
+  platform keeps it in that presentation's library, so a file the client
+  attaches in the panel needs no storage of ours anywhere. Place the returned
+  uri the sanctioned way — `uploadAndInsertImage(blob, x, y, w, h, 0, null)`
+  for a still, `insertPexelBatchVideo({id, label, meta:{uri, sourceSet:[…]}},
+  …)` for a clip. A raw r2 URL in a plain fill still hard-freezes the
+  renderer (§ 9); that has not changed.
+
+## 2026-09-17 — reading a built deck live: what the engine says vs what the mock says (deck 307)
+
+A read-only pass over all 42 slides of deck 307 through `window.aiagent`
+(`slides.get` → `changeSlide` → walk `block.getChildren(page)` for name, type,
+x/y/w/h, `getFrameHeight`, `text/fontSize`, `getTextVisibleLineCount`), run
+from a second tab while the deck was open. Verified facts from it:
+
+- **The mock's text model is ~12-15% wide.** `replay-scenes.mjs` predicted 30
+  wrapped short labels in this deck; the engine had **2**
+  ("THE TURNING POINT" at 28px in 280px, "BUILT TO BE REPAIRED" at 28px in
+  340px). Its per-character estimate (0.56 sans / 0.60 display) and its 0.9
+  usable-width rule are deliberately conservative, which is right for
+  PREDICTING but wrong for CORRECTING: a fix driven by the estimate shrinks
+  type that fits. Correct from `getFrameHeight` against a one-line frame
+  (`setWidthMode('Auto')`), never from the estimate.
+- **`setWidthMode(id,'Auto')` makes the frame hug its text** — one line unless
+  the string carries "\n". The sandbox modelled it as still wrapping at the
+  old box width, which made every measured-correction pass a no-op in the
+  gate; fixed 2.1.3.
+- **A screenshot taken mid-timeline lies.** At 7.5s of a 7.1s slide the
+  headline's baseline animation is still clipping its second line, which reads
+  exactly like an overlap with the body below. Scrub with
+  `engine.block.setPlaybackTime(page, duration - 0.3)` before judging a
+  layout, and read `engine.block.getDuration(page)` for the number.
+- **A stroke does not imply a hollow fill.** A `//ly.img.ubq/graphic` created
+  by the kit carries a solid fill; `setStrokeEnabled` + `setStrokeColor` draws
+  the outline ON TOP of it. To get a ring, clear the fill first
+  (`getFill(id)` → `setColor(f, 'fill/color/value', {r:0,g:0,b:0,a:0})`).
+  Confirmed live on deck 307: three concentric "rings" rendered as one cream
+  disc with an orange ring inside it.
+- **The editor does not initialise a tab it is not drawing** — the 2.1.2 fact
+  again, from the other side: a second tab opened on the deck sat at the
+  loading spinner with `document.visibilityState === "hidden"` and
+  `engine.scene.getCurrentPage()` returning null, for as long as its Chrome
+  window stayed behind another app. `chrome.scripting.executeScript` still
+  runs in it (that is how the state is readable), but nothing renders and
+  `changeSlide` never settles. Bren, twice: "you need to pull focus to the
+  window for it to initialize". Bring the window forward, then read.
+- **AND AN AGENT CANNOT RAISE A TAB IT OPENS (2026-09-18).** Proven with a
+  stopwatch, not inferred: a tab created with the Chrome extension's
+  `tabs_create_mcp` and then pointed at a deck sat at
+  `document.visibilityState === "hidden"` with
+  `engine.scene.getCurrentPage()` returning null for 17 seconds, while
+  `window.aiagent` AND `window.aiagent.engine` were both present the whole
+  time. That is the trap — the objects exist, so a readiness check that looks
+  for them passes while nothing renders. Check `getCurrentPage()`.
+  Three ways out were tried and none works: `navigate` loads the URL but does
+  not activate such a tab; `window.focus()` and a synthetic click are refused
+  for a background tab; `resize_window` resizes it and leaves it hidden. The
+  desktop bridge cannot do it either — Chrome is grantable there only in READ
+  mode (see the screen, no interaction), by design, because the extension is
+  meant to be the interaction path, and the extension's own
+  `chrome.windows.update({focused:true})` runs in its panel, not in the page.
+  **So an agent reading a deck uses ONE tab and navigates it in place** — the
+  first tab of a group is active; keep it and change its URL.
+- **…EXCEPT THROUGH THE EXTENSION, WHICH NOW LETS THE PAGE ASK (2.1.5).**
+  Bren, an hour after the above was written: "Can we possibly use the extension
+  as a pipeline to open and focus tabs when checking our work?" It can, and the
+  permission was already there — `chrome.tabs.update({active:true})` and
+  `chrome.windows.update({focused:true})` need no user gesture, and the panel's
+  `bringBuilderForward` has called them since 2.1.2. What was missing was a way
+  in from the page. `resolve.js` (isolated world) now relays
+  `window.postMessage({__idp:"focus-tab"})` to `background.js`, which raises
+  **the sender's own tab** — un-minimise, activate, focus the window — and the
+  answer lands on `document.documentElement.dataset.idpFocus`:
+  `ok` · `denied:not-an-agent-url` · `denied:throttled` · `error:<msg>`.
+  Proven live on deck 308, extension reloaded: a tab that had been `hidden`
+  with `getCurrentPage()` null went `visible` with page 3 **within 1.2s of one
+  postMessage**, nobody touching anything. A second post inside 3s answered
+  `denied:throttled`; the same deck URL without `&aiagent=` answered
+  `denied:not-an-agent-url`; an unknown message shape was ignored.
+  Two gates, because this ships: the content script only runs on the myiDecide
+  hosts in the manifest, so no other site can post it at all, and the URL must
+  carry the agent flag, so a viewer's ordinary session can never pull focus.
+  The one-tab habit above is still the cheaper path — ask for focus when a
+  second tab is genuinely needed, not as a substitute for reusing the first.
+- **Reading a deck from a second tab is safe.** No write, no
+  `markCustomDataDirty`, no save: 42 `changeSlide` calls and a full block walk
+  left the deck untouched (the panel's own session kept the lock).
+
+## 2026-09-18 — what the animated library actually contains, and how a match goes wrong
+
+From reading deck 307's `lottieMeta` back against the library's own
+`catalog.json` (3,687 items) and re-running the panel's matcher over the
+builder's whole 433-concept vocabulary:
+
+- **Every item carries a `class`**: `multicolour` (3,337 — the 2-tone WIRED
+  drawings, ink plus an accent) or `black-only` (350 — the 1-tone SYSTEM
+  drawings). A `black-only` item has no accent to paint, so it renders
+  visibly lighter than its neighbours in a row of 2-tone icons. The class is
+  the thing to match on for a set; `variants` (flat / system-outline /
+  system-solid) is about style, not family.
+- **An item's `aliases` are the builder's vocabulary attached at ingest, and
+  they lost the wishlist's ORDER.** `lordicon-wishlist.json` lists accepted
+  Lordicon names per concept in preference order ("flag": flag, milestone,
+  goal-flag), but the ingest hangs each accepted name on whichever file it
+  harvested, so a third-choice drawing ends up carrying the concept as an
+  alias. Any scorer that ranks an alias above a file name therefore inverts
+  the wishlist. Verified: "flag" → sport-and-fitness/goal-sign, "globe" →
+  nature-and-weather/planet in the shipped deck.
+- **The vocabulary is not fully covered**: 74 of 433 concepts match nothing at
+  all (move, trending-up, activity, clipboard-list, quote, banknote, …) and
+  fall back to the static SVG glyph. That is the visible mismatch when five
+  animated icons sit beside one flat one.
+- **A concept can be answered by a specialisation**: nothing is named "chart",
+  but `finance-and-stats/pie-chart`, `bar-chart-vertical-grow` and
+  `line-chart-grow` all are. Accepting a name whose HEAD is the asked noun
+  (with only shape qualifiers in front) is safe; accepting any compound is
+  not ("hand truck" is a trolley, "paper plane" is a paper dart).
+- **The matcher can be tested offline.** `lottieFor` / `lottieForWords` /
+  `lottieNames` are pure functions of (concept, catalogue): lift them out of
+  the panel source, load the real catalog.json, and run the wishlist's
+  concepts through both the old and the new version. That diff — 17 changes,
+  17 improvements — is how this change was verified, not by eye.
+
+## 2026-09-18 — the gate's ruler disagreed with itself (a simulated six-slide run)
+
+A deck was written by hand the way the design pass writes one — a cover, two
+content slides, a question, a menu and a CTA for an invented credit union —
+and put through `replay-scenes.mjs` and the new `paint-scenes.mjs` (which
+draws the sandbox's blocks as HTML and shoots a PNG, so a slide can be LOOKED
+at without a browser session). Nothing here is a platform behaviour; all of it
+is about the model the gate grades with, which had been trusted without being
+checked against itself.
+
+- **`Auto` frame width and the wrap test used different rulers.** The mock
+  measured an Auto frame at `chars x cw` and wrapped an Absolute one at
+  `(word + 1) x cw` against **90%** of the box. So a frame set to its own
+  measured ink "wrapped" in the model. Every pass that widens-to-ink and then
+  steps the size down when that fails — scene step 0c — therefore shrank type
+  the platform holds: a solo pill's label came out **29px** in the replay
+  where the engine gives 33. One ruler now, 98% usable, and an Auto frame
+  reports the width at which its longest HARD line just holds. Consistent by
+  construction: measure, set that width, and the line holds.
+- **The Auto width of a multi-line string was the whole string.** `"The first
+  key\nis the hardest."` measured as one 28-character line — 1.9x its real
+  ink. Every `match:"ink"` binding and every trim off a hard-broken headline
+  was wrong by that much. It is the longest hard line now.
+- **Capitals were not modelled at all.** composer's own estimator has
+  multiplied by 1.1 for upper case since 2.0; the mock did not. The one
+  treatment that is ALWAYS capitalised is the eyebrow, so every spaced-caps
+  line measured ~10% narrow on top of the letter-spacing the mock ignored
+  until 2.1.4 — "A FEW MINUTES ABOUT YOUR FIRST HOME" was graded a clean
+  one-liner in an 858px box and wrapped at 900. Same 1.1 factor as the
+  estimator now.
+
+What that cost, measured on deck 307's record: **four text blocks under the
+phone band** that the replay had signed off, and a class of correction passes
+that were quietly fighting each other. After the fix, 0.
+
+- **A replay that ignores the renderer's own findings grades a slide clean
+  that the build would send back.** `IDP.designFaults` — where the designed-
+  overlap reports (2.1.4) and now the bottom-margin ones land, and what the
+  pipeline hands the slide reviewer — was not read by `replay-scenes.mjs` at
+  all. The simulated cover shipped its sender line 43px into the bottom margin
+  under a pill it overlapped, and the tool said "0 defects". It reads them now.
+
+## 2026-09-19 — two build modes (2.2.0), and the Track Choice the template path never wrote
+
+The extension now offers TWO layout paths, picked per build by the operator
+with the **Build mode** selector beside the model pill. **Quick Build** (the
+default) draws a layout from the restored 375-variation library through
+`composer.js`'s archetype renderers; **Creative Build** designs a scene per
+slide and draws it with `inject/scene.js`. `DESIGN_MODE` is gone — the panel
+now carries `BUILD_MODES` / `DEFAULT_BUILD_MODE` / `BUILD_MODE` / `MODE_PIN`,
+and `sceneMode()` reads the setting instead of a constant. Nothing about the platform
+changed; what changed is which renderer issues the calls, and every platform
+fact in this document holds on both paths.
+
+- **The composer never wrote `idecide/track`, in ANY version — so a
+  template-path deck recorded no viewer choices at all.** The platform records
+  a viewer's answer in the same `clickActionData` envelope as the finish
+  payload (§13); `blockActions.set` cannot carry it, so `wireSlideBlocks()` in
+  `pipeline.js` reads the mark off the clickable plate and writes the record by
+  hand. `scene.js` has written that mark since 2.0. `composer.js` never did —
+  not in 1.2.8, not before. **Nothing errors**: the reader simply finds no
+  metadata and writes nothing, so the deck ships, plays, and silently records
+  nothing on a product whose whole point is recording what the viewer chose.
+  It went unnoticed because the template path was retired four days before
+  anyone looked. Fixed 2026-09-19: `button()` marks the plate with the same
+  rule as `scene.js` (question answers `"<trackAs> - <label>"`, menu topics
+  `"Topic Viewed - <label>"`, navigation labels excluded), guarded on the scene
+  flag so exactly one owner marks a given plate — `scene.js` calls that same
+  constructor and marks it itself. **The lesson is the shape of the failure,
+  not the fix: a metadata contract with no gate on the writer fails silently.**
+- **`cornerMark()` was in the same position** — the brand mark in the first
+  free corner ran only on the scene path. It now runs in `__COMPOSE`'s tail,
+  same corner order, same 36px pad, same aspect-aware height, same "skipped —
+  every corner is taken", guarded the same way.
+- **A deck's mode is a property of the deck, not of the panel.** Opening one
+  for revision pins the mode to what that deck actually is: its record's
+  `settingsUsed.buildMode`, else inferred from whether its slides carry `scene`
+  or `skel`+`spec`. The revision path branches on `sceneMode()` in five places
+  (load the template library? attach the element contract? bind a new slide to
+  a variation or give it a scene? how is an updated slide merged?), and a
+  Quick Build deck handed a scene-path slide gets a slide with no binding.
+  Choosing a mode in the popup clears the pin as an explicit override, logged.
+- **Known difference, recorded not fixed (no owner action):** `scene.js`'s 64px
+  minimum button height is NOT ported to the template path. Template button
+  heights are computed against template geometry (`rh = Math.max(56, rh)` in
+  one renderer), and a blanket floor risks overflowing tight rows.
+- **A device in a deck's design language governs FORM, never WORDS.** Deck 309
+  shipped five eyebrows reading `sk_test_menu`, `sk_test_billing`,
+  `sk_test_subs`, `sk_test_ready`, `sk_live_global`. Nothing malfunctioned: the
+  deck's own design language minted a device described as *"key chip — a small
+  pill holding a mono-styled tag (sk_test_ style)"*, the design pass obeyed the
+  description literally, and the review pass repaired the chip's geometry
+  without ever questioning the words inside it. The guard is three-part — the
+  rule in `deck_outline_system.md`, a copy rule in both design and both review
+  contracts, and a mechanical `placeholderFault()` detector in
+  `scripts/replay-scenes.mjs` (all five caught, zero false positives across 51
+  other slides). **The carve-out is the ROLE:** `sk_test_51H…` as the VALUE in
+  a labelled cell is a legitimate specimen; the same shape in an `eyebrow` is a
+  defect.

@@ -1,12 +1,13 @@
 > **Reference for the myiDecide Presentation Builder skill.** The plain-English
-> troubleshooting KB shared with the myiDecide AI Presentation Extension: one
+> troubleshooting KB shared with the myiDecide AI: one
 > entry per situation under a stable code (`KEY-01`, `TAB-04`, …) — what the
 > user sees, what it means, what to do. Read it when the user reports an error
 > or asks what a message means; answer from it before retrying anything. The
-> `KEY-*` entries concern the Extension's API key and do not apply to this
-> skill.
+> `KEY-*` entries concern the Extension's API key, and `BUILD-07` the
+> Extension's own reading of the AI's plan (here you write and act on the plan
+> yourself); neither applies to this skill.
 
-# Troubleshooting — myiDecide AI Presentation Extension
+# Troubleshooting — myiDecide AI
 
 Plain-English help for the messages the myiDecide Builder can show while it writes,
 builds or edits a myiDecide presentation. Each entry has a short code
@@ -29,16 +30,19 @@ key and never shows those — every other entry applies to both.
 | `KEY-05` | "anthropic-workspace-id is required when authenticating with an identity-linked API key" | The key was created with no workspace chosen — paste its Workspace ID in Settings, or make a key with a workspace |
 | `KEY-06` | "anthropic-workspace-id header must be a valid workspace ID" | The Workspace ID in Settings is mistyped or belongs to another organisation |
 | `TAB-01` | "Open your presentation in the myiDecide Builder first" · "I'm not seeing a myiDecide tab in front" | The panel can't find the myiDecide Builder tab it should work in |
-| `TAB-02` | "The myiDecide Builder tab hasn't finished loading" · "The myiDecide Builder reloaded but its tools never came up" | The myiDecide Builder never finished booting, usually because the tab was in the background |
+| `TAB-02` | "Your presentation's tab has to be the one you can see" · "the build tools never loaded … because <reason>" | Chrome is not drawing the myiDecide Builder tab (minimised, behind another window, or behind another tab) so it never finishes starting |
 | `TAB-03` | "builder error dialog detected" · "The myiDecide Builder crashed N times … mid-update" | The myiDecide Builder showed its Unknown Error dialog |
 | `TAB-04` | "slides.changeSlide did not answer in 30s" · "could not open <slide> — skipped" · "export timed out after 20s" | The tab lost focus or the computer slept during a long pass |
 | `TAB-05` | "This presentation is open in another tab" · `409 SESSION_MISMATCH` | The same presentation is open somewhere else and holds the lock |
 | `BUILD-01` | "A build is running in your myiDecide Builder tab right now" | Edits wait until the running build finishes |
 | `BUILD-02` | "I couldn't read any text out of <file>" | The uploaded script or brochure has no readable text |
+| `BUILD-06` | "…is 140 MB — the limit for videos is 96 MB" · "Six files at a time is the limit" · "could not be uploaded into the presentation" | A file attached with the paperclip is over a limit, or the presentation tab wasn't reachable to upload it |
 | `BUILD-03` | "wire: unknown target" | A button pointed at a slide that doesn't exist — repaired automatically since 1.1.0 |
 | `BUILD-04` | "(NO VOICEOVER)" is spoken aloud | A silent-slide marker was narrated — fixed in 1.1.0; older decks can be cleared |
 | `BUILD-05` | "iconify unreachable" · "display font unresolved" | An icon or font service couldn't be reached; built-in fallbacks were used |
+| `BUILD-07` | "The AI's plan came back garbled" · `non-JSON reply (N chars…)` | The AI's plan wasn't in the exact format the extension reads — resume and it almost always comes back clean |
 | `PANEL-01` | The side panel was closed while a build was running | Reopen it — History → Resume carries on where it stopped |
+| `GEN-01` | "Something went wrong" | A problem with no specific explanation yet — try again, then send the build record |
 | `HELP-01` | You need to send something to support | Where the build record is and what to send to hi@idecide.com |
 
 ---
@@ -121,9 +125,10 @@ the normal first hurdle rather than a fault.
 **What to do**
 
 1. Go to **platform.claude.com → Billing** (under Settings) and add credit.
-   A small amount goes a long way: a typical build costs about **$1–2 with
-   Sonnet**, **$5–10 with Opus or Fable**, and under **$1 with Haiku**. $10
-   covers several builds.
+   A small amount goes a long way: a typical build costs about **$1–2
+   (Quick Build) to $2.50–4 (Creative Build) with Sonnet**, **$3–5 (Quick
+   Build) to $6–10 (Creative Build) with Opus**, about twice that with
+   Fable, and **$0.50–2 with Haiku**. $10 covers several builds.
 2. Back in the extension, press **Test key** in ⚙ Settings — the credit check
    should now pass.
 3. If a build had stopped, open 🕘 History → **Resume build**. Nothing that
@@ -335,44 +340,58 @@ list or the player don't count, and neither does a tab in another window.
   different window, either move the tab into this window or open the panel
   from that window.
 
-### TAB-02 — "The myiDecide Builder tab hasn't finished loading" / "The myiDecide Builder reloaded but its tools never came up"
+### TAB-02 — "Your presentation's tab has to be the one you can see"
 
 **What you'll see**
 
-- *"The myiDecide Builder tab hasn't finished loading."* (versions before
-  1.1.0 said *"myiDecide Builder page never mounted (engine present but no current
-  page after 45s)"*.)
-- *"The myiDecide Builder reloaded but its tools never came up. Give the tab a moment,
-  make sure the presentation has finished loading and that its tab is in
-  front, then tell me again."*
+- *"Your presentation's tab has to be the one you can see."* — with a line
+  above it naming what the panel actually found, for example *"the build tools
+  never loaded because Chrome is not drawing that tab — the window looks
+  minimised"*, *"…because another tab is in front of it in that window"*, or
+  *"…because its window is behind another app"*.
+- Older wording, before 2.1.2: *"The myiDecide Builder tab hasn't finished
+  loading."* / *"The myiDecide Builder reloaded but its tools never came up."*
+  Before 1.1.0: *"myiDecide Builder page never mounted (engine present but no
+  current page after 45s)"*.
 
 **What it means**
 
-To work in your presentation the panel adds a small switch (`aiagent`) to the
-tab's address and reloads it. The myiDecide Builder then has to finish starting up — and
-the myiDecide Builder **does not finish starting while its tab is in the
-background**. If you switched to another tab, another window or another app
-while it was reloading, it sat half-loaded and the panel gave up waiting.
+Chrome stops drawing a tab that nobody is looking at, and the myiDecide Builder
+**does not finish starting while it isn't being drawn** — minimised window,
+window behind another app, or another tab in front of it in the same window all
+count. The panel brings the tab forward itself first; when Chrome still isn't
+drawing it, the panel stops after a few seconds instead of leaving you watching
+a spinner for a minute and a half, and it names the reason it found.
 
-Since 1.1.0 the panel brings the tab to the front itself before it waits, and
-the message tells you which step it was waiting on.
+**Nothing in your presentation is changed by this.** The failure happens before
+any edit is written, so the deck is exactly as it was. Since 2.1.2 the panel
+also prints what it was about to do, so you can see the change is only waiting.
+
+Since 2.1.2 the panel no longer reloads the tab when the build tools are already
+live in the page — the myiDecide platform sometimes rewrites its own address and
+drops the `aiagent=` switch while the tools are still running, and reloading on
+that was costing a wait for nothing.
 
 **What to do**
 
-1. Click the myiDecide Builder tab so it is the one you can see.
-2. Wait until the slides appear and the myiDecide Builder stops showing its loading
-   state.
-3. In the panel, press **Try again** (or **Resume build** in 🕘 History).
+1. Click the tab with your presentation so it's the one you can see, and wait
+   until the slides appear.
+2. Press **"Try that again ↻"** under the message. Your request is still
+   there — you don't have to retype it. (**"Show me the tab"** next to it jumps
+   straight to the presentation.)
+3. Keep that window in front while a change runs. It only has to be visible;
+   once the change finishes you can work in another app again.
 
 **If it keeps happening**
 
-- Reload the myiDecide Builder tab yourself (⌘R / F5), wait for the slides, then try
-  again.
-- Check that the address still ends with `aiagent=`; if you navigated
-  elsewhere and back, the switch is gone and the panel will add it again on
-  the next attempt.
-- A very slow connection can take longer than the panel's ceiling — wait for
-  the myiDecide Builder to be fully idle before pressing Try again.
+- Reload the myiDecide Builder tab yourself (⌘R / F5), wait for the slides, then
+  try again.
+- A second Chrome window sitting on top counts as "behind another window", even
+  when the presentation's own window is un-minimised.
+- On a very slow connection the myiDecide Builder can still be loading when the
+  tab comes forward — wait until the slides are drawn before pressing Try again.
+- If the panel says it can't find a myiDecide tab at all, that's `TAB-01`, not
+  this one.
 
 ### TAB-03 — "builder error dialog detected" / "The myiDecide Builder crashed N times … mid-update"
 
@@ -640,6 +659,85 @@ completes either way; the slides just use the fallback.
 - A font that is never found is probably not one the myiDecide Builder offers.
   Pick a similar one from the myiDecide Builder's font list and name that instead.
 
+### BUILD-06 — "the limit for videos is 96 MB" / "Six files at a time is the limit" / "could not be uploaded into the presentation"
+
+**What you'll see**
+
+- *"logo-final.png is 18 MB — the limit for images is 12 MB."*
+- *"Six files at a time is the limit — send these first."*
+- In a reply: *"the file … could not be uploaded into the presentation"*, or
+  *"the attached file(s) could not be uploaded — the myiDecide Builder tab was
+  not reachable"*.
+
+**What it means**
+
+The 📎 paperclip beside the message box (2.1.2 and later) attaches your own
+files to a change request. Pictures and video are uploaded **into the
+presentation's own media library** — the myiDecide platform stores them, the
+extension stores nothing — and the assistant then places them by name.
+Documents (.docx, .pptx, .pdf, .txt, .csv, .md) are read and handed over as
+text, so their real copy and figures can be used.
+
+Because each message carries the file to the presentation in one go, there are
+limits: **12 MB per picture, 96 MB per video, 24 MB per document, six files per
+message**. A file over its limit is refused before anything is sent. A file
+that is within its limit but still won't go up almost always means the
+presentation's tab wasn't reachable at that moment (see `TAB-02`) — the upload
+travels through that tab.
+
+**What to do**
+
+1. Export or compress the file under its limit. A 1558×720 deck never needs a
+   picture wider than about 1920px, and a long video is better trimmed to the
+   seconds that appear on the slide.
+2. If you attached more than six files, send them in two messages.
+3. If the message says it couldn't be uploaded into the presentation, click the
+   presentation's tab so it's the one you can see, then attach the file again.
+4. Once a file is in, it stays available for the rest of the session — you can
+   say *"put the logo on slide 3"* later without attaching it again.
+
+**If it keeps happening**
+
+- A document that opens but has no text inside is `BUILD-02`, not this one.
+- SVG logos upload as pictures, but a very complex SVG can fail to draw; export
+  it as a PNG at the size you need instead.
+- Files attached in an earlier session are not carried over — the list only
+  covers the session you're in.
+
+### BUILD-07 — "The AI's plan came back garbled" / "non-JSON reply (N chars; head: … tail: …)"
+
+**What you'll see**
+
+- *"The AI's plan came back garbled"*, with a technical detail beginning
+  `non-JSON reply (19613 chars; head: "{\"theme\":…`.
+
+**What it means**
+
+The build asks the AI for each stage's plan in a strict format (JSON) that the
+extension then reads. This time part of the reply wasn't in that format — a
+single wrong character is enough — so none of it could be used.
+
+The extension already handles most of these on its own. It mends the slips that
+have only one possible meaning (a number written `06` instead of `6`, a stray
+comment, a trailing comma, a line break inside a sentence, an unescaped quote
+mark), and if that isn't enough it asks the AI once more, telling it exactly
+what was wrong and where. You only see this code when a reply got past both.
+
+**What to do**
+
+1. Resume the build: 🕘 **History → Resume build**. Your answers and your
+   script are kept, and a second attempt almost always comes back clean.
+2. If you changed the **Build mode** or the model since the build started,
+   that's fine — a resumed build uses the settings on screen.
+
+**If it keeps happening**
+
+- Download the build record (🕘 History → ⬇) and send it to hi@idecide.com.
+  Since 2.2.0 the record carries the **exact reply that failed** (both
+  attempts), so the faulty character can be found rather than guessed at.
+- Two replies failing the same way usually means the instructions the AI was
+  given contradict each other — that's a fault on our side, not yours.
+
 ---
 
 ## The side panel
@@ -676,6 +774,33 @@ progress is saved in Chrome on your computer.
 ---
 
 ## Getting help
+
+### GEN-01 — "Something went wrong"
+
+**What you'll see**
+
+- *"Something went wrong — myiDecide AI hit a problem it doesn't have a
+  specific explanation for"*, with the exact message under **Technical detail**.
+
+**What it means**
+
+This is the catch-all: the extension stopped on something it has no specific
+explanation for yet. Every failure we have seen and understood has its own code
+on this page — GEN-01 means this one is new to us.
+
+**What to do**
+
+1. Try the step again: 🕘 **History → Resume build** for a build, or send your
+   message again for an edit. Your progress is saved.
+2. If it happens a second time, don't keep retrying — send it to us (below).
+
+**If it keeps happening**
+
+- Download the build record and email it, with the message, to
+  hi@idecide.com — see `HELP-01` for exactly what to send. A GEN-01 that
+  repeats is how new codes get added to this page.
+
+---
 
 ### HELP-01 — What to send to support
 
