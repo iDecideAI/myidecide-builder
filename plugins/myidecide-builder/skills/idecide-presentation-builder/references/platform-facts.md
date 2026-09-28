@@ -1974,3 +1974,18 @@ family is called (a comment naming the method passes; a call does not).
 pane" → `generateThumbnailAtTimeOffset(296, t)` then an `<img>` overlay.
 2026-09-17's "export waits for a painted window" → expected of the preview
 path too (same tick), not separately re-proven.
+
+**Addendum, same day (Patagonia proof build → 2.2.5): an ACTIVE tab in a
+covered window is undrawn too.** 49 clean snapshots in the main pass; then, in
+the rebuild pass, three thumbnails timed out (20 s primary + 20 s fallback;
+one recovered, two skipped) and a `changeSlide` stalled, all inside the three
+minutes the Chrome window sat behind Terminal. `chrome.tabs.get().active` was
+true throughout, so the panel's background-tab nudge never fired; the page
+itself knew — `document.visibilityState === "hidden"` — and Chrome throttles
+its timers too (an 800 ms timeout fired at 1.2 s in a background MCP tab).
+Rule: **the render clock starts only when the document is visible.**
+`pipeline.js whenVisible()` waits up to 45 s for `visibilitychange`; the
+panel's probe reports `hidden` and the 20 s nudge focuses the window for it
+(`bringBuilderForward` already did `windows.update({focused:true})` and
+un-minimised — only the trigger was missing). Export had the identical
+weakness; this is the first fix for it.
