@@ -10,7 +10,21 @@ Every item below was proven live in the builder and re-verified after a full pag
 reload. These are the rules the extension's inject scripts must follow — several were
 learned the hard way and silently corrupt a deck if ignored.
 
-Last updated 2026-09-04.
+Last updated 2026-09-28.
+
+> **NEVER call the img.ly export family — `engine.block.export`, `exportVideo`,
+> `exportWithColorMask`, `exportAudio`, `cesdk.utils.export` (Bren, 2026-09-28).**
+> img.ly METERS every one as a billable export against the myiDecide licence;
+> the review snapshots were counted that way and pushed the account into a
+> higher, costlier tier. Not once, not "to compare", not because the method is
+> on the BlockAPI page — it is on the API and it is banned here. To LOOK at a
+> slide use the engine's PREVIEW path (the calls the timeline itself uses):
+> `engine.block.generateVideoThumbnailSequence(page, 296, t, t, 1, cb)` → one
+> `ImageData` of the composed page at time `t`, or
+> `engine.block.generateThumbnailAtTimeOffset(296, t)` → a PNG `Blob` of the
+> current page (browser only). The extension wraps both as
+> `IDP.pageThumbnail(pageId)`; `scripts/package.mjs` refuses to zip a tree that
+> calls an export. Full record: verified-platform-facts.md § 2026-09-28.
 
 > **Dual-environment rule (Bren, 2026-08-07).** This file and the project runbook
 > (`WORKFLOW.md` / `AIAGENT_API.md` / `BUILD_NOTES.md` at the repo root) must BOTH be
@@ -62,7 +76,8 @@ message was hard-coded to the "45s / no current page" wording, so every retry
 (`chrome.tabs.update({active:true})` + `chrome.windows.update({focused:true})`)
 before waiting on the editor, and wait for `window.aiagent.engine`, not just
 `window.aiagent`.** The same applies to every navigated pass — img.ly needs a
-visible tab for `changeSlide` / `block.export` / snapshots; backgrounded runs
+visible tab for `changeSlide` / snapshots (preview-path thumbnails since 2026-09-28 —
+`block.export` is BANNED, see that section); backgrounded runs
 lost slides to 30 s stalls in two of the three records.
 
 ### Colour changes go through `IDP.recolorDeck`, never a rebuild
@@ -1391,8 +1406,10 @@ on deck 200.
 time-remapped loop — it plays the first cycle and freezes on the last frame;
 N back-to-back precomp layers play and loop.** Method: place both builds of
 the same icon (`arrows/arrow-1`, `ui/clock`, white tone) on "Find Your Sport -
-3", then `engine.block.setPlaybackTime(page, t)` for t = 0.2 … 7.3 s and
-`engine.block.export(block, 'image/png')` at each t, hashing the bytes: the
+3", then `engine.block.setPlaybackTime(page, t)` for t = 0.2 … 7.3 s and a
+frame grab at each t, hashing the bytes (the 09-05 proof used `block.export`;
+that call is BANNED since 2026-09-28 — grab frames with
+`generateVideoThumbnailSequence(block, 128, t, t, 1, cb)` and hash `result.data`): the
 `--mode tm` file's frames stopped changing after its ~1 s source cycle; the
 `--mode layers` file's frames kept changing through every sample and repeated
 its cycle. Bren confirmed both on the canvas ("your 2 test lottie uploads are
@@ -1560,11 +1577,13 @@ glyphs (`idecide/icon` / `idecide/lottie` marks, `icon-*`, `*/icon`,
 square Lottie canvas Crop and Contain draw the same picture, which is why
 nobody saw it; the cost was time, not pixels.
 
-Also verified on 304: `engine.block.export(page, 'image/jpeg', {targetWidth,
-targetHeight})` from the aiagent page returns a full-canvas frame at the
-page's current `setPlaybackTime` — the cheap way to look at a slide from a
-browser pane that cannot zoom (an `<img>` overlay in the page, then a
-screenshot). `logoUris.aspect` (w/h) now travels with the logo uploads:
+Also verified on 304: a full-canvas frame of the page can be pulled from the
+aiagent page and shown as an `<img>` overlay for a screenshot — the cheap way
+to look at a slide from a browser pane that cannot zoom. ⚠ The 09-16 proof
+used `block.export`, BANNED since 2026-09-28 (metered by img.ly): use
+`engine.block.generateThumbnailAtTimeOffset(296, t)` (PNG Blob, browser only)
+or `generateVideoThumbnailSequence(page, 296, t, t, 1, cb)` — both take the
+time as an argument, so no `setPlaybackTime` first. `logoUris.aspect` (w/h) now travels with the logo uploads:
 `IDP.setLogo` reads an SVG's viewBox / width+height or decodes a raster,
 and `composer.logoImg` / `scene.placeLogo` size every placement from it.
 
@@ -1605,7 +1624,7 @@ and `composer.logoImg` / `scene.placeLogo` size every placement from it.
   WASM BindingError ("parameter 1 has unknown type … FindAssetsResult") —
   transient; the same call succeeded a few seconds later.
 
-## 2026-09-17 — a graphic's corner radius lives on its SHAPE; `export` waits for a painted window
+## 2026-09-17 — a graphic's corner radius lives on its SHAPE; a page render waits for a painted window
 
 - `shape/rect/cornerRadiusTL` / `TR` / `BL` / `BR` are properties of the
   block's **shape** (`engine.block.getShape(id)` → a `//ly.img.ubq/shape/rect`
@@ -1623,8 +1642,10 @@ and `composer.logoImg` / `scene.placeLogo` size every placement from it.
   2.1.1 writes every radius on the shape (`composer.shapeRadius`,
   `pipeline.setRadius`, `transferDress`, `SH.placeUploadedImage`), and
   inspect reads it from the shape.
-- `engine.block.export(block, { mimeType, targetWidth, targetHeight })` needs
-  the editor to be drawing: with the Claude desktop window MINIMIZED the
+- A page render needs the editor to be drawing (proven with `block.export`,
+  BANNED since 2026-09-28; the preview-path `generateVideoThumbnailSequence` /
+  `generateThumbnailAtTimeOffset` run in the same engine tick, so expect the
+  same — not separately re-proven): with the Claude desktop window MINIMIZED the
   promise never settles (a 45s check timed out; the same call returned a
   frame on deck 304 with the window up). A page script that changes a value
   and then awaits an export can therefore time out with the value still
@@ -1887,3 +1908,69 @@ fact in this document holds on both paths.
   other slides). **The carve-out is the ROLE:** `sk_test_51H…` as the VALUE in
   a labelled cell is a legitimate specimen; the same shape in an `eyebrow` is a
   defect.
+
+## 2026-09-28 — `engine.block.export` is METERED by img.ly; it is BANNED; snapshots come from the preview path (extension → 2.2.4)
+
+**What happened.** img.ly contacted the lead developer: the extension's
+`engine.block.export(page, 'image/jpeg', …)` calls register as exports of the
+licensed system, the account's average exports rose sharply, and the licence
+is being moved to a higher, more expensive tier. The calls were the
+design-review snapshots — one per composed slide in the build loop
+(`snapAudit`), one per inspected slide in the revision chat (`exportSnap`),
+one after every `applyEdits`. A 30-slide build with a review pass and a few
+revisions is on the order of a hundred exports; that is what img.ly saw.
+
+**The rule.** `engine.block.export`, `engine.block.exportVideo`,
+`engine.block.exportWithColorMask`, `engine.block.exportAudio` and
+`cesdk.utils.export` are never called — from the extension, the SH runtime,
+the Claude plugin's page scripts, or any runbook recipe. Not to compare, not
+to verify an animation frame by frame, not because the BlockAPI page lists
+them. Every older recipe in this file that said `block.export` has been
+amended to point here. `scripts/package.mjs` walks every staged `.js` /
+`.mjs` / `.html` and refuses to zip — STORE and TESTER alike — if the export
+family is called (a comment naming the method passes; a call does not).
+
+**The replacement — verified live 2026-09-28 (session 222, 1558×720 page,
+15 s, engine 1.74.1):**
+
+- `engine.block.generateVideoThumbnailSequence(page, 296, t, t, 1, cb)` →
+  `cb(0, ImageData)` of the composed page at time `t`: 641×296 in 20–35 ms
+  (`block.export` took seconds). Overlaid on the canvas it was the same
+  composition, every layer. `t` is honoured independently of the playhead
+  (playhead parked at 7.48 s; frames requested at 0.3 s and 14.92 s differed
+  correctly, later-timed blocks absent from the early one) — so no
+  `setPlaybackTime` / `SH.seek` before and no rewind after. img.ly's own
+  words: passing a page "re-renders the composed scene instead of decoding a
+  file"; pages, graphics, text, groups and tracks are accepted; blocks render
+  in their RESTING state; video fills inside the composition come from cached
+  frames (approximate — fine for layout review). One request per block at a
+  time; the returned function cancels. The callback runs inside the engine's
+  update loop — copy the frame out and leave; do the canvas work outside.
+- `engine.block.generateThumbnailAtTimeOffset(296, t)` → PNG `Blob` of the
+  CURRENT page at `t`, 41–51 ms; browser only. The fallback.
+- Both cap at 512 px high; 296 → 641 wide keeps the frame the reviewer always
+  received. Both exist on 1.74.1 (so do the deprecated
+  `getPageThumbnailAtlas` / `getVideoFillThumbnail*` — do not use those).
+  img.ly documents both under "Thumbnail Previews", apart from the export
+  section, as the API the timeline's filmstrip and page storyboard use.
+- Six back-to-back preview calls produced no network request from the page
+  (an empty DevTools request log over 2.5 s). That is an observation, not a
+  licence statement: whether the preview path is metered at all is a question
+  only img.ly can answer — the lead developer should ask it in the same thread,
+  and until then the preview path is the only render call we make.
+- Like export, the render needs the engine ticking: a background tab or a
+  minimized window stalls it. Bring the tab forward; `pageThumbnail`'s 20 s
+  ceiling cancels the request instead of hanging the pass.
+- `IDP.pageThumbnail(pageId, {time, height, quality})` in `pipeline.js` wraps
+  both and returns the same JPEG data URL as before (`IDP.getSnapshot` reads
+  the MIME from the prefix); `snapAudit`, `inspectSnap` (was `exportSnap`) and
+  `applyEdits` all go through it. The 1150 ms fill-settle wait stays; the
+  seek-to-end / rewind-to-0 pair is gone because the time is an argument.
+
+**Recipe amendments made in this file.** 2026-09-05's lottie loop proof
+("export at each t, hashing the bytes") → grab frames with
+`generateVideoThumbnailSequence(block, 128, t, t, 1, cb)` and hash
+`result.data`. 2026-09-16's "the cheap way to look at a slide from a browser
+pane" → `generateThumbnailAtTimeOffset(296, t)` then an `<img>` overlay.
+2026-09-17's "export waits for a painted window" → expected of the preview
+path too (same tick), not separately re-proven.

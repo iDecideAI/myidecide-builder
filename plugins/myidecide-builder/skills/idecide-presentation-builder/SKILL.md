@@ -366,6 +366,19 @@ change its elements, verify, and report what moved.
 These are earned from real failures. Breaking them produces decks that look
 built and play broken.
 
+- **Never call the img.ly export family.** `engine.block.export`,
+  `engine.block.exportVideo`, `engine.block.exportWithColorMask`,
+  `engine.block.exportAudio`, `cesdk.utils.export` — not once, not to compare
+  two frames, not because the BlockAPI page lists them. img.ly METERS every
+  one as a billable export against the myiDecide licence, and the calls
+  pushed the account into a higher tier (Bren, 2026-09-28). To look at a
+  slide use the engine's PREVIEW path — the calls the Builder's own timeline
+  uses: `engine.block.generateVideoThumbnailSequence(page, 296, t, t, 1, cb)`
+  (one `ImageData` of the composed page at time `t`; draw it on a canvas) or
+  `engine.block.generateThumbnailAtTimeOffset(296, t)` (a PNG `Blob` of the
+  current page; browser only). Both take the time as an argument, so no
+  `setPlaybackTime` first; both cap at 512 px high. Details:
+  `references/platform-facts.md` § 2026-09-28.
 - **Delivery is full-screen landscape on a phone.** The 1558×720 canvas is
   ~7 inches wide in the viewer's hand. **28px is the absolute minimum font
   size**, hero type is 44px+, and touch targets are finger-sized (≥490px wide
@@ -450,7 +463,7 @@ built and play broken.
 - **Keep the Builder tab visible and focused for every long pass.** The
   Builder (img.ly under the hood) does not boot, render or change slides in a
   background tab: a navigated pass with the tab behind something else stalls
-  at `changeSlide`, times out exports and skips slides. Bring the tab to the
+  at `changeSlide`, times out snapshots and skips slides. Bring the tab to the
   front before you start, and tell the user not to switch tabs until it
   finishes.
 - **Every auto-advance names its target explicitly, on every slide.** Never
@@ -873,8 +886,9 @@ earlier ones resolve.
    concurrent calls left only the last one resolving (the others came back
    as black colour-fill blocks) — `await` each placement, never
    `Promise.all` them, and reload the page if one ever hangs. Check a placed
-   animation by exporting frames at two playback times before you promise it
-   animates. If the user's animations are Lordicon files, know their shape:
+   animation by grabbing two preview frames at different times —
+   `engine.block.generateVideoThumbnailSequence(block, 128, t, t, 1, cb)`, never
+   `block.export` (metered by img.ly) — before you promise it animates. If the user's animations are Lordicon files, know their shape:
    a `watermark` layer to drop, `hover-N`/`loop-N` state layers that all
    render at once without expressions (keep one), marker states (`in-*`,
    `hover-*`, `loop-*`) to cut a window from, and colours in two slots —
@@ -994,7 +1008,8 @@ The same surface, one slide at a time. Read before you write:
   through `insertUploadedImage` in the old block's box, at the old z-index,
   with the old timing — light and dark drawings by field.
 - **Say what you changed, with the layer names**, not "done".
-- **Verify before replying.** Re-read the slide (or re-export a snapshot) and
+- **Verify before replying.** Re-read the slide (or take a fresh preview
+  thumbnail — `generateThumbnailAtTimeOffset(296, t)`, never `block.export`) and
   confirm the change landed. Never promise to check something after your reply
   — your reply is the last thing that happens.
 - Structural changes (add / remove / re-order a slide) mean the deck's
@@ -1041,7 +1056,10 @@ failure this system has hit repeatedly.
 - Keep the contact/sender block at the foot of the stack, below the buttons.
 - `engine.scene.setZoomLevel(0.95)` shows the whole slide above the timeline
   for a screenshot; `engine.block.setPlaybackTime(page, s)` scrubs the
-  preview to the frame at `s`. Check margins by numbers, not by eye.
+  preview to the frame at `s`. To see a frame without a screenshot,
+  `engine.block.generateThumbnailAtTimeOffset(296, s)` returns a PNG blob of
+  the page at `s` — show it in an `<img>` overlay. Never `engine.block.export`:
+  img.ly bills it. Check margins by numbers, not by eye.
 
 `references/composition.md` has the full system.
 

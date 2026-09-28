@@ -659,7 +659,7 @@ dirty** — every engine write must be followed by a documented `api.*` call bef
 | Timing & media | 30 | `setDuration`, `setTimeOffset`, `setTrimOffset`, `setTrimLength`, `setLooping`, `setVolume`, `setMuted`, `getNativeWidth/Height`, `forceLoadAVResource` |
 | Text | 28 | `replaceText`, `setTextColor`, `setTextFontSize`, `setTextFontWeight`, `setTextCase`, `getTextVisibleLineCount`, `getTextVisibleLineGlobalBoundingBoxXYWH`, `setTextCursorRange` |
 | Size mode / visibility | 23 | `setContentFillMode`, `setSizeMode`, `setPlaceholderEnabled`, `setClipped`, `setVisible`, `setOpacity`, `setBlendMode` |
-| Lifecycle | 20 | `create`, `destroy`, `duplicate`, `saveToString`, `loadFromString`, `export`, `replace` |
+| Lifecycle | 20 | `create`, `destroy`, `duplicate`, `saveToString`, `loadFromString`, `export` ⚠ **BANNED — img.ly meters it as a billable export (Bren 2026-09-28); render with `generateVideoThumbnailSequence` / `generateThumbnailAtTimeOffset`, AIAGENT_API.md Recipe P**, `replace` |
 | Shadow | 17 | `setDropShadowEnabled`, `setDropShadowColor`, `setDropShadowOffsetX/Y`, `setDropShadowBlurRadiusX/Y` |
 | Effects | 17 | `createEffect`, `appendEffect`, `getEffects`, `createBlur`, `setBlur`, `setBlurEnabled` |
 | Stroke | 14 | `setStrokeEnabled`, `setStrokeColor`, `setStrokeWidth`, `setStrokeStyle`, `setStrokePosition` |
