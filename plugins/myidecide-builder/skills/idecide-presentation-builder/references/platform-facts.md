@@ -373,6 +373,59 @@ and the fallback outline then plans from a whole script. Open (owner: lead
 developer): a higher `max_tokens` ceiling on the proxy (64,000) would make
 the cut rare instead of handled.
 
+**Proved on the Stripe record (22:37, the first built with the evidence).**
+`usage.log[0] = {stage:'plan', out: 35802, stop:'max_tokens'}` and the
+`script reply:` line: 26,198 characters received (CSV 20,007 + outline 6,191)
+— the reply ran out of output budget with the thinking counted in, exactly the
+mechanism above. This time the cut landed in the OUTLINE: the CSV was whole
+(Finish Up 1–3 and the Hamburger Menu present), so the continuation had
+nothing to add and the fallback outline planned from a whole script; the deck
+was complete. 52 slides, 22.8 min, 19 calls.
+
+### The "Importing Video" dialog is the per-slide fallback, not the wave (Stripe, 2026-10-16)
+
+Bren: "the uploading video popup from img.ly came up a few times throughout
+the build, which I thought our aiagent bulk video upload call avoided." The
+trace says the bulk calls were used throughout: 9 `assets.importPexelVideoBatch`
+(the wave, in chunks), 63 `currentSlide.videos.insertPexelBatchVideo`
+placements, 20 `assets.importLottieBatch` → 66 `images.insertUploadedImage`,
+39 `images.uploadAndInsertImage` (icons, the logo, stills). The twenty dialogs
+were the twenty single `POST /pexels/import/video` requests of the PER-SLIDE
+fallback — the path a slide takes when the wave could not source its key (here:
+139 searches into the Pexels hourly limit, the searches answered empty, plus a
+few "the server could not process pexels N"). That fallback resolved through
+the ENGINE's asset source, `e.asset.apply('pexelVideos', …)`: the platform's
+single import, which shows the dialog, creates a temp block, polls the CDN and
+returns ONE rendition (960×540 — the table at the top of this file). Since
+2.3.0 (late) `SH.resolveSlideClip` runs one key through `batchResolveClips`
+(the wave's search), tries the engine's asset source as a second SEARCH when
+that answers nothing, and imports through `importPexelVideoBatch` either way —
+no dialog, four renditions; `asset.apply` survives as `resolveSlideClipLegacy`
+for a Builder bundle without the batch surface. Not yet exercised live.
+
+### Three geometry faults every Quick Build deck carried (Stripe, 2026-10-16; mock-replayed on the day's eight records)
+
+Bren saw two on the Stripe deck — "extra back plates were added behind the
+lotties in some slides, which caused some overflow" and "on a number of final
+cta slides throughout builds, the logo appears to get placed below the contact
+info lines" — and the mock engine, replaying the eight build records of the
+day through `__COMPOSE`, found both on every deck plus a third: 24 card wells
+outside their card, 21 card bodies packed BELOW their card, 26 logos on the
+contact lines, across 379 Quick Build slides. The mock agreed with the engine
+to the pixel where it could be checked (the Stripe record's own log line
+`icons: 6 stacked icon(s) enlarged — card/icon/box ×1.76, card/icon ×2.00 …`;
+the sample deck's record packing `card/bg+11+itemBody+2`; the screenshot's plate 10 px
+left of the card). The three causes and fixes are in element-contract.md ("A
+card holds its own rows; the well rides with its glyph") and the CHANGELOG;
+the short form: the stacked-icon pass tested the well's NAME for `icon-well`
+when the well is named `<glyph>/box` (the role is `icon-well`), so the well
+was grown as a second icon; the packer's plated-row rule paired a card's body
+off the card's bottom edge; the terminal CTA's `brand-logo` was pinned as
+architecture while the sender lines packed onto it. After the fix the same
+379 slides replay with 0 / 0 / 0, and the six text overlaps that remain
+(LiftProtocol "Inside the Plan - 2", the sample deck's "Not Right Now") are the same
+six as before — the stacked-buttons fault already on the open list.
+
 ---
 
 ## Batch video import — the footage wave (measured 2026-08-22, deck 179)

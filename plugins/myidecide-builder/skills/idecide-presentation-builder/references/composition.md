@@ -69,6 +69,39 @@ whole row when nothing does; a plated or ringed row is still spaced by its
 box. Pair gap inside a unit (`PAIR_GAP`, 16 px), unit gap between units
 (`GAPT`) — the pair reads as one object, the list as its members.
 
+### A card holds its own rows; the well rides with its glyph (binding, 2026-10-16)
+
+Three things the Stripe build showed on every card slide and every terminal
+CTA of the day's eight records (24 wells, 21 bodies, 26 logos), now binding:
+
+- **A row inside the same plate hangs off the text, not the plate.** The
+  plated-row rule above is right for a button and a ring; applied to a CARD
+  it paired the body off the card's bottom edge and packed it 16 px BELOW the
+  card it was drawn in. A subordinate row whose blocks all sit inside the
+  plates of the row above is part of that card: it pairs off the title's ink
+  (even when the title is two rows up, because a neighbour's title wrapped),
+  and the plate grows to hold it — every plate in the row to the same height,
+  so a set of cards stays uniform. Rows merge into a unit when they share ANY
+  group with any row of it (three cards are three groups).
+- **The well is part of the icon, never a second icon.** `icon()` draws the
+  well under a card/step/row glyph, named `<glyph>/box` with the role
+  `icon-well`; the stacked-icon pass recognises it by role or suffix and grows
+  the glyph and its well as ONE unit — kept at the corner the renderer gave
+  it, the ratio the renderer gave it (≈1.7×), the copy below moved down by the
+  growth. In a card the growth is what the card can hold: the playbook's card
+  icon (40–56 in a well), never a blind ×2 the card has no room for; a row of
+  icons shares the smallest scale any of them can afford, so three cards keep
+  one icon size.
+- **The terminal CTA's logo is the first line of the sender block.** It is
+  marked into the `contact:` group (role `logo`) and packs, separates and
+  closes the slide WITH the name and email lines; it sits on the column's own
+  edge (left edge at the column's left, right at its right, or centred). A
+  `brand-logo` with no group mark is still architecture and never packs (the
+  cover, the reveal, the corner mark). When the packed block would end inside
+  the bottom 24 px, the logo line gives way first — the lines close up over it
+  and the mark goes to a free corner instead (`trimSenderLogo`, before
+  `cornerMark`).
+
 ## The cover has exactly one action element (binding, 2026-09-03)
 
 Slide 1 is advanced by the platform on **any click**; it never carries a
