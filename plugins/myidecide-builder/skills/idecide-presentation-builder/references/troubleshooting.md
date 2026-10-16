@@ -1,34 +1,40 @@
 > **Reference for the myiDecide Presentation Builder skill.** The plain-English
 > troubleshooting KB shared with the myiDecide AI: one
-> entry per situation under a stable code (`KEY-01`, `TAB-04`, …) — what the
+> entry per situation under a stable code (`ACCT-01`, `TAB-04`, …) — what the
 > user sees, what it means, what to do. Read it when the user reports an error
 > or asks what a message means; answer from it before retrying anything. The
-> `KEY-*` entries concern the Extension's API key, and `BUILD-07` the
-> Extension's own reading of the AI's plan (here you write and act on the plan
-> yourself); neither applies to this skill.
+> `ACCT-*`, `API-*` and `NET-*` entries concern the Extension's connection to
+> the person's myiDecide account (since 2.3.0 its AI runs through myiDecide on
+> their sign-in; this skill runs on the user's own Claude subscription), and
+> `BUILD-07` the Extension's own reading of the AI's plan (here you write and
+> act on the plan yourself); none of those apply to this skill.
 
 # Troubleshooting — myiDecide AI
 
 Plain-English help for the messages the myiDecide Builder can show while it writes,
 builds or edits a myiDecide presentation. Each entry has a short code
-(`KEY-01`, `TAB-02`, …) that the side panel quotes next to an error, so you can
+(`ACCT-01`, `TAB-02`, …) that the side panel quotes next to an error, so you can
 jump straight to the matching section. Nothing here needs technical knowledge;
 where a step does, it says so.
 
-The `KEY-*` entries are about the Anthropic API key the **Chrome extension**
-uses. The Claude plugin (the "myiDecide Builder" plugin for Cowork) needs no
-key and never shows those — every other entry applies to both.
+The `ACCT-*`, `API-*` and `NET-*` entries are about the **Chrome extension's**
+connection to your myiDecide account — since 2.3.0 every AI request goes
+through myiDecide on your own sign-in, and there is no API key to manage. (The
+`KEY-01`…`KEY-06` codes of earlier versions, about a pasted Anthropic key, are
+retired; a link to one of them lands on `ACCT-01`.) The Claude plugin (the
+"myiDecide Builder" plugin for Cowork) runs on your Claude subscription and
+never shows those — every other entry applies to both.
 
 ## Codes at a glance
 
 | Code | What you'll see (short) | In one line |
 |---|---|---|
-| `KEY-01` | "The Claude API rejected this key" · `401 authentication_error` | The key is mistyped, copied from the masked list, revoked or expired |
-| `KEY-02` | "credit balance is too low" | The Anthropic account has no prepaid credit yet |
-| `KEY-03` | `429 rate_limit_error` · "enforced_spend_limit_reached" | A monthly usage cap or rate limit was hit — wait, or raise the limit |
-| `KEY-04` | `404 not_found_error` "model: …" · `403 permission_error` | The chosen model isn't available to this key — pick another model |
-| `KEY-05` | "anthropic-workspace-id is required when authenticating with an identity-linked API key" | The key was created with no workspace chosen — paste its Workspace ID in Settings, or make a key with a workspace |
-| `KEY-06` | "anthropic-workspace-id header must be a valid workspace ID" | The Workspace ID in Settings is mistyped or belongs to another organisation |
+| `ACCT-01` | "You're signed out of myiDecide" · `API 401` | Your myiDecide session ended — sign in on the tab that opens; the panel carries on by itself |
+| `ACCT-02` | "Today's AI allowance is used up" · `API 429 rate_limit_error` | Your account's daily iDecide AI allowance is spent — it comes back at the reset time in ⚙ Settings |
+| `ACCT-03` | "That model isn't available right now" · `404 not_found_error` "model: …" · `403 permission_error` | The model iDecide AI builds with couldn't be reached through myiDecide — wait a few minutes |
+| `API-01` | "The AI request was refused" · `API 400` / `invalid_request_error` | The request was sent and refused; usually temporary — resume, then send the record |
+| `API-02` | "iDecide AI is busy right now" · `529 overloaded_error` · `API 502/503` | The AI service is overloaded or briefly down — wait a minute or two |
+| `NET-01` | "myiDecide couldn't be reached" · "Failed to fetch" | No answer from my.idecide.com — connection, captive Wi-Fi page, firewall or VPN |
 | `TAB-01` | "Open your presentation in the myiDecide Builder first" · "I'm not seeing a myiDecide tab in front" | The panel can't find the myiDecide Builder tab it should work in |
 | `TAB-02` | "Your presentation's tab has to be the one you can see" · "the build tools never loaded … because <reason>" | Chrome is not drawing the myiDecide Builder tab (minimised, behind another window, or behind another tab) so it never finishes starting |
 | `TAB-03` | "builder error dialog detected" · "The myiDecide Builder crashed N times … mid-update" | The myiDecide Builder showed its Unknown Error dialog |
@@ -47,259 +53,166 @@ key and never shows those — every other entry applies to both.
 
 ---
 
-## API key (Chrome extension only)
+## Your myiDecide account (Chrome extension only)
 
-### KEY-01 — The Claude API rejected this key
+Since 2.3.0 the extension sends every AI request to **myiDecide** (the backend
+at my.idecide.com), which runs it on iDecide's own account and counts it
+against a **daily iDecide AI allowance** for your myiDecide user. You never
+paste a key: the only thing the extension needs is that you are **signed in to
+myiDecide in Chrome**. ⚙ Settings shows who you are signed in as and how much
+of today's allowance is used; the slim bar at the bottom of the panel shows the
+same figure while you work.
+
+### ACCT-01 — You're signed out of myiDecide
 
 **What you'll see**
 
-- On the setup screen: *"The Claude API rejected this key. Double-check it …
-  and paste it again."*
-- Before a resume: *"The Claude API rejected your key — check it in Settings
-  (⚙), then press Resume again."*
-- In the build log: `API 401: … "type":"authentication_error" …`
-- If the text you pasted isn't even the right shape: *"That doesn't look like
-  an Anthropic key"*.
+- A bar under the panel's header: *"Sign in to myiDecide — iDecide AI builds
+  through your myiDecide account"* with a **Sign in** button, and a myiDecide
+  login tab opening by itself.
+- Before a build: *"One thing first: you're signed out of myiDecide. Sign in
+  with the button at the top and I'll start writing straight after."*
+- Before a resume: *"Waiting on your myiDecide account"* with this card.
+- In the build log: `API 401: not signed in to myiDecide`.
 
 **What it means**
 
-Anthropic's servers looked at the key and didn't recognise it. One of four
-things is true:
-
-1. **It was mistyped or cut short.** A real key is long (over 100 characters)
-   and is one unbroken run of letters, numbers and dashes. A missing character
-   at either end is enough.
-2. **It was copied from the masked key list.** After a key is created, the
-   Console's *API keys* page only ever shows a shortened preview — a few
-   characters, three dots, then the last four (something like
-   `…api03-4Kq…m2AA`). That preview is a label, not the key. The full key is
-   shown **once**, at the moment you create it.
-3. **It was revoked** (deleted or disabled in the Console), by you or by
-   someone else in the organisation.
-4. **It expired.** When you create a key the Console asks for an expiry —
-   3 hours, 1 day, 7 days, 30 days, a custom length, or *Never*. A 30-day key
-   simply stops working on day 31, and expired keys can't be reactivated.
+myiDecide no longer has a signed-in session for this Chrome profile. The
+session expired, you signed out in another tab, or you signed in to myiDecide
+in a different browser or profile. Nothing already built is lost — the
+presentation lives in your myiDecide account, and the build record is kept in
+the panel.
 
 **What to do**
 
-1. Sign in at **platform.claude.com** and, on the dashboard, press
-   **Get API Key**.
-2. Name it (e.g. "myiDecide Builder"), choose an expiry you'll remember —
-   *Never* if you're happy to rotate it yourself — and press **Create key**.
-   Made from the dashboard, the key is tied to your workspace and works in
-   the extension as-is. (A key made some other way, with no workspace, needs
-   its Workspace ID pasted in Settings — see `KEY-05`.)
-3. **Copy the full key from the confirmation dialog straight away** and paste
-   it into the extension's ⚙ Settings. You can't come back for it later —
-   only the masked preview remains.
-4. Press **Test key**. It runs the real calls the myiDecide Builder makes and tells you
-   in plain English what passed and what didn't.
-5. Save. If a build had failed, open 🕘 History and press **Resume build** —
-   progress is kept.
+1. Sign in on the myiDecide tab that opened (or press **Sign in** at the top
+   of the panel; it opens the login page and brings it forward).
+2. Come back to the panel. It checks by itself as soon as the login page
+   moves on, says *Signed in as …*, and the bar folds away. A build you had
+   asked for while signed out starts on its own.
+3. If a build had stopped: 🕘 History → **Resume build**. Progress is kept.
 
 **If it keeps happening**
 
-- Make sure nothing was added around the key when you pasted (a space, a
-  quote mark, a line break).
-- Ask whoever manages your Anthropic organisation whether the key was
-  disabled or whether keys there are limited to a maximum lifetime.
+- Sign in to myiDecide in the **same Chrome profile** the extension is
+  installed in — a different profile or an incognito window has its own
+  cookies, and the panel cannot see them.
+- An ad blocker or privacy extension that deletes cookies for my.idecide.com
+  signs you out between visits; allow the site.
 - Still stuck? See `HELP-01`.
 
-### KEY-02 — "credit balance is too low"
+### ACCT-02 — Today's AI allowance is used up
 
 **What you'll see**
 
-- On the setup screen: *"Key accepted — but the account has no credit yet."*
-- During a build: a red status line quoting *"Your credit balance is too low
-  to access the Anthropic API"*, and the build stops.
-- Before a resume: *"Your Anthropic account still shows no available
-  credit — top up … then press Resume again. Your progress is saved."*
-- In the build log: `API 400: … credit balance is too low …`
+- *"Today's AI allowance is used up (ACCT-02)."*
+- ⚙ Settings → *Today's AI usage*: **Limit reached**, with the reset time.
+- In the build log: `API 429: … rate_limit_error …` and the build stopping
+  rather than retrying.
 
 **What it means**
 
-The key is fine. The Anthropic Console account it belongs to is **prepaid**,
-and it has no credit on it. A brand-new organisation starts at zero, so this is
-the normal first hurdle rather than a fault.
+Every myiDecide user has a daily iDecide AI allowance, and today's is spent.
+It is a cap on how much AI work your account can ask for in a day — a
+long Creative Build, several builds in a row, or a lot of edit requests will
+reach it. The panel stops the build at once instead of retrying until the
+reset, so no allowance is wasted on refused calls. Nothing already built is
+lost.
 
 **What to do**
 
-1. Go to **platform.claude.com → Billing** (under Settings) and add credit.
-   A small amount goes a long way: a typical build costs about **$1–2
-   (Quick Build) to $2.50–4 (Creative Build) with Sonnet**, **$3–5 (Quick
-   Build) to $6–10 (Creative Build) with Opus**, about twice that with
-   Fable, and **$0.50–2 with Haiku**. $10 covers several builds.
-2. Back in the extension, press **Test key** in ⚙ Settings — the credit check
-   should now pass.
-3. If a build had stopped, open 🕘 History → **Resume build**. Nothing that
-   was already built is redone.
+1. Note the reset time in ⚙ Settings (*Resets at …*). The allowance comes
+   back in full then.
+2. After the reset, open 🕘 History and press **Resume build**. Finished
+   slides are never redone; the build carries on from where it stopped.
+3. If your work regularly needs more than a day's allowance, email
+   **hi@idecide.com** from your myiDecide account.
 
 **If it keeps happening**
 
-- Credit can take a minute to register after payment. Wait, then Test key
-  again.
-- If your organisation has a monthly **spend limit** set, reaching it looks
-  similar — see `KEY-03`.
+- Quick Build uses roughly half the allowance of a Creative Build on the same
+  presentation; a build that stops near the end can be resumed the next day
+  and finishes in minutes.
+- Still stuck? See `HELP-01`.
 
-### KEY-03 — 429 rate_limit_error / "enforced_spend_limit_reached"
-
-**What you'll see**
-
-- In the build log: `API 429: … "type":"rate_limit_error" …`, sometimes with
-  *"your organization has crossed its monthly API usage threshold"* and
-  `"error_code":"enforced_spend_limit_reached"`.
-- The build slows to a crawl, retries, or stops with that line on screen.
-
-**What it means**
-
-Anthropic is refusing calls for one of three reasons, all on the account
-side:
-
-- **The monthly spend cap of your usage tier.** Every organisation sits on a
-  tier with a monthly ceiling; once it's reached, usage pauses until 00:00
-  UTC on the first day of the next month unless a higher limit is granted
-  sooner. The message says when access returns.
-- **A spend limit you (or an administrator) set** on the organisation or
-  workspace.
-- **A short-term rate limit** — too many requests in a short window. These
-  clear by themselves within a minute or so.
-
-**What to do**
-
-1. Wait a minute or two, then open 🕘 History → **Resume build**. If it was a
-   short-term limit, it simply continues.
-2. If it fails again straight away, sign in at **platform.claude.com** and
-   open **Settings → Billing**: raise the spend limit you set, or — if the
-   message names a date — request a higher tier from Anthropic. Tiers move up
-   automatically over time with usage history and account standing.
-3. Resume once the limit is raised or the date has passed.
-
-**If it keeps happening**
-
-- Pick a cheaper model for the rest of the build (⚙ Settings → model). Sonnet
-  or Haiku use a fraction of the budget Opus does.
-- If the cap is organisation-wide, someone else's usage counts too — ask the
-  administrator.
-
-### KEY-04 — 404 not_found_error "model: …" / 403 permission_error
+### ACCT-03 — That model isn't available right now
 
 **What you'll see**
 
-- In the build log: `API 404: … "type":"not_found_error","message":"model:
-  claude-…"`
-- Or: `API 403: … "type":"permission_error" …`
-- Test key reports that the chosen model failed while the key itself passed.
+- *"That model isn't available right now (ACCT-03)."*
+- In the build log: `API 404: … not_found_error … model: …` or
+  `API 403: … permission_error …`.
 
 **What it means**
 
-The key works, but the **model you picked isn't available to it**. Some
-models are limited by organisation, workspace or region, and some are retired
-over time. A 403 means the key has been scoped (for example to one workspace)
-and that workspace can't use the model.
+myiDecide accepted the request but the AI model it builds with could not be
+reached — the model is being updated on the service's side, or myiDecide's
+own configuration is mid-change. That is on iDecide's side, not yours.
 
 **What to do**
 
-1. Open ⚙ Settings and choose a different model from the picker — **Opus 5**
-   is the recommended default; **Sonnet 5** is the economical choice.
-2. Press **Test key** — it checks the model you selected, not just the key.
-3. Resume the build from 🕘 History if one had stopped.
+1. Wait a few minutes, then 🕘 History → **Resume build**.
+2. If it is still refused after a few tries, email **hi@idecide.com** with the
+   *Technical detail* line from the card.
 
-**If it keeps happening**
-
-- Sign in at platform.claude.com and check the workspace the key is scoped
-  to; a key created for a restricted workspace inherits its limits. Creating
-  a new key with the default workspace usually clears a 403.
-- If you pasted a **Workspace ID** in Settings, a 403 can also mean that
-  workspace isn't one your account may use — try a different one, or clear
-  the box and use a key made from the dashboard's **Get API Key** button.
-
-### KEY-05 — "anthropic-workspace-id is required when authenticating with an identity-linked API key"
+### API-01 — The AI request was refused
 
 **What you'll see**
 
-- In **Test key**: the *Anthropic accepts the key* row (or a model row) turns
-  red with *"This key was created with a Linked account but no workspace
-  chosen …"*, and a **Workspace ID** box appears under the key.
-- During a build or an edit: a card titled *"This key needs a Workspace ID
-  (KEY-05)"* and the run stops before anything else is tried.
-- In the build log: `API 400: … "anthropic-workspace-id is required when
-  authenticating with an identity-linked API key; send the id of the workspace
-  this request acts in." …`
+- *"The AI request was refused (API-01)"* with the exact wording under
+  *Technical detail*.
+- In the build log: `API 400: … invalid_request_error …`.
 
 **What it means**
 
-The key itself is fine. A key linked to your account can be tied to **one
-workspace** or left to work in **all** the workspaces you can use. Keys made
-with the dashboard's **Get API Key** button are the first kind; a key created
-from the Console's key-management pages without a workspace chosen is the
-second, and Anthropic then needs to be told, on every call, which workspace
-the call acts in. The extension does that automatically once you give it the
-workspace's ID — until then the API refuses everything, even the one-token
-test call.
-
-(That is why the same steps worked for one person and not another: one key
-carried its workspace inside it, the other did not.)
+The request reached myiDecide and was sent on, but was refused — most often a
+request the model could not accept as sent (a very large attachment, say) or a
+temporary fault on the service's side.
 
 **What to do**
 
-Either of these works; the first keeps the key you have.
+1. Try again in a minute (🕘 History → **Resume build**, or send your message
+   again).
+2. If the same message repeats, download the build record (🕘 History → ⬇)
+   and email it to **hi@idecide.com** — see `HELP-01`.
 
-1. In the extension open ⚙ **Settings** and press **"Key needs a Workspace
-   ID?"** under the key (after a failed test the box is already showing).
-2. In the Claude Console open **Settings → Workspaces** and copy the ID from
-   the **ID** column of the workspace you want the myiDecide Builder to use. It starts
-   with `wrkspc_`. Paste it into the **Workspace ID** box.
-3. Press **Test key** — every row should turn green and the first row names
-   the workspace — then **Save**.
-
-Or:
-
-1. On the dashboard at **platform.claude.com** press **Get API Key** — a
-   key made there is tied to your workspace.
-2. Copy the new key from the confirmation box, paste it into ⚙ Settings,
-   leave the Workspace ID box empty, press **Test key**, then **Save**.
-
-If a build had stopped, open 🕘 History → **Resume build** — progress is
-kept.
-
-**If it keeps happening**
-
-- The Workspace ID must be pasted on its own — nothing before `wrkspc_` and
-  nothing after the last character.
-- A workspace ID from a different organisation than the key's is refused —
-  see `KEY-06`.
-- The extension cannot look the ID up for you: Anthropic's workspace list is
-  an administrator-only call. If you can't see **Settings → Workspaces**,
-  ask whoever manages your organisation for the ID, or make the key from
-  the dashboard (second route above).
-
-### KEY-06 — "anthropic-workspace-id header must be a valid workspace ID"
+### API-02 — iDecide AI is busy right now
 
 **What you'll see**
 
-- In **Test key**: the *Workspace ID* row is red — either *"A workspace ID
-  looks like wrkspc_ followed by letters and digits — this one doesn't"* or
-  *"Anthropic doesn't accept that Workspace ID"*.
-- During a build or an edit: a card titled *"The Workspace ID isn't valid
-  (KEY-06)"*.
-- In the build log: `API 400: … "anthropic-workspace-id header must be a
-  valid workspace ID." …`
+- *"iDecide AI is busy right now (API-02)"*.
+- In the build log: `API 529: … overloaded_error …`, `API 502` or `API 503`.
 
 **What it means**
 
-The extension sent the Workspace ID saved in Settings, and Anthropic didn't
-recognise it for this key: it was mistyped, pasted with extra characters, or
-it belongs to a different organisation than the key.
+The AI service behind myiDecide is overloaded or briefly unavailable. The
+panel retries short outages by itself; this card means they lasted longer
+than it was willing to wait.
 
 **What to do**
 
-1. Open ⚙ **Settings**. Copy the ID again from the **ID** column of
-   **Settings → Workspaces** in the Claude Console and paste it on its own.
-2. Press **Test key**, then **Save**.
-3. Or clear the box and use a key made with the dashboard's **Get API
-   Key** button — then no ID is needed (see `KEY-05`, second route).
+1. Wait a minute or two, then 🕘 History → **Resume build**.
+2. If it keeps happening for more than a few minutes, email **hi@idecide.com**.
 
----
+### NET-01 — myiDecide couldn't be reached
+
+**What you'll see**
+
+- *"myiDecide couldn't be reached (NET-01)"*.
+- In the build log: `Failed to fetch`, `NetworkError`, `ERR_INTERNET_DISCONNECTED`,
+  `ERR_NAME_NOT_RESOLVED`.
+
+**What it means**
+
+The request to my.idecide.com never got an answer. Usually a dropped
+connection, a captive Wi-Fi login page that has not been clicked through yet,
+or a firewall or VPN that blocks the address.
+
+**What to do**
+
+1. Check that **my.idecide.com** opens in a tab.
+2. Try again in a moment. If a build had stopped: 🕘 History → **Resume
+   build**.
 
 ## The myiDecide Builder tab
 
@@ -811,7 +724,7 @@ Open 🕘 **History** in the panel. Every run that was saved has a **⬇** butto
 `build-record-<brand>-<date>.json` to your Downloads folder. It contains the
 questionnaire answers, the script, every step of the build log, every edit
 request and reply, and the timings — everything needed to see what happened.
-It does **not** contain your API key.
+It does **not** contain your myiDecide password or any sign-in cookie.
 
 **What to send**
 
@@ -829,5 +742,5 @@ Email **hi@idecide.com** with:
 
 - Try the "What to do" steps for the matching code once — most stops resume
   cleanly from 🕘 History.
-- Never send your Anthropic API key. Support does not need it, and a key sent
-  by email should be treated as exposed and replaced.
+- Never send your myiDecide password. Support does not need it — the
+  address of the presentation and the record are enough.

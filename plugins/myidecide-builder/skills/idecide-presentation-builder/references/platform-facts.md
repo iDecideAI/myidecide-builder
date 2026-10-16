@@ -10,7 +10,7 @@ Every item below was proven live in the builder and re-verified after a full pag
 reload. These are the rules the extension's inject scripts must follow — several were
 learned the hard way and silently corrupt a deck if ignored.
 
-Last updated 2026-09-28.
+Last updated 2026-10-16.
 
 > **NEVER call the img.ly export family — `engine.block.export`, `exportVideo`,
 > `exportWithColorMask`, `exportAudio`, `cesdk.utils.export` (Bren, 2026-09-28).**
@@ -126,34 +126,92 @@ fills blank names from the outline order, keeps plan slides that are
 referenced as targets, and drops unresolvable targets so the fallback
 re-points them.
 
-### Anthropic API — an identity-linked key with no workspace needs a header
+### Anthropic API — RETIRED 2026-10-16 (the extension no longer calls it)
 
-Not a myiDecide fact, but it decides whether the extension works at all, and
-it was measured the same day (second tester run). A Console key created with
-*Linked account* set and **no workspace chosen** is an *all-workspaces* key:
+Until 2.2.6 the extension called `api.anthropic.com` from the browser with a
+key the person pasted, and an identity-linked key made with no workspace
+chosen needed an `anthropic-workspace-id` header on every call (second tester
+run, 2026-09-03; `KEY-05` / `KEY-06`). Since 2.3.0 no call leaves the
+extension for Anthropic — see the next section — so the header, the key UI,
+the Test-key diagnostic and the `KEY-*` codes are gone. The finding stays here
+for the record only.
 
-- `POST /v1/messages` and `GET /v1/models` both answer `400
-  invalid_request_error` — *"anthropic-workspace-id is required when
-  authenticating with an identity-linked API key; send the id of the
-  workspace this request acts in."* — for **every** model, including the
-  one-token Haiku ping the diagnostic uses.
-- With the header set to something that is not a workspace the API answers
-  *"anthropic-workspace-id header must be a valid workspace ID."* (`default`
-  is not accepted; the value is the `wrkspc_…` ID from the ID column of
-  Console → Settings → Workspaces).
-- The Admin API (`GET /v1/organizations/workspaces`, `/v1/organizations/me`)
-  answers `403 permission_error` to a personal key, so **the panel cannot
-  discover the workspace** — the person pastes it or creates a key with a
-  workspace chosen (that key carries its scope and needs nothing).
-- CORS preflight on `api.anthropic.com` lists `anthropic-workspace-id` in
-  `access-control-allow-headers`, and the panel's `host_permissions` cover
-  the origin anyway.
-- A successful call returns the resolved workspace in the
-  `anthropic-workspace-id` **response** header (also for the Default
-  Workspace); the diagnostic shows it in the "accepts the key" row.
+---
 
-Source: platform.claude.com/docs → Manage Claude → Authentication → "Select a
-workspace".
+## 2.3.0 — every AI call goes through the myiDecide backend (lead developer, 2026-10-15; verified on his walkthrough + Bren's charity: water build 2026-10-16)
+
+The Builder's backend proxies the Anthropic Messages API for the extension at
+`<builder>/api/extension` (`config.js`: `IDP_API_URL = IDP_BUILDER_URL +
+"/api/extension"`; production `https://my.idecide.com`, dev
+`http://localhost:8099`). It authenticates with the person's **myiDecide
+sign-in cookie** — the panel is an extension page with `host_permissions` for
+the origin, so `fetch(…, { credentials: "include" })` sends the cookie and CORS
+does not apply — runs the call on iDecide's own Anthropic account, logs tokens
+and real cost per user, and meters each user against a **daily allowance**.
+
+- `GET /user` → `{ firstName, lastName, email, profileImageUrl }` for the
+  signed-in person; `401` when there is no session. The panel calls it on
+  open, on visibility, before a build, and every 4 s while the sign-in bar is
+  open.
+- `GET /usage` → `{ usedUsd, limitUsd, remainingUsd, percentUsed, resetsAt, … }`
+  (and `tokensUsed`). The panel shows the percentage only (the footer meter
+  and the Settings card); refreshed when every Messages stream ends, on
+  sign-in, on visibility, when Settings opens, and just after `resetsAt`.
+- `POST /v1/messages` — the Messages API, proxied unchanged, with these
+  rules the proxy enforces (a violation is a `400`): `stream: true` on every
+  call; only the four models in `API_MODELS`
+  (`claude-fable-5-1`, `claude-opus-5-5`, `claude-sonnet-5-5`,
+  `claude-haiku-5-5`); `max_tokens ≤ 32000`; **no server tools** — a tool
+  whose `type` is not `custom` is refused, so `web_search` / `web_fetch`
+  cannot ride along (`RESEARCH_TOOLS = []` in the panel and the prompts say
+  "no web access" instead; Brandfetch still runs client-side); only the
+  server-side-fallback beta header.
+- `GET /v1/models` — the model list, through the same proxy (the picker's
+  catalogue when it is switched on).
+- `401` on any call = signed out: the panel opens `<builder>/login` once per
+  15 s burst, shows the sign-in bar, and re-checks `/user` when a myiDecide
+  tab finishes loading a non-login page (`chrome.tabs.onUpdated`, no extra
+  permission). `429` with `x-should-retry: false` = the daily allowance is
+  spent: fatal for the run (no retry loop until midnight), `ACCT-02`.
+- Every request carries `anthropic-version` and `x-client-version` (the
+  manifest's version) so the backend can tell builds apart.
+
+
+### The person chooses nothing (Bren 2026-10-16) — the selectors are switches
+
+`FEATURES` in `config.js` (`modelPicker`, `effortPicker`, `advancedSettings`,
+`buildModePicker`) are `true`/`false`; all four are **off**, and `LOCKED`
+(`claude-opus-5-5` · `high` · `quick`) is what every call uses. A switch that
+is off forces its value into the stored settings at boot (`lockSettings()`),
+hides its pill, and the Settings note says what is locked. A deck opened for
+REVISION still follows the mode it was built in (`MODE_PIN`), so a 2.2.x
+Creative Build keeps composing scenes with the switch off. Build records
+carry `settingsUsed.features` so a run says which switches it had.
+
+### A fresh install opens the help page at its next step (2.3.0)
+
+`chrome.runtime.onInstalled` with `reason === "install"` (never `update`)
+opens `https://idecide.com/extension-help/#pin` in a new tab — the step after
+installing (pin the icon, open the panel), with sign-in and the first build
+below it. Every step on that page is a stable anchor (`#install`, `#pin`,
+`#login`, `#open`, `#build`, `#usage`, `#history`, `#share`); the 2.2.x ids and
+the retired `KEY-*` codes redirect.
+
+### Review frames: both preview calls can time out — stop asking (charity: water, 2026-10-16)
+
+On Bren's 58-slide Quick Build (deck built 16:16–16:43), **every** slide that
+asked for a review frame got neither: `generateVideoThumbnailSequence` gave
+no callback in 20 s and `generateThumbnailAtTimeOffset` no Blob in 20 s, on
+seven slides in a row — 4 min 40 s of a 26-minute build waiting for frames
+that never came, and "thumbnail primary failed …" painted on the build card
+each time while the review carried on from layer dumps. (Session 222 on
+2026-09-28 had the primary answering in ~30 ms; something between the Builder
+and this Chrome changed, and it is not yet known what.) Since 2.3.0
+`pageThumbnail` gives the primary 8 s and two strikes, then the direct call
+12 s and two strikes, then switches frames OFF for the page session (callers
+degrade to the layer dump at once; a reload starts clean), and none of it
+reaches the card — `note()` writes the log and the console only. The record's
+`metrics.thumb` says how the frames were drawn.
 
 ---
 
@@ -189,11 +247,11 @@ both `e.asset.findAssets('pexelVideos')` AND the separate
 **`ProcessedVideoResponse`** = `{ id, label, success, pexelVideoId, slideId,
 meta: { uri, thumbUri, posterUri, sourceSet[{uri,width,height}], width, height,
 duration, mimeType } }`. `slideId` is echoed straight back from the request so a
-result can be matched to its slide. `meta.uri` is a plain `.mp4` — verified live
-that applying it to a block WE created renders identically to
-`insertPexelBatchVideo`, so the composer keeps its own slots, groups and marks
-and only the sourcing engine changed. `setSourceSet(fill,'fill/video/sourceSet',
-meta.sourceSet)` works on our blocks too.
+result can be matched to its slide. `meta.uri` is a plain `.mp4`. ⚠ The 08-22 finding that
+applying it to a block WE created "renders identically" is RETIRED: an engine
+fill write is banned (Bren 2026-08-24, restated by the lead developer
+2026-09-28) — hand the whole record to `insertPexelBatchVideo(record, …)`,
+which sets the four-rendition sourceSet itself. See § 2026-09-28 (2.2.6).
 
 ### The resolution ceiling — 960×540, on BOTH paths
 
@@ -458,17 +516,20 @@ const allBlocks = root => { const out = []; const walk = id => {
 ## 7. Video: `insertPexelVideo` is Pexels-URL-only
 
 Passing a non-Pexels URL (e.g. an r2 upload) **hard-freezes the renderer** — every later
-call times out and only a browser reload recovers. For already-hosted media, swap the
-image block's FILL instead (also a cleaner 1:1 swap: geometry, z-order, timing and
-animation are preserved because the block never changes):
+call times out and only a browser reload recovers. ⚠ The 07-30 answer that stood here
+(create a video fill, write `fill/video/fileURI`, `setFill`) is **BANNED** since
+2026-08-24 and restated by the lead developer on 2026-09-28: a fill WE write carries one
+rendition — the large file — and crashes phones. For already-hosted media, get the
+platform's record and let the api insert it:
 
 ```js
-const f = E.block.createFill('video');
-E.block.setString(f, 'fill/video/fileURI', uri);
-E.block.setFill(target, f);
-E.block.setContentFillMode(target, 'Cover');
-A.currentSlide.blocks.updateTiming(target, st, du);   // commit
+const rec = await SH.findUploadRecord(uri);                    // {id,label,meta:{uri,sourceSet[4],…}} from the library listing
+const bid = await A.currentSlide.videos.insertPexelBatchVideo(rec, x, y, w, h, 0, null);
+// then move geometry/timing/marks from the old block to bid and destroy the old one
+// (composer.transferDress) — never the other way round
 ```
+`api.currentSlide.videos.uploadAndInsertVideo(file, x, y, w, h, 0, null)` exists on the
+live api (verified 2026-09-28) for a File you still hold.
 `api.assets.searchVideos(query, page)` returns `duration`; `engine.asset.findAssets`
 does not. Pick clips longer than the slide.
 
@@ -1467,8 +1528,9 @@ Toolkit parity: `sh/media.js` → `SH.preResolveImages(specs, opts)` (search
 via `searchImages`, best landscape result, dedupe by url, ≤50 per request,
 returns `{query → UploadedFileResponse}`), `SH.placeUploadedImage(upload, x,
 y, w, h, {contain, nativeAspect, name, radius, start, duration})`, and
-`SH.applyPexelImage(block, query, {upload | uploads})` preferring a
-pre-resolved upload. The lottie build step itself (which slides get one) is
+~~`SH.applyPexelImage(block, query, {upload | uploads})`~~ (refuses since
+2.2.6 — it wrote `fill/image/imageFileURI`; use `SH.placeUploadedImage` /
+`images.insertUploadedImage(record, …)`). The lottie build step itself (which slides get one) is
 being implemented separately in the composer.
 
 ## 2026-09-15 — template-free (2.0.0): what the test decks proved, and what the renderer must do
@@ -1953,11 +2015,11 @@ family is called (a comment naming the method passes; a call does not).
   `getPageThumbnailAtlas` / `getVideoFillThumbnail*` — do not use those).
   img.ly documents both under "Thumbnail Previews", apart from the export
   section, as the API the timeline's filmstrip and page storyboard use.
-- Six back-to-back preview calls produced no network request from the page
-  (an empty DevTools request log over 2.5 s). That is an observation, not a
-  licence statement: whether the preview path is metered at all is a question
-  only img.ly can answer — the lead developer should ask it in the same thread,
-  and until then the preview path is the only render call we make.
+- **CONFIRMED NOT METERED (Bren, 2026-09-28, from the lead developer / img.ly):**
+  `generateVideoThumbnailSequence` and `generateThumbnailAtTimeOffset` do not
+  count as exports. (Six back-to-back preview calls had also produced no
+  network request from the page.) The preview path is the only render call we
+  make, and it is free.
 - Like export, the render needs the engine ticking: a background tab or a
   minimized window stalls it. Bring the tab forward; `pageThumbnail`'s 20 s
   ceiling cancels the request instead of hanging the pass.
@@ -1989,3 +2051,46 @@ panel's probe reports `hidden` and the 20 s nudge focuses the window for it
 (`bringBuilderForward` already did `windows.update({focused:true})` and
 un-minimised — only the trigger was missing). Export had the identical
 weakness; this is the first fix for it.
+
+## 2026-09-28 (later) — every media block is api-inserted with the PLATFORM's record; the paperclip video was not (extension → 2.2.6)
+
+The lead developer asked whether the extension adds videos with the aiagent
+`uploadAndInsertVideo` / `insertPexelVideo` / `insertPexelBatchVideo` calls or
+writes `fill/video/fileURI` itself — the api calls upload device renditions and
+a fill we write plays the full file on a phone and crashes the browser.
+
+**Audit of the shipped 2.2.5 tree.** Video: 10 call sites, all
+`videos.insertPexelBatchVideo(record, …)` (pipeline ×7, composer ×3); zero
+`setString(…'fill/video/fileURI'…)` on any live path. Images: `insertPexelImage`,
+`uploadAndInsertImage` (icons, charts, logo), `insertUploadedImage` (lotties and
+library files). The engine-fill helpers the developer remembered —
+`SH.applyVideoUri`, `applyPexelImage`, `addImageBlock`, `addIcon`, `addIconRow` —
+still existed in `sh/media.js`, exported, with **no caller anywhere in the
+extension** (grep-proven); since 2.2.6 they THROW (`SH_MEDIA_BAN`) and their
+fill writes are deleted. `package.mjs` and `smoke-panel` refuse a tree that
+writes `fill/video/fileURI`, `fill/image/imageFileURI` or `setSourceSet`.
+
+**The one real gap — the 2.1.2 paperclip's VIDEO (and image) attachment.**
+`SH.uploadAsset` POSTed the file to `/uploads?source=user_upload` and kept only
+`meta.uri`; the `addUpload` op then inserted through `insertPexelBatchVideo`
+with a SYNTHESIZED record `{meta:{uri, sourceSet:[{uri}]}}` — api-inserted, but
+one rendition, the large file. Verified on session 222: the POST answers the
+full `{id, label, meta:{uri, thumbUri, sourceSet, posterUri, lowLesUri, width,
+height, duration, mimeType}}`, the server makes four video renditions
+(large 1080 / medium 720 / small 640 / smaller 340 wide) and four to five image
+renditions, and the library listing (`GET …/uploads?source=user_upload`) carries
+`sourceSet`, `s3Key`, `s3PosterKey`, `width`, `height`, `duration`,
+`contentType` per entry. 2.2.6: `SH.uploadAssetRecord(file)` returns the whole
+record and the upload record keeps it as `rec.upload`; `addUpload` hands
+`rec.upload` to `insertPexelBatchVideo` / `insertUploadedImage`; a record
+without one (pre-2.2.6, or rehydrated bare) is recovered by
+`SH.findUploadRecord(uri)` (tail-match against `s3Key` / the listing's
+sourceSet); only when both fail does the single-rendition record remain, and
+the log says "phones will load the large file". Proved live: from a large uri
+alone → 4 renditions recovered → `insertPexelBatchVideo` → the block's fill
+reads a 4-entry `fill/video/sourceSet` with an EMPTY `fileURI` (the platform's
+convention); the test block was discarded by reload.
+
+Also verified: `api.currentSlide.videos.uploadAndInsertVideo(videoData: Blob |
+string | File, x, y, w, h, startTime, duration)` IS on the live api — AIAGENT_API
+Recipe H ("there is no `videos.upload*`") was stale and is corrected.
