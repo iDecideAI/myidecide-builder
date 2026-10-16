@@ -161,11 +161,17 @@ and real cost per user, and meters each user against a **daily allowance**.
   rules the proxy enforces (a violation is a `400`): `stream: true` on every
   call; only the four models in `API_MODELS`
   (`claude-fable-5-1`, `claude-opus-5-5`, `claude-sonnet-5-5`,
-  `claude-haiku-5-5`); `max_tokens ≤ 32000`; **no server tools** — a tool
-  whose `type` is not `custom` is refused, so `web_search` / `web_fetch`
-  cannot ride along (`RESEARCH_TOOLS = []` in the panel and the prompts say
-  "no web access" instead; Brandfetch still runs client-side); only the
-  server-side-fallback beta header.
+  `claude-haiku-5-5`); `max_tokens ≤ 32000`; tools are `custom` ones plus
+  the two server tools **`web_search` and `web_fetch`** (the lead developer
+  let them through on 2026-10-16, evening — his patch restores
+  `RESEARCH_TOOLS` and drops the `anthropic-beta: web-fetch-2025-09-10`
+  header, web fetch being GA; the proxy also accepts the `web_*_20260209`
+  variants); only the server-side-fallback beta header. Web research is
+  therefore ON again in the script stage — the planner reads the client's
+  site and searches for the figures the script needs; `theme.scriptEvidence`
+  records every one. (Earlier the same day the proxy refused every non-
+  `custom` tool and the prompts said "no web access"; emptying
+  `RESEARCH_TOOLS` turns that back on.)
 - `GET /v1/models` — the model list, through the same proxy (the picker's
   catalogue when it is switched on).
 - `401` on any call = signed out: the panel opens `<builder>/login` once per
@@ -176,6 +182,19 @@ and real cost per user, and meters each user against a **daily allowance**.
 - Every request carries `anthropic-version` and `x-client-version` (the
   manifest's version) so the backend can tell builds apart.
 
+
+### The person never sees the AI vendor's name (Bren 2026-10-16)
+
+The first evening on the proxy put "Your credit balance is too low to access
+the Anthropic API. Please go to Plans & Billing to upgrade or purchase
+credits." on a client's screen, verbatim, under `API-01`. Two rules since:
+the refusal gets its own code (`ACCT-04`, iDecide's own account out of
+prepaid credit — not the person's allowance), and every error that reaches
+the UI goes through `IDE_ERRORS.forUser()` — an `API NNN: {json}` refusal
+reduced to its human message and request id, vendor names / model ids /
+vendor-side instructions removed; the four `ACCT-*` codes show no detail at
+all. The log and the record keep the raw text. The KB and the help page name
+no vendor; the finished screen names models only when the picker is on.
 
 ### The person chooses nothing (Bren 2026-10-16) — the selectors are switches
 
@@ -304,6 +323,55 @@ same slides, and frames go off. The slides that time out share nothing
 the cost to ~40 s a build; why the engine's thumbnail path stops answering
 after nine calls in a page session is for the lead developer (the 2.2.5
 charity: water build had the fallback timing out from the first call).
+
+### A cut script is finished, not planned from (three of the day's four 2.3.0 builds)
+
+YETI 17:54 ("STOCK: gear lineup laid out across a tailg"), the sample deck
+18:48 ("…weeks before it would have become a serious problem. … Pulse g"),
+YETI 19:24 ("…when something does go wrong, it"): the script CSV stopped
+mid-cell, the `===OUTLINE===` marker and a complete outline followed, and the
+record could not say whether the model stopped writing or the proxy dropped a
+chunk (the trace holds requests, not the stream). What happened next was the
+real damage: `repairBlankSlideNames` gave the nameless fragment the NEXT
+outline name, every later outline slide was "dropped (no CSV identity)" —
+Finish Up 1–4 and the Hamburger Menu — both menus were rebuilt without them,
+and the audit put "no Finish Up chapter — the viewer has no way to choose to
+leave" on the card. The 47-row illustrator deck, the shortest of the four, was
+whole. Since 2.3.0 (evening) the script stage (1) logs the reply's stop
+reason, the model's own `output_tokens`, the characters received, the number
+of text blocks and any unparseable `data:` lines — the evidence for next time
+(tokens ≫ chars/4 = text lost in transit; `end_turn` with a fragment = the
+model stopped); (2) `scriptCutDiagnosis()` recognises a cut — a last data row
+with no Slide Name or fewer cells than the header, a `max_tokens` stop, or an
+outline tail after the last named row that names a Finish Up / Hamburger
+slide the CSV lacks; (3) `continueScriptCsv()` makes ONE more streaming call
+through the same proxy — the same system prompt (a cache hit), the answers,
+the script so far, the outline's entries for the missing slides — for the
+missing rows only, drops a header or fence it may add, ignores rows whose
+names the outline does not have, logs what is still missing, and appends the
+rest before `refinePlan` runs. The per-row detection was proved on the three
+real fragments; the continuation call is exercised by the next cut build.
+
+**What the cut is (A.M.WakeUpCall, 21:44, the fourth cut record).** Every
+cut record shares one more signature the whole ones lack: a 69–107 s AI call
+at the top of the build before the first plan line — the OUTLINE FALLBACK in
+`runBuild`, which runs only when the combined reply carried no parseable
+outline. So in every case the whole reply was cut, CSV and outline together,
+which is what the output ceiling does: `max_tokens` is 32,000 on the proxy
+and extended thinking at effort high counts against it; a 60-slide script
+plus its outline plus the thinking that precedes them does not always fit
+(the 63-row charity: water script did, the 62-slide A.M.WakeUpCall one was
+cut at row 32 and the fallback outline planned 62 slides from 31 rows — 30
+dropped). The record could not show it because `runBuild` began with
+`buildLog = []` and wiped everything the script stage had logged. Since
+2.3.0 (late): generate()'s log survives into the record (`keepBuildLog`);
+every call's usage rides in `usage.log` with its stop reason (`out` includes
+thinking — an `out` at the ceiling with stop `max_tokens` is the diagnosis);
+with no outline the continuation is OPEN-ENDED ("finish the script to the
+Hamburger Menu"), up to three rounds while a reply keeps hitting the ceiling,
+and the fallback outline then plans from a whole script. Open (owner: lead
+developer): a higher `max_tokens` ceiling on the proxy (64,000) would make
+the cut rare instead of handled.
 
 ---
 

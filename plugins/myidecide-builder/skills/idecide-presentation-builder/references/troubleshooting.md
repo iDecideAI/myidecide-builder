@@ -20,7 +20,7 @@ where a step does, it says so.
 The `ACCT-*`, `API-*` and `NET-*` entries are about the **Chrome extension's**
 connection to your myiDecide account — since 2.3.0 every AI request goes
 through myiDecide on your own sign-in, and there is no API key to manage. (The
-`KEY-01`…`KEY-06` codes of earlier versions, about a pasted Anthropic key, are
+`KEY-01`…`KEY-06` codes of earlier versions, about a pasted API key, are
 retired; a link to one of them lands on `ACCT-01`.) The Claude plugin (the
 "myiDecide Builder" plugin for Cowork) runs on your Claude subscription and
 never shows those — every other entry applies to both.
@@ -32,6 +32,7 @@ never shows those — every other entry applies to both.
 | `ACCT-01` | "You're signed out of myiDecide" · `API 401` | Your myiDecide session ended — sign in on the tab that opens; the panel carries on by itself |
 | `ACCT-02` | "Today's AI allowance is used up" · `API 429 rate_limit_error` | Your account's daily iDecide AI allowance is spent — it comes back at the reset time in ⚙ Settings |
 | `ACCT-03` | "That model isn't available right now" · `404 not_found_error` "model: …" · `403 permission_error` | The model iDecide AI builds with couldn't be reached through myiDecide — wait a few minutes |
+| `ACCT-04` | "iDecide's AI account needs topping up" · `API 400` "Your credit balance is too low" | The AI service refused iDecide's own account (its prepaid credit is spent) — not your allowance; email hi@idecide.com, then Resume |
 | `API-01` | "The AI request was refused" · `API 400` / `invalid_request_error` | The request was sent and refused; usually temporary — resume, then send the record |
 | `API-02` | "iDecide AI is busy right now" · `529 overloaded_error` · `API 502/503` | The AI service is overloaded or briefly down — wait a minute or two |
 | `NET-01` | "myiDecide couldn't be reached" · "Failed to fetch" | No answer from my.idecide.com — connection, captive Wi-Fi page, firewall or VPN |
@@ -153,6 +154,30 @@ own configuration is mid-change. That is on iDecide's side, not yours.
 1. Wait a few minutes, then 🕘 History → **Resume build**.
 2. If it is still refused after a few tries, email **hi@idecide.com** with the
    *Technical detail* line from the card.
+
+### ACCT-04 — iDecide's AI account needs topping up
+
+**What you'll see**
+
+- *"iDecide's AI account needs topping up (ACCT-04)."*
+- In the build log: `API 400: … invalid_request_error … credit balance is
+  too low …` (the card itself shows no technical detail for this one — the
+  explanation is complete, and the raw wording is the AI service's, aimed at
+  iDecide's billing, not at you).
+
+**What it means**
+
+myiDecide forwarded your request, and the AI service refused it because
+**iDecide's own account** — the one every build runs on — has run out of
+prepaid credit. This is not your daily allowance (that is `ACCT-02`) and not
+anything you did; nobody's build goes through until the account is topped
+up. Nothing already built is lost.
+
+**What to do**
+
+1. Email **hi@idecide.com** so the account can be topped up — it is usually a
+   few minutes once seen. Trying again before that just repeats the refusal.
+2. Then 🕘 History → **Resume build**. Nothing already built is redone.
 
 ### API-01 — The AI request was refused
 

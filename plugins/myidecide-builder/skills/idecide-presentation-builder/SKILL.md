@@ -926,6 +926,14 @@ The same surface, one slide at a time. Read before you write:
   in this session may be redesigned as a whole — a new scene — when the person
   asks for a different layout; a request for a different word, colour or
   picture is an in-place edit of that element and nothing else.
+- **A slide you have already hand-edited stays hand-edited (2026-10-16).** Once
+  you have moved a button, uploaded a logo onto it or changed its words in
+  place, a later request about that slide is more in-place edits — never a
+  redesign from the plan, which carries copy and nothing of what those edits
+  did (a tester's centred button and uploaded logo were erased that way by a
+  rebuild in the next turn, while the reply said both were still there).
+  Redesign such a slide only when the person asks for the slide to be redone,
+  and say that the earlier changes will go.
 - **Any slide can carry video, whatever its layout.** Never tell the person a
   slide cannot have footage because of how it is composed — a solid field
   becomes a tinted clip, a panel gets its own clip, in place.
