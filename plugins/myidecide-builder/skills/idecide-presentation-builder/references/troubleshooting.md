@@ -113,8 +113,8 @@ the panel.
 **What it means**
 
 Every myiDecide user has a daily iDecide AI allowance, and today's is spent.
-It is a cap on how much AI work your account can ask for in a day — a
-long Creative Build, several builds in a row, or a lot of edit requests will
+It is a cap on how much AI work your account can ask for in a day — a very
+long presentation, several builds in a row, or a lot of edit requests will
 reach it. The panel stops the build at once instead of retrying until the
 reset, so no allowance is wasted on refused calls. Nothing already built is
 lost.
@@ -130,9 +130,8 @@ lost.
 
 **If it keeps happening**
 
-- Quick Build uses roughly half the allowance of a Creative Build on the same
-  presentation; a build that stops near the end can be resumed the next day
-  and finishes in minutes.
+- A build that stops near the end can be resumed the next day and finishes
+  in minutes — nothing already built is spent twice.
 - Still stuck? See `HELP-01`.
 
 ### ACCT-03 — That model isn't available right now
