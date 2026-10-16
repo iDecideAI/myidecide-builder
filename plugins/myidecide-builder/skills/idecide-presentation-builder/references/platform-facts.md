@@ -213,6 +213,98 @@ degrade to the layer dump at once; a reload starts clean), and none of it
 reaches the card — `note()` writes the log and the console only. The record's
 `metrics.thumb` says how the frames were drawn.
 
+### The record's trace is a hook on the SHARED engine — an engine line is anyone's (lead developer, 2026-10-16)
+
+Reading the same charity: water record, the lead developer asked what
+`engine.block.setSourceSet(85, "fill/image/sourceSet", [])` followed by
+`setString(85, "fill/image/imageFileURI", "https://r2-dev…/images/23fc11a5…")`
+was, and whether the extension was setting fills through CE.SDK again. It
+was not, on either count. **What the trace is:** the panel wraps the mutators
+on `window.aiagent.engine.block` IN PLACE at injection; the myiDecide Builder's
+own code calls the same object, so every mutation on the page is recorded —
+the extension's and the platform's api inserters' internal work alike (reads
+are skipped). Both quoted runs are the platform's inserters: block 85's owner
+is `brand-mark` (the 128×40 corner mark at 86,36) placed by
+`api.currentSlide.images.uploadAndInsertImage(blob…)` — the `POST
+/api/builder/builderSession/225/uploads` two lines earlier is that call's own
+upload, and `create → rect → image fill → setFill → setSourceSet([]) →
+imageFileURI → Cover → appendChild → setSize → setPosition → resetCrop →
+adjustCropToFillFrame` is what the platform's uploaded-image inserter writes
+(an EMPTY sourceSet with the imageFileURI is ITS convention for an uploaded
+file, exactly as an empty `fileURI` with a 4-entry sourceSet is its convention
+for a clip — see 2026-09-28); the extension's own calls follow once the id
+comes back (`name`, timing, Contain, `insertChild`, destroy the placeholder).
+`setSourceSet(24117313, "fill/video/sourceSet", [{uri:…/videos/4861a903…}])` is
+the full-slide `ghost-video` on Main Menu - Return (Pexels 33733737, imported
+by `importPexelVideoBatch`) placed by `insertPexelBatchVideo(record, 0, 0,
+1558, 720, 0, null)`: `create → rect → video fill → setFill → setMuted → Cover
+→ appendChild → fileURI "" → sourceSet → setSize → setPosition → resetCrop`.
+`setMuted`, `setSize`, `setPosition` and `resetCrop` are not called anywhere
+in the extension — they are the inserter's fingerprint. **Across the whole
+record:** 108 `setSourceSet` lines — 62 video, every one `fileURI ""` + the
+batch's renditions (insertPexelBatchVideo); 46 image — 41 uploaded
+(37 brand-mark + 4 brand-logo, uploadAndInsertImage) and 5 Pexels stills with
+5-rendition sets (insertPexelImage); ZERO non-empty `fill/video/fileURI`
+writes and ZERO `playback/looping|muted` setBools, the fingerprints of the old
+`SH.applyVideoUri` / `applyPexelImage`. That matters because this record was
+built on **v2.2.5** (the panel log's first line) — the developer's test build
+is his zip, whose base commit is 2.2.5, so it still CARRIES those helpers;
+none ran. 2.3.0 (the build on idecide.com/builds) is his four commits on top
+of 2.2.6, where they throw and `package.mjs` refuses a tree with a fill write.
+
+**Why the runs looked orphaned, and the fix.** `api.currentSlide` is a getter
+on the api's prototype (docs/AIAGENT_SURFACE.md caveat 1); the tracer walked
+`Object.keys`, never saw it, and so no `insertPexelBatchVideo` /
+`uploadAndInsertImage` / `insertUploadedImage` line was ever written while
+every engine call they made was. Since 2.3.0 the tracer shadows the getter on
+the instance and wraps what it returns (`get` and `blockActions` excepted —
+the wiring step hand-traces those with the button's name and target), so the
+api line now precedes its engine work, and every trace opens with a legend
+line (`TRACE_LEGEND`) saying what an engine line is. smoke-panel checks both.
+
+### A profile page is not the brand's domain (test user, 2026-10-16 — the Instagram wordmark became the client's mark)
+
+A test user with no site of her own gave `instagram.com/inkbeedle` as the
+website. Brandfetch, asked about `instagram.com`, answered with Instagram's
+own brand data; the planner recognised it ("Instagram the platform, not the
+artist", `theme.logoCandidates: []`, palette from the stated orange and
+cream) — but the build-time logo hunt is fed from the Brandfetch files
+whatever the planner decided (22 candidates, `cdn.brandfetch.io/ido5G85nya/…`),
+found the dark SVG, recoloured and uploaded both tones, and the deck carries
+Instagram's wordmark as `brand-logo` / `brand-mark` on 41 slides and in the
+Logo Reveal. Since 2.3.0 `profileHostOf(domain)` (the panel's research step,
+`PROFILE_HOSTS`: the social, marketplace, link-in-bio, portfolio, code,
+video, music and site-builder hosts, matched on the host and its subdomains)
+makes the research step skip Brandfetch and the CDN candidate, log why, and
+tell the planner the site is a profile page (`brandFactsDirective()`); the
+hunt goes by name only. The script side was already right: the writer named
+the brand "Inkbeedle" from the handle and never used the sentence the person
+typed into the brand-name field.
+
+### The footage wave's "fell back" never said why (same record)
+
+Three chunks of ten searches "fell back" in half a second each, then 0/33 at
+the review pass, and every one went to the slow per-slide path — and the
+record could not say whether the search answered nothing, errored, or every
+candidate was spent, because `r.failures[k].err` was tallied into
+`IDP.clipFailures` and never printed. Since 2.3.0 each chunk's log line is
+followed by a `note()` with the distinct reasons tallied, and the per-slide
+"could not source it" line is a `note()` too (a recovery; it was painting the
+card) and carries the wave's reason for that key. The cause of this build's
+fallbacks is therefore still OPEN — the next record will say.
+
+### Review frames: the primary answers nine times, then stops (two 2.3.0 records)
+
+YETI (18:10) and the illustrator's deck (18:28), the first two 2.3.0 builds:
+`metrics.thumb` = `primaryOk 9, primaryTimeouts 2, fallbackTimeouts 2, off`
+on both — nine storyboard frames in well under a second each, then the tenth
+and eleventh time out at 8 s, the direct preview times out at 12 s on the
+same slides, and frames go off. The slides that time out share nothing
+(an icon row, a photo trio, a bio, a logo reveal). The strike policy holds
+the cost to ~40 s a build; why the engine's thumbnail path stops answering
+after nine calls in a page session is for the lead developer (the 2.2.5
+charity: water build had the fallback timing out from the first call).
+
 ---
 
 ## Batch video import — the footage wave (measured 2026-08-22, deck 179)
