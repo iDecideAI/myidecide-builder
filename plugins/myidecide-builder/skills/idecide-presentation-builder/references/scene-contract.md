@@ -146,7 +146,7 @@ wired list is the whole list.
   "stage": {
     "field": "dark"|"light",
     "bg": { "kind": "video"|"still"|"solid"|"gradient",
-            "hint": "<4-8 word stock search — the slide's imageHint>",   // video/still
+            "hint": "<3-6 keyword stock search, the visible subject FIRST — the slide's imageHint>",   // video/still
             "tint": 0.0-0.9,          // a wash over the footage — 0.5-0.72 of the field colour keeps motion; a BRAND colour at 0.85+ is a coloured field with life under it
             "tintColor": "<token|#hex>",   // the wash colour (default: primaryDeep / surfaceLight by field)
             "scrim": "left"|"right"|"bottom"|"center"|"none",   // a directional darkening under the copy (left: 900px wide, 0.9 → 0)
@@ -178,7 +178,16 @@ TEXT  {"el":"text", "text":"...", "role":"eyebrow"|"hero"|"headline"|"longline"|
     numeral 110-260 (THE hero figure) · stat 40-96 (a figure INSIDE a unit —
     a stat value, a price, a row numeral "01", a chevron glyph) · subhead
     34-46 · body 30-40 · itemTitle 32-40 · eyebrow 30-34 · button 32-36 ·
-    fine 29-33. WRITE THE SIZE YOU MEAN: a `size` inside the role's band (10%
+    fine 29-33. (The Quick Build's bands grew by about a quarter on
+    2026-10-21 — Bren: larger text across the board; this path keeps the
+    bands above, which its worked scenes and gate were verified against,
+    until it is re-verified at the bigger scale. Even so: size generously —
+    a headline that could sit at 80 should, and nothing readable starts
+    at the floor.) NO EYEBROW ELEMENT unless the copy carries one, and the
+    copy carries one only on an answer slide (its verdict, "CORRECT" / "NOT
+    QUITE") — never a question number, a chapter name or a framing phrase
+    (Bren 2026-10-21: they "cost a lot of screen real estate"); the headline
+    takes that room. WRITE THE SIZE YOU MEAN: a `size` inside the role's band (10%
     slack) is honoured exactly; a size UNDER the band is raised to the band's
     floor, never re-sized by length.
     **28px is the floor of the canvas, not the working size of a line**
@@ -186,9 +195,9 @@ TEXT  {"el":"text", "text":"...", "role":"eyebrow"|"hero"|"headline"|"longline"|
     viewed well on mobile devices" — 33 of that deck's blocks were written at
     28-29). This canvas is ~7 inches wide in the viewer's hand: 28 is for a
     true footnote (a source line, an asterisked rate), 30-33 for captions,
-    meta and support lines under a row label, 32-36 for eyebrows, button
-    labels and row labels, 34-46 for a subhead, 44-96 for figures in units,
-    54-110 for headlines. Height is measured, never given.
+    meta and support lines under a row label, 32-36 for button labels and
+    row labels, 34-46 for a subhead, 44-96 for figures in units, 54-110 for
+    headlines. Height is measured, never given.
   - A LABEL IS ONE LINE, AND ITS BOX HAS TO BE (2.1.3): an eyebrow, a row
     label, a button label, a stat caption, a tag line — give it a `w` with
     real room (measure by eye: ~0.55 × size per character, then add a fifth),

@@ -225,7 +225,58 @@ const r = await window.aiagent.api.assets.searchImages(['warehouse', 'morning'],
 const landscape = r.photos.filter(p => p.width > p.height);
 ```
 
-### `assets.searchVideos(terms, page): Promise<{…, videos[]}>`
+### A tidy canvas (2026-10-20) — auto-fit the page
+
+View state, not document state (nothing is marked dirty); do it after every
+page load:
+
+```js
+const E = window.aiagent.engine, page = E.scene.getCurrentPage();
+if (!E.scene.isZoomAutoFitEnabled(page)) E.scene.enableZoomAutoFit(page, 'Both');   // the zoom menu's "Auto-Fit Page"
+```
+
+Do not click the timeline's `[data-cy="expand-timeline"]` button to collapse it
+during a build — CE.SDK 1.74 fights the click (forces the expanded height back,
+runtime errors); it was tried and removed on 2026-10-20.
+
+### The provider-neutral STOCK calls (2026-10-17; verified live 2026-10-20) — use these first
+
+`assets.searchStockImages(terms, page)` / `assets.searchStockVideos(terms, page)` →
+`{ provider, page (0-based), perPage, totalResults, images|videos: [{ provider, id,
+width, height, duration?, label, tags[], thumbUrl, previewUrl, authorName, authorUrl,
+pageUrl }] }`. The live provider is **Pixabay**; `label` is the first five tags, `tags`
+every keyword. The bridge asks 20 a page; the endpoint it calls — `POST
+/api/builder/stock/{images,videos}/search {query, page (1-based), perPage}` — honours
+`perPage` up to 80. `totalResults: 500` means Pixabay BROADENED the query (a loose pool
+of partial matches); a real count means every result carries the words. The server
+ignores `orientation` / `video_type` / `image_type` / `min_width` / `order` for now.
+
+`assets.importStockImageBatch([{ provider, id, name? }])` → `(UploadedFileResponse|null)[]`
+and `assets.importStockVideoBatch([{ provider, id, slideId? }], onCompleted)` →
+`ImportedStockVideo[]` (`id` = the upload's, `stockId` = the provider's; `meta` as
+before) — import by provider + id, never by url; both also take `{provider:'pexels', id}`.
+Place with `currentSlide.images.insertStockImage(result, x, y, w, h, start, dur)` (imports
+and places), `images.insertUploadedImage(upload, …)`, `videos.insertImportedVideo(record,
+…)` (also our synthesized `{id,label,meta:{uri,sourceSet}}` records; `insertPexelBatchVideo`
+is an alias), `images.replaceWithStockImage`, `videos.replaceVideoWithImported`. Never
+place `previewUrl` / `thumbUrl`.
+
+```js
+const A = window.aiagent.api;
+const r = await A.assets.searchStockVideos('handshake office business deal', 0);
+// RANK before importing: Pixabay's order is popularity, not relevance — score each result
+// by how many of the hint's words its tags carry (subject first), landscape first, then:
+const pick = r.videos.filter(v => v.width > v.height)[0];
+const [rec] = await A.assets.importStockVideoBatch([{ provider: pick.provider, id: pick.id }]);
+await A.currentSlide.videos.insertImportedVideo(rec, 0, 0, 1558, 720, 0, null);
+```
+
+The Pexels-era calls below are still on the live surface. The extension uses only the
+SEARCHES (`searchImages` / `searchVideos`) as the last rung when Pixabay answers nothing,
+and imports what they find through `importStock*Batch`; `insertPexelImage` /
+`insertPexelVideo` (url inserts) and `importPexel*Batch` are not used.
+
+### `assets.searchVideos(terms, page): Promise<{…, videos[]}>` (Pexels — fallback only)
 
 Same shape. **Rank on the real `width`/`height`** — the query does not guarantee
 orientation, and a portrait clip in a landscape frame is a defect. Each result also

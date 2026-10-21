@@ -386,8 +386,31 @@ built and play broken.
   **28 is a footnote size, not a working one** (Bren, deck 307: "some text is
   getting close to too small to be viewed well on mobile devices" — 33 blocks
   in that build were written at 28-29). Source lines 28-30, captions and
-  support lines 30-33, eyebrows / button labels / row labels 32-36, subheads
-  34-46, figures in units 44-96, headlines 54-110.
+  support lines 34-38, button labels / row labels 40-50, subheads 44-58,
+  figures in units 50-116, headlines 68-120 (the scale grew by about a
+  quarter on 2026-10-21 — Bren: "larger text across the board"; a headline
+  that landed around 70 lands around 90).
+- **Eyebrows are the exception** (Bren 2026-10-21: they "don't add much to
+  the design, and cost a lot of screen real estate"). The only eyebrow a deck
+  keeps is an answer slide's verdict — "CORRECT" / "NOT QUITE" — on a slide
+  with little text and open space, where it says what the viewer chose.
+  No question numbers ("QUESTION 1 OF 3" over a question that already carries
+  its options: that room goes to larger option text, or one more option), no
+  chapter names, no framing phrases. A kicker is its headline alone.
+- **A button-heavy slide gives up its dressing, not its buttons** (Bren
+  2026-10-21, the YETI build). When the buttons do not fit after the rhythm,
+  the media and the type have given: the plates step to the 64px touch floor,
+  then the logo line goes to a corner, then the eyebrow, then plates to 56px,
+  and on a slide with three or more buttons the headline itself — navigation
+  is never dropped, truncated or piled. Six or more menu rows go TWO ABREAST
+  before they go under the floor (a side photo gives width, then gives way).
+  A terminal CTA sizes its targets first and its headline from what is left;
+  a circle target is never smaller than the icon and label inside it.
+- **A sub-beat is its chapter's.** Name every beat of a sub-fork after the
+  chapter — "Shop the Range - 2" or "Shop the Range - Hard Coolers" — and
+  reach it only through the chapter's own menu; it is never a main-menu
+  option. "Main Menu - Return" sits right after "Main Menu - First" in deck
+  order.
 - **A label is one line.** An eyebrow, a row label, a button label, a tag
   line, a stat caption: draw the box wide enough (≈0.55 × size per character,
   plus a fifth), and when a line breaks anyway, widen the box or take the size
@@ -549,9 +572,8 @@ built and play broken.
   the graphic carries the number and the headline/eyebrow say what it means
   without the digits ("ABOUT 5 MINUTES / 5 minutes survives a bad day. / 5
   min" is one fact three times and reads as a mistake). Items never restate
-  the headline word for word. Chapter openers share one eyebrow style with no
-  ordinals — the viewer chooses the order, so "CHAPTER SIX" is wrong for
-  whoever taps it first. Two answers to one question may share a headline (a
+  the headline word for word. Chapter openers carry no eyebrow at all since
+  2026-10-21 (nor does any slide but an answer). Two answers to one question may share a headline (a
   viewer sees only one); any other two slides may not.
 - **The 2-tone wired outline is the default icon drawing, everywhere.**
   Every animated icon — standalone, above a line of text, in a button or
@@ -674,11 +696,17 @@ animated bar chart, photo tiles with captions, a pull-quote with its
 attribution) · ONE detail that says designed, drawn from the deck's own
 design language (below). Six to twelve elements is the normal range; a
 two-element slide is for a section intro or a closing line, at most four per
-deck. Menus and questions carry an eyebrow and a real headline above their
-buttons; a CTA its headline, support line, buttons, sender block and footage
+deck. Menus and questions carry a real headline above their buttons — no
+eyebrow (2026-10-21); a CTA its headline, support line, buttons, sender block and footage
 or a panel. Buttons are 68–84px tall on hairline-stroked glass plates with a
-40px icon; framed panels get 24px corners; the real logo sits small in a
-corner of every slide after the reveal and large, centred, on the reveal.
+40px icon; framed panels get 24px corners; the real logo sits in a
+corner of every slide after the reveal and large, centred, on the reveal —
+never smaller than 75px on its short side (Bren 2026-10-21: a 40px mark does
+not read on a phone; only a long side that would overflow its room lets the
+short side give), and in the drawing that suits what sits under it: the dark
+drawing on a light plate or field, the light one on a dark field or footage.
+Fetch BOTH tones from the brand's source when it offers them (Brandfetch
+names a logo's theme); recolour a lone drawing for its missing tone.
 Never size text below its role's band to make room — widen the box, shorten
 the words or move the neighbour.
 
@@ -786,8 +814,9 @@ exactly to the rub-prompt narration (0→D1, the one element with no tail),
 carrying the four metadata keys and a blockAction record whose
 `interactionData` is the same config; every reveal layer starts at D1; the
 reveal narration plays at D1; the page runs D1 + D2 + 0.5s; `coverImageUrl` is
-an upload-library r2 url (import a dark still with `importPexelImageBatch` and
-read its uri). The Builder renders the rub natively after a reload — the hand
+an upload-library r2 url (search a dark still with `searchStockImages`, import it
+with `importStockImageBatch([{provider, id}])` and read its `meta.uri` — never a
+provider url). The Builder renders the rub natively after a reload — the hand
 and "Rub Your Screen" over the dark cover. The exact anatomy is in
 `references/platform-facts.md` ("Rub Your Screen").
 
@@ -836,14 +865,40 @@ earlier ones resolve.
    consecutive runs and issue one call per run. Then set every slide's
    auto-advance explicitly (the rule above): `false` on every slide that
    waits for a click, `true` with its named target on every content beat.
-6. **Resolve assets before composing.** Search and import stock video in bulk
-   with `api.assets.importPexelVideoBatch` — it uploads many clips in one
-   request and does not need the target slide to be current. Import stock
-   stills the same way, beside it: `api.assets.searchImages` per query, take
-   the best landscape result, dedupe by url across the deck, then ONE
-   `api.assets.importPexelImageBatch(urls)` (at most 50 per request; a failed
-   entry is `null` at its index, no blocks are made) and keep the returned
-   `UploadedFileResponse` per query. Every media panel in a scene gets its
+6. **Resolve assets before composing.** Search stock with the provider-neutral
+   calls (`api.assets.searchStockVideos` / `searchStockImages` — Pixabay; every
+   result carries `tags`) and **rank before you import** (2026-10-20): Pixabay
+   answers in popularity order and broadens a query it cannot satisfy
+   (`totalResults: 500` is the tell), so take the result whose tags best cover
+   the hint — the hint's first word is the subject and weighs most, a hit among
+   the author's first five tags counts in full, skip tags like cartoon / 3d /
+   render / illustration / ai generated, DROP a result tagged with anything
+   political, extremist, military, worship, death, adult, drug or horror
+   unless the hint asks for it (a "grassroots activism" tag sat on a far-right
+   party's flag — deck 320; check the same words again on the clip you are
+   about to import and on any clip reused from an older record, and never
+   write such a word into a hint unless it IS the brand's own subject — a
+   word in the hint unlocks it), landscape first, 720 long-side floor; when the
+   pool is loose, also search narrower forms (the content words, the first
+   three, the first two, the subject alone) and rank the merged pool; when the
+   best match is still under 40% or misses the subject, search the deck's
+   brand-safe generic queries (`theme.footage`) and take a candidate that
+   answers one of them well instead. **The endpoint has a minute**: one Pixabay
+   key, ~100 requests a minute, then `502` + `Retry-After: 60` — keep at most
+   6 searches in flight and under 80 a minute, never send the same query twice
+   (cache it), and on a 429/502/503 wait the `Retry-After` and retry once; a
+   refused search comes back EMPTY and must not be read as "nothing matched".
+   Write hints subject-first (`references/deck-outline.md`). Then import in bulk with
+   `api.assets.importStockVideoBatch([{provider, id}])` — one request, many
+   clips, no target slide needed — and stills beside it with
+   `api.assets.importStockImageBatch([{provider, id, name}])` (at most 50 per
+   request; a failed entry is `null` at its index, no blocks are made), keeping
+   the returned `UploadedFileResponse` per query; dedupe by `provider:id` across
+   the deck. Only when Pixabay answers nothing on every form, fall back to the
+   Pexels search (`api.assets.searchVideos` / `searchImages`) and import what it
+   finds through the same `importStock*Batch` with `provider: 'pexels'` (a Pexels
+   photo's id is in its url). Never place or store `previewUrl` / `thumbUrl`.
+   `references/aiagent-surface.md` has the calls and shapes. Every media panel in a scene gets its
    own clip, so resolve one hint per background AND one per panel. Upload the
    logo drawings (3d) once here. Do the same for narration with
    `api.narration.generateBatch`, giving every narration the house delivery
@@ -1003,7 +1058,7 @@ The same surface, one slide at a time. Read before you write:
     when that answers 0; then `setContentFillMode(id, 'Contain')` so a logo or
     a product shot is never cropped;
   - video → upload with `SH.uploadAsset(file)` and place the returned uri with
-    `insertPexelBatchVideo({id, label, meta:{uri, sourceSet:[{uri,width,height}]}}, x, y, w, h, 0, null)`
+    `insertImportedVideo({id, label, meta:{uri, sourceSet:[{uri,width,height}]}}, x, y, w, h, 0, null)`
     — the placement call the platform sanctions; a raw r2 URL handed to a
     plain fill freezes the renderer (`references/platform-facts.md` § 9).
   Size the box from the file's own proportions: take one side from the layout

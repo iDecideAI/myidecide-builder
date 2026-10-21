@@ -642,18 +642,20 @@ Assign a **role**; the builder picks a size inside its band from the text's actu
 
 | Role | Size band | Character budget |
 |---|---|---|
-| hero | 92–200 | ≤ 28 chars (160+ only for 1–2 words) |
-| headline | 54–80 | 28–70 chars |
-| longline | 44–58 | 70–130 chars (a quote, a long sentence) |
-| numeral (the hero figure) | 110–260 | ≤ 6 glyphs |
-| stat (a figure inside a unit: a value, a price, a row numeral, a chevron glyph) | 40–96 | ≤ 8 glyphs |
-| subhead | 34–46 | ≤ 70 chars |
-| body | 28–40 | ≤ 160 chars per block |
-| button (item titles, chips, labels) | 28–34 | ≤ 22 chars, 1–3 words, never wraps |
-| eyebrow | 27–34 | ≤ 24 chars, UPPERCASE |
-| fine (detail, attribution, captions) | 28–32 | ≤ 80 chars |
+| hero | 112–240 | ≤ 28 chars (200+ only for 1–2 words) |
+| headline | 68–104 | 28–70 chars |
+| longline | 56–74 | 70–130 chars (a quote, a long sentence) |
+| numeral (the hero figure) | 130–300 | ≤ 6 glyphs |
+| stat (a figure inside a unit: a value, a price, a row numeral, a chevron glyph) | 50–116 | ≤ 8 glyphs |
+| subhead | 44–58 | ≤ 70 chars |
+| body | 38–50 | ≤ 160 chars per block |
+| button (item titles, chips, labels) | 40–50 | ≤ 22 chars, 1–3 words, never wraps |
+| eyebrow | 32–36 | ≤ 24 chars, UPPERCASE — an answer's verdict ONLY; no other slide carries one (2026-10-21) |
+| fine (detail, attribution, captions) | 34–38 | ≤ 80 chars |
 
-**Hard floor 28px — and 28 is a FOOTNOTE size, not a working one** (2.1.3, Bren on deck 307: "some text is getting close to too small to be viewed well on mobile devices", with 33 blocks written at 28–29). On a canvas that is ~7 inches wide in the hand: a source line or an asterisked rate 28–30; captions, meta and support lines 30–33; eyebrows, button labels and row labels 32–36; subheads 34–46; figures in units 44–96; headlines 54–110. A size written under a role's band is raised to the band, never re-sized by length. **Write the size you mean**: a `size` inside the role's band is honoured exactly. Headlines ≤ 3 lines (4 for a stacked one-word-per-line hero), body ≤ 4 lines, no orphan last word (the builder binds the last two). A three-word line in a body-sized box is wrong: promote it to hero. A 90-character headline is a longline, not a wrapped hero.
+**The scale grew by about a quarter on 2026-10-21** (Bren, after the Warby Parker build: "increase the font sizes of all other element types a little more to create larger text across the board" — a headline that landed around 70 lands around 90, a 32 around 40, a 34 around 44), and **eyebrows became the exception**: "we rely too heavily on including eyebrow elements … they don't add much to the design, and cost a lot of screen real estate." A `heading.kicker` slot is satisfied by its headline alone; the only eyebrow a deck writes is an answer slide's "CORRECT" / "NOT QUITE". "QUESTION 1 OF 3" over a question that already carries its options is the case that named the rule — that room goes to larger option text, or one more option. The table above is the QUICK BUILD's scale (composer.js `ROLES`); the Creative Build's scene renderer keeps the 2.1.3 bands (`ROLES_SCENE`: headline 54–80, body 30–40, button 32–36 …) until it is re-verified at the bigger scale — an open item.
+
+**Hard floor 28px — and 28 is a FOOTNOTE size, not a working one** (2.1.3, Bren on deck 307: "some text is getting close to too small to be viewed well on mobile devices", with 33 blocks written at 28–29). On a canvas that is ~7 inches wide in the hand: a source line or an asterisked rate 28–30; captions, meta and support lines 34–38; button labels and row labels 40–50; subheads 44–58; figures in units 50–116; headlines 68–120. A size written under a role's band is raised to the band, never re-sized by length. **Write the size you mean**: a `size` inside the role's band is honoured exactly. Headlines ≤ 3 lines (4 for a stacked one-word-per-line hero), body ≤ 4 lines, no orphan last word (the builder binds the last two). A three-word line in a body-sized box is wrong: promote it to hero. A 90-character headline is a longline, not a wrapped hero.
 
 **Weights.** The body face has weights and the exemplars use two or three on one slide: eyebrows BOLD (the default), row labels MEDIUM, captions and button labels SEMIBOLD, subheads REGULAR. `weight` on any text element; `lh` (line-height 0.82–0.95 for a headline that breaks, 1.05 for a subhead), `ls` (letter-spacing 0.2–0.3 on spaced caps), a `"\n"` for a deliberate break (one thought per line), `runs` for a two-tone line.
 
@@ -778,7 +780,7 @@ The renderer worked; the designs were thin. Thirty-seven slides came out as a he
 - **A slide is layered — six to twelve elements.** Stage · eyebrow or accent rule · headline · ONE substance element (cards on stroked plates with icons in tinted wells, rows with wells, a dot grid, an animated bar chart, photo tiles with captions, a pull-quote and its attribution) · ONE detail (a badge, a divider, a soft disc behind a numeral, a legend). Two-element slides are for section intros and closing lines, at most four per deck. The design contract's worked scenes show how such a slide is written; compose to that standard in the deck's own language.
 - **Every slide is designed.** The menus never reached the design pass (the outline had given them their items, so the template-era shortcut skipped them) and fell back to a flat row list. In 2.0 a slide without a scene is a slide that still needs designing, whatever copy it already has.
 - **The band is binding and the builder sizes by length.** Headlines were written at 40 and 34, support at 26, a figure as body at 104. `size` is honoured only inside the role's band; a figure is a numeral; a two-to-four-word headline is one line (the box widens before the words break).
-- **The corner mark is the builder's.** The real logo, small, top-left (or the first free corner) on every slide after the reveal — the way deck 303 carried it — unless the scene places a logo or says `logoMark:false`. The reveal draws the mark large and centred from its real proportions (`logoUris.aspect`), whatever box the scene gave.
+- **The corner mark is the builder's.** The real logo, top-left (or the first free corner) on every slide after the reveal — the way deck 303 carried it — unless the scene places a logo or says `logoMark:false`. **No logo is ever smaller than 75px on its short side** (Bren 2026-10-21: a 40px corner mark does not read on a phone; `logoBox` raises the short side to 75 unless the long side would overflow its room), and **the drawing follows what sits under it**: the dark drawing on a light plate or field, the light drawing on a dark one or over footage (`toneUnder` / `localField`), from the pair the logo hunt keeps when the brand's source offers both tones — a lone drawing is recoloured for its missing tone. The reveal draws the mark large and centred from its real proportions (`logoUris.aspect`), whatever box the scene gave.
 - **Framed panels get 24px corners; columns never overlap.** A panel that touches no edge is rounded by default; a text box that runs into the column beside it narrows to a 28px gutter before anything is drawn (the overlap resolver had shoved a list's first row sideways instead).
 - **An empty well is worse than no well.** Icons draw first; wells go in behind an icon that landed. The tones a scene names (an accent well icon) are prepared with the slide's icons, and a tone that still fails falls back to the field's own.
 - **Glyphs persist as Contain.** The engine resets an icon's fill mode on load exactly as a photo's; the in-visit guard now re-asserts Contain on glyphs, so the byte-level verify stops counting them and no slide pays a corrective revisit for its animated icons.

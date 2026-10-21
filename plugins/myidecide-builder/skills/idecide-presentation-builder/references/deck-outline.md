@@ -107,6 +107,13 @@ Output ONE JSON object (no fences, no commentary):
     },
     "voiceName": "...",          // EXACT name from the voice catalog provided
     "casting": "...",            // one line: who appears in photos, deck-wide
+    "footage": ["...", "..."],   // 4-6 BRAND-SAFE stock VIDEO searches, 3-5 keywords each, the visible
+                                 // subject first, that could sit under ANY slide of this deck — the
+                                 // settings, materials, places and people of this brand's world (an
+                                 // outdoor-gear brand: "hiker mountain trail", "fleece jacket texture
+                                 // closeup", "alpine lake sunrise"). They are the fallback when a
+                                 // slide's own imageHint finds nothing good, so make each one common
+                                 // stock footage, not a niche scene.
     "brandEvidence": "..."       // REQUIRED when a website was researched: what
                                  // you actually READ off the page, as selector +
                                  // declaration pairs, e.g.
@@ -141,8 +148,14 @@ Output ONE JSON object (no fences, no commentary):
       "layout": "...",           // ONE LINE: the beat's content shape + weight + what dominates — see LAYOUT INTENT
       "field": "light"|"dark"|"primary",   // a suggestion; the design pass may choose otherwise
       "photoZone": "full"|"left"|"right"|"top"|"bottom"|"none",   // photo INTENT
-      "imageHint": "...",        // 4-8 word Pexels VIDEO phrase (motion bg), "" if none.
-                                 // UNIQUE per slide — vary subjects/settings.
+      "imageHint": "...",        // 3-6 concrete stock VIDEO keywords (motion bg): the visible SUBJECT FIRST (what the camera
+                                 // sees — "handshake", "barista", "solar panels"), then setting, then light/mood. No filler
+                                 // words, no abstract noun first: not "mortgage loan paperwork signing" but "paperwork signing
+                                 // desk mortgage" — the search ranks results by their keywords, weighted by this order. "" if none.
+                                 // UNIQUE per slide — vary subjects/settings. NEVER a political, protest, military,
+                                 // religious, death, adult, drug or graphic subject unless it IS the brand's own
+                                 // subject (a church's deck may ask for its church): such words in a hint UNLOCK
+                                 // results the build otherwise refuses, so they are a deliberate choice, never colour.
       "panels": 2-6              // OPTIONAL. A beat that IS a set of N photographable
                                  // things shown side by side — four services, three
                                  // locations, a 2×2 of moments. Say the number and
@@ -175,10 +188,16 @@ Binding consequences:
   next chapter and the viewer never chooses again. That last beat plays like
   a REGULAR content slide — no navigation copy, no buttons (the return menu
   owns the choose-next prompt).
+- **Main Menu - Return sits immediately after Main Menu - First in deck
+  order** — the pair is one design and one place; the builder moves it there
+  if the outline does not.
 - **Subfork chapters** (testimonials, product lines — content browsed
   piecemeal): the chapter's FIRST beat is its own menu — kind "menu",
   `autoAdvance: false`, one item per sub-beat plus a "Move Ahead" item
-  targeting "Main Menu - Return". Each sub-beat carries its content plus a
+  targeting "Main Menu - Return". Name every sub-beat after the chapter —
+  "<Topic> - 2", "<Topic> - 3" or "<Topic> - Hard Coolers" — never as a
+  stand-alone title: a sub-beat is reached only through its chapter's menu
+  and is never a main-menu option. Each sub-beat carries its content plus a
   single "Back" item targeting the chapter's first beat, and
   `autoAdvance: false` (a viewer leaves a sub-beat only via Back).
 - **"Finish Up" is always a topic**, offered in BOTH menus, even when the
@@ -337,24 +356,26 @@ hand-built ones. Every copy fault below appeared in BOTH builds, and the
 reviewer had to spend its one fix on it — or missed it. Write it right the
 first time:
 
-- THE EYEBROW FRAMES THE HEADLINE. It is never the section or chapter name
-  ("FINISH UP", "OUR STORY", "WAYS TO GIVE"), never filler ("CHAPTER",
-  "SECTION", "INTRO"), and never a word that is already in the headline
-  ("TWO ACCOUNTS, ONE PURPOSE" over "Two accounts. One promise." is the same
-  thing twice). It names the moment, the claim or the category the headline
-  answers: "THE HONEST ANSWER", "WHAT PROOF MEANS", "YOUR TURN". Three or
-  four words; no eyebrow beats a weak one.
-- ONE NUMBERING SCHEME FOR QUESTIONS, deck-wide: "QUESTION 1 OF 3",
-  "QUESTION 2 OF 3", "QUESTION 3 OF 3" — digits, always the same shape.
-  "QUESTION ONE" beside "QUESTION 2" is a drift the viewer sees.
+- EYEBROWS ARE THE EXCEPTION (Bren 2026-10-21: "we rely too heavily on
+  eyebrow elements … they don't add much to the design, and cost a lot of
+  screen real estate"). Write `eyebrow` on ONE kind of slide only: an answer
+  slide's VERDICT — "CORRECT" / "NOT QUITE" — because the viewer needs it. A
+  branch answer with no right or wrong (the outcomes of "which describes
+  you?") carries none. Every other slide has NO eyebrow: not the question's number ("QUESTION 1
+  OF 3" above a question that already carries its options is the exact case
+  — the room goes to larger option text, or one more option), not a chapter
+  name, not a category, not a framing phrase. Leave the field out. The
+  headline is bigger now and takes that room. When an eyebrow IS written
+  (the verdict), it is never the section or chapter name, never filler,
+  never a word already in the headline.
 - A FIGURE IS SAID ONCE ON ITS SLIDE. The label under a numeral never
   restates it ("$100" over "of $100" is a stutter — "$100" over "of every
   gift reaches the project"); the headline never carries the number the
   numeral shows; "100%" appears once.
-- ANSWER SLIDES: "Correct" or "Not quite" appears ONCE (the eyebrow), then
-  the fact that makes the answer true. An answer slide with no eyebrow and
-  no headline — a bare figure over footage — leaves the viewer unsure
-  whether they were right.
+- ANSWER SLIDES: "Correct" or "Not quite" appears ONCE (the eyebrow — the
+  one eyebrow a deck keeps), then the fact that makes the answer true. An
+  answer slide with no eyebrow and no headline — a bare figure over footage
+  — leaves the viewer unsure whether they were right.
 - QUIZ OPTIONS CARRY NO DECORATIVE ICONS. "60% · 80% · 90% · 100%" with a
   pie, a bar, a badge and a drop beside them is noise; icons on options
   only when every option names a THING with an obvious pictogram (Auto ·

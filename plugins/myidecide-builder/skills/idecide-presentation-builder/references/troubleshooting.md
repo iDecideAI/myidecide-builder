@@ -41,6 +41,7 @@ never shows those — every other entry applies to both.
 | `TAB-03` | "builder error dialog detected" · "The myiDecide Builder crashed N times … mid-update" | The myiDecide Builder showed its Unknown Error dialog |
 | `TAB-04` | "slides.changeSlide did not answer in 30s" · "could not open <slide> — skipped" · "export timed out after 20s" | The tab lost focus or the computer slept during a long pass |
 | `TAB-05` | "This presentation is open in another tab" · `409 SESSION_MISMATCH` | The same presentation is open somewhere else and holds the lock |
+| `TAB-06` | "This myiDecide Builder is out of date" · "no stock media calls" | The builder page is older than the extension (or cached) — hard-reload it |
 | `BUILD-01` | "A build is running in your myiDecide Builder tab right now" | Edits wait until the running build finishes |
 | `BUILD-02` | "I couldn't read any text out of <file>" | The uploaded script or brochure has no readable text |
 | `BUILD-06` | "…is 140 MB — the limit for videos is 96 MB" · "Six files at a time is the limit" · "could not be uploaded into the presentation" | A file attached with the paperclip is over a limit, or the presentation tab wasn't reachable to upload it |
@@ -48,6 +49,7 @@ never shows those — every other entry applies to both.
 | `BUILD-04` | "(NO VOICEOVER)" is spoken aloud | A silent-slide marker was narrated — fixed in 1.1.0; older decks can be cleared |
 | `BUILD-05` | "iconify unreachable" · "display font unresolved" | An icon or font service couldn't be reached; built-in fallbacks were used |
 | `BUILD-07` | "The AI's plan came back garbled" · `non-JSON reply (N chars…)` | The AI's plan wasn't in the exact format the extension reads — resume and it almost always comes back clean |
+| `BUILD-08` | "Imagery on <slide> was blocked (…) and could not be replaced automatically" | A stock clip or photo the brand must never show was refused and no safe replacement was found in time — ask in the chat to replace it |
 | `PANEL-01` | The side panel was closed while a build was running | Reopen it — History → Resume carries on where it stopped |
 | `GEN-01` | "Something went wrong" | A problem with no specific explanation yet — try again, then send the build record |
 | `HELP-01` | You need to send something to support | Where the build record is and what to send to hi@idecide.com |
@@ -442,6 +444,36 @@ stale one and the platform rejects its saves.
 
 ---
 
+### TAB-06 — "This myiDecide Builder is out of date" / "no stock media calls"
+
+**What you'll see**
+
+- The panel stops right after connecting, before anything is built or
+  changed, with "This myiDecide Builder is out of date".
+- In the build log: `this myiDecide Builder has no stock media calls`.
+
+**What it means**
+
+The extension finds photos and video through the myiDecide Builder's stock
+media tools (searchStockImages, importStockVideoBatch and the rest). The page
+in this tab doesn't have them: it's an older version of the site, or the
+browser is still showing a cached copy of one. The extension no longer has a
+way to source media without them, so it stops instead of building a deck with
+no footage.
+
+**What to do**
+
+1. Hard-reload the myiDecide Builder tab — ⌘⇧R on a Mac, Ctrl+Shift+R on
+   Windows — and wait for the slides to show.
+2. Try again (or 🕘 History → **Resume build**).
+
+**If it keeps happening**
+
+- The site hasn't been updated for this version of the extension yet. Email
+  hi@idecide.com with the build record (🕘 History → ⬇).
+
+---
+
 ## During a build or an edit
 
 ### BUILD-01 — "A build is running in your myiDecide Builder tab right now"
@@ -674,6 +706,45 @@ what was wrong and where. You only see this code when a reply got past both.
   attempts), so the faulty character can be found rather than guessed at.
 - Two replies failing the same way usually means the instructions the AI was
   given contradict each other — that's a fault on our side, not yours.
+
+### BUILD-08 — "Imagery on <slide> was blocked (…) and could not be replaced automatically"
+
+**What you'll see**
+
+- On the finished screen, under **Needs attention**: *"Imagery on "Our
+  Commitments - 4" was blocked (political) and could not be replaced
+  automatically — ask in the chat: "replace the footage on Our Commitments - 4""*.
+- In the build log: `ERROR imagery: "<slide>" still carries pixabay <id> tagged
+  "<word>" — replace it`.
+
+**What it means**
+
+Stock footage and photos come from a public library, and a search for an
+ordinary subject can bring back a clip whose own keywords say it shows
+something a brand must never show — a political party's flag, a protest, a
+weapon, a place of worship, a graveyard, adult or drug content, horror. Since
+2.3.1 the extension refuses such a clip at every step: the search drops it,
+nothing places it, the review re-sources a slide the moment it is seen, the
+finished deck is checked once more, and a presentation opened later for edits
+is checked again. This code appears only when a slide was refused its clip
+and the replacement searches could not find a safe one in time (usually the
+stock service's minute was spent — see the build log for `REFUSED`).
+
+**What to do**
+
+1. Open the chat and say *"replace the footage on <slide>"* (or name what it
+   should show — *"replace the footage on slide 12 with volunteers planting
+   trees"*). The chat sees the same block and will not bring the clip back.
+2. If several slides are named, one message can list them all.
+
+**If it keeps happening**
+
+- A brand whose OWN subject is on the list (a church, a security company, a
+  cemetery) names it in its answers and hints — a word the hint names is
+  allowed through. Everything else stays refused.
+- Download the build record (🕘 History → ⬇) and send it to hi@idecide.com if
+  a clip you consider unsafe was NOT caught: its keywords are in the record,
+  and the list grows from real cases.
 
 ---
 

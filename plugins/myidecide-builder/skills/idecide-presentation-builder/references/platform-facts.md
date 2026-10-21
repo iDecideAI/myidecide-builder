@@ -10,7 +10,7 @@ Every item below was proven live in the builder and re-verified after a full pag
 reload. These are the rules the extension's inject scripts must follow — several were
 learned the hard way and silently corrupt a deck if ignored.
 
-Last updated 2026-10-16.
+Last updated 2026-10-20.
 
 > **NEVER call the img.ly export family — `engine.block.export`, `exportVideo`,
 > `exportWithColorMask`, `exportAudio`, `cesdk.utils.export` (Bren, 2026-09-28).**
@@ -34,6 +34,166 @@ Last updated 2026-10-16.
 > The extension and the agent runbook drive the same platform through different code
 > paths, so a finding recorded in only one place is lost to the other. Prose alone is not
 > enough.
+
+---
+
+## 2026-10-20 — the stock calls live: ranked search, the query ladder, Pexels as the last rung
+
+Everything in the 2026-10-17 section below was VERIFIED LIVE on my.idecide.com on
+2026-10-20 (deck 302 for read-only searches, test deck 319 "Pixabay Ranking Test
+2026-10-20" for every import) — with these corrections and additions:
+
+- **Both call families are live on the server.** `api.assets` carries `searchImages`,
+  `searchVideos`, `importPexelVideoBatch`, `importPexelImageBatch` AND the stock family;
+  `currentSlide.images` has `insertPexelImage`, `replaceWithPexelImage`, `insertStockImage`,
+  `replaceWithStockImage`; `currentSlide.videos` has `insertPexelVideo`, `insertStockVideo`,
+  `insertPexelBatchVideo`, `insertImportedVideo`, `replaceVideoWithPexelBatch`,
+  `replaceVideoWithImported`. The Pexels searches still answer.
+- **The provider-neutral import takes a Pexels ref.** `importStockVideoBatch([{provider:
+  'pexels', id: 854110}])` → success in 4.0 s, 4 renditions, uri under
+  `r2-dev…/stock/pexels/videos/`; `importStockImageBatch([{provider:'pexels', id:6769779}])`
+  → 5 renditions under `/stock/pexels/images/`. So the extension's Pexels FALLBACK is only a
+  Pexels SEARCH (`searchVideos` / `searchImages`) normalised into the stock shape; the
+  import and the placement are the stock calls. A Pexels PHOTO's id lives only in its url
+  (`/photos/<id>/`); a Pexels video result carries `pexelVideoId`.
+- **The endpoint is `POST /api/builder/stock/{videos,images}/search` `{query, page
+  (1-based), perPage}`.** The bridge sends `perPage` = `defaultPhotoPageSize` = 20 and
+  converts to 0-based pages. The server honours `perPage` up to **80** (asked 200, got 80);
+  `SH.stockSearchRaw` asks it directly for 80 and falls back to the bridge's 20. It IGNORES
+  `provider`, `orientation`, `order`, `video_type`/`videoType`, `image_type`/`imageType`,
+  `min_width`, `editors_choice`, `category`, `safesearch`, `lang` — identical ids back for
+  every spelling. The request to pass them through is
+  `docs/requests/2026-10-20-stock-search-filters-for-kevin.md`.
+- **Pixabay's `type` is not surfaced** (film/animation; photo/illustration/vector), nor
+  views/likes/downloads. An IMAGE's `pageUrl` says its kind (`/photos/<slug>-<id>/`;
+  illustrations and vectors live under `/illustrations/`, `/vectors/`); a video's is
+  `/videos/id-<id>/`, no kind. 3D renders and flat illustrations sit in video results with
+  ordinary tags ("tooth, implant, dental"; "handshake, agreement, contract").
+- **Tight vs loose pools — the tell is `totalResults`.** A query Pixabay can satisfy
+  answers a real count (`handshake` 16, `dentist` 39, `mortgage` 5, `mortgage loan` 28 —
+  every result carries the words). A multi-word query it cannot satisfy is silently
+  BROADENED and reports `totalResults: 500` with mostly partial matches (`paperwork
+  signing` 500 with 0 full matches; `patagonia zebra skyscraper` 500). "20 results" never
+  means "20 matches"; the first landscape result of a loose pool can be unrelated
+  ("handshake business deal office" → a keyboard-typing clip; "kids classroom learning
+  spanish" → a book on a beach). Pixabay's default order is `popular`, so position is
+  popularity, never relevance.
+- **Processed output is no longer always 960x540.** A 3840x2160 source came back
+  1080x608 (renditions 1080/720/640/340); a 1920x1080 source came back 960x540. The
+  long-side floor (720) still holds; the old "4K takes longer" penalty is gone from the
+  ranker because the bigger source is now the better output.
+- **Tag spam is real:** a clip tagged with every coffee word ("coffee, powder, instant
+  coffee … barista, espresso, shop") matched "barista espresso coffee shop" 100%. The
+  ranker counts a hit among the author's FIRST FIVE tags (Pixabay's `label`) in full and a
+  hit further down at 0.75. `ai generated` IS a tag on AI stills/clips.
+- **What the extension does with all this (media.js r12, `SH.searchStock`):** every search
+  answers RANKED — weighted coverage of the hint's terms by the result's tags (the first
+  term is the subject; the outline prompt writes hints subject-first), a phrase bonus, a
+  subject bonus, penalties for non-footage tags, the orientation / duration / resolution
+  gates underneath; a loose first pool or a weak best match earns a parallel LADDER (the
+  hint minus one term each, the first two, the subject alone) ranked against the full hint;
+  Pexels only when Pixabay answered nothing. **The quality floor (the Patagonia build,
+  same day):** a best match under 40%, or one whose subject is unmatched, widens to the
+  slide's other query (`photo.query` ↔ `imageHint`, `altQuery`) and the deck's
+  `theme.footage` (4-6 brand-safe generic searches the outline writes; rotated per hint),
+  each ranked against ITSELF — a fallback candidate that answers its own query (subject
+  matched, ≥50%) leads, the hint's pool trails. A niche subject ("hands patching outdoor
+  jacket workbench") otherwise leaves a loose pool whose best matched one incidental word.
+  The batch paths add an LLM re-rank (one Haiku call per chunk through the panel,
+  `stock_rerank_system.md`, told the deck's brand line and which candidates are fallbacks;
+  `IDP.stockRerank` is the page↔panel queue, 25 s timeout → mechanical order; a re-query's
+  results are ranked before they lead). Every record carries `stock.query`, `stock.why`,
+  `stock.llm`. Measured against the old first-landscape pick: handshake → a real office
+  handshake; classroom → a real classroom; the renders/illustrations are the Haiku pass's
+  job until the server passes `video_type=film`. A review re-hint also rewrites
+  `photo.query` — a photo panel searches that, not `imageHint`.
+- **Zoom auto-fit is an engine call; the timeline collapse is NOT ours to click.**
+  `engine.scene.enableZoomAutoFit(page, 'Both')` is the zoom menu's "Auto-Fit Page" (the
+  control reads "Auto"; `isZoomAutoFitEnabled` / `disableZoomAutoFit` / `setZoomLevel` /
+  `getZoomLevel` exist) — view state, nothing dirty; the extension sets it after every
+  changeSlide, inject and the final landing (`IDP.tidyView` / `TIDY_VIEW_FN`). The timeline
+  toggle is `[data-cy="expand-timeline"]` inside the `#root-shadow` shadow root: its
+  `aria-label` is the state ("Collapse Timeline" = expanded; `aria-pressed` never changes),
+  `click()` toggles it, an in-app `changeSlide` keeps the state, a page load starts it
+  expanded. By hand a click on sight held — but under a build CE.SDK 1.74's layout code
+  fights it (forces the expanded height back, runtime errors; Bren, second Patagonia build,
+  2026-10-20), so the collapse was removed the day it was added. Leave the timeline alone
+  until the platform exposes a call for it.
+- **The focus-tab bridge is TESTER-ONLY.** `package.mjs` strips `resolve.js` (and
+  `web_accessible_resources`) from the Chrome Web Store build (the 0.9.182 hardening), so
+  `window.postMessage({__idp:"focus-tab"})` is answered only by the tester build or an
+  unpacked load — on the store build `data-idp-base` is never set and the message is
+  ignored. A tab driven through the Claude-in-Chrome javascript bridge loads
+  `window.aiagent` and the engine in the background anyway (measured: behind another tab,
+  and with the Claude app covering Chrome) because the bridge attaches the debugger; the
+  Extension's own connect pulls the tab forward itself (`bringBuilderForward`).
+
+---
+
+## 2026-10-17 — stock media goes provider-neutral (verified live 2026-10-20 — see above)
+
+Sources: "AI agent bridge: stock media API migration" (2026-10-17) and the
+builder code it describes (iDecideServer `28d155cda`: `react-app/src/api/stock.ts`,
+`aiagent/aiAgentBridge.ts`, `diy/pixabay/*`, `diy/stock/StockBatchImportService`).
+Written from the source before the release was deployed; every item was then proven on a
+live page on 2026-10-20, and the section above records what differed.
+
+The extension now sources every photo and clip through the provider-neutral calls
+and **no longer imports or places through the Pexels family** (`importPexelImageBatch`,
+`importPexelVideoBatch`, `insertPexelImage`, `insertPexelBatchVideo`, `replaceWith…Pexel…`)
+**or the engine's `pexelVideos` / `pexelImages` asset sources** (`SH.applyPexelVideo`,
+`preResolveVideos`, `resolveSlideClipLegacy` are gone). The Pexels SEARCHES
+(`searchImages`, `searchVideos`) survive only as the last rung of `SH.searchStock`
+(2026-10-20), and what they find is imported by the stock batch. The panel refuses to
+connect to a builder page without the stock calls — error **TAB-06** (hard-reload the tab).
+
+| Was | Now |
+| --- | --- |
+| `assets.searchImages(terms, page)` → `photos[{url, alt, …}]` | `assets.searchStockImages(terms, page)` → `{ provider, page, perPage, totalResults, images: StockImage[] }` |
+| `assets.searchVideos(terms, page)` → `videos[{pexelVideoId, url, …}]` | `assets.searchStockVideos(terms, page)` → `{ …, videos: StockVideo[] }` |
+| `assets.importPexelImageBatch([url or {url,name}])` | `assets.importStockImageBatch([StockImage or {provider, id, name?}])` |
+| `assets.importPexelVideoBatch([{pexelVideoId}], cb)` | `assets.importStockVideoBatch([{provider, id, slideId?}], cb)` → results carry `provider` + `stockId` |
+| `currentSlide.images.insertPexelImage(url, …)` | `currentSlide.images.insertStockImage(StockImage or ref, …)` |
+| `currentSlide.videos.insertPexelBatchVideo(rec, …)` | `currentSlide.videos.insertImportedVideo(rec, …)` (name only) |
+
+- **Import by provider + id, never by URL.** Every `StockImage` / `StockVideo` carries
+  `provider` and `id`; pass the result itself. Pixabay URLs carry no id and expire.
+- **Never place, fetch or store `previewUrl` / `thumbUrl`.** Temporary (Pixabay's last
+  24h) and placing them hotlinks the provider. The Logo Reveal cover used to FETCH a
+  Pexels url and re-upload the bytes; it now imports the still and uses the import's
+  `meta.uri`.
+- **Two ids on an imported video:** `id` is the upload's, `stockId` the provider's.
+  Clip records in `IDP.videoUris` now carry `provider`, `stockId` (also `assetId`),
+  `uploadId`, and `stock` (provider · id · label · tags · author); `pexelVideoId` is gone.
+- **Repeat imports are instant** — the server reuses an asset any session imported.
+  (§ "Batch video import" below says there is no server-side dedupe; that was the
+  Pexels-era endpoint.) The run's `used` sets now hold `provider:id` keys.
+- **Pages are 0-based, 20 per page** (the old still searches asked for page 1 — the
+  SECOND page — and now ask for 0). A query answers at most 500 results.
+- **Pixabay matches keywords.** `label` is the first five tags; `tags` is every distinct
+  keyword (empty on Pexels); safe search is on; a blank query returns editor's choice;
+  photos import at most 1280px wide. Hints are now written as 3-6 concrete keywords, and
+  `SH.searchStock` retries an EMPTY answer with the query's content words, then its
+  first three and first two (an error is not retried; q is capped at 100 chars).
+- **Tags reach the LLMs that judge imagery:** the vision reviewer gets each slide's
+  STOCK MEDIA (label + keywords) beside the snapshot and may re-hint footage that
+  contradicts the slide; the revision chat gets the deck's STOCK MEDIA list once a turn
+  (to choose an `addMedia` clip). Since 2026-10-20 the ranker is tag coverage first (see
+  the section above) and a Haiku re-rank confirms the batch picks.
+- **Attribution:** the extension never shows search results to a person, so the
+  provider/author attribution the providers require for result lists does not arise;
+  `stock.authorName` / `authorUrl` / `pageUrl` are kept on every record if it ever does.
+- **`insertImportedVideo` takes our synthesized records** (read from the bridge):
+  `insertPexelBatchVideo` is now a one-line alias of it, and it refuses only a record
+  with `success === false` or no `meta.sourceSet` — so the `{id, label, meta:{uri,
+  sourceSet}}` records the extension builds, and plain upload records, still place.
+- **The bridge swallows search failures:** a failed `searchStock*` resolves to an empty
+  page with `provider: ''` (a real answer always names its provider). `SH.searchStock`
+  treats that as an error and does not retry it shorter.
+- **Pixabay is asked for its default order (`popular`)** — the server sends no `order`
+  — so the first results are the most popular matches, not the most relevant. The
+  server also cuts `q` at 100 characters, mid-word if need be; `SH.searchStock` trims
+  at a word boundary first.
 
 ---
 
@@ -2307,3 +2467,28 @@ convention); the test block was discarded by reload.
 Also verified: `api.currentSlide.videos.uploadAndInsertVideo(videoData: Blob |
 string | File, x, y, w, h, startTime, duration)` IS on the live api — AIAGENT_API
 Recipe H ("there is no `videos.upload*`") was stale and is corrected.
+
+## 2026-10-21 — a button-heavy slide, proven in the mock (deck 322, the YETI build)
+
+- `scripts/replay-template.mjs <record> [--slide "…"] [--log] [--blocks]`
+  replays a record's Quick Build slides through `__COMPOSE` in the mock
+  engine and reproduces the live `canvas fit` numbers to the pixel. Run it on
+  every new record before reading the deck by eye; it reports off-canvas,
+  text-over, torn units, piles and under-floor plates.
+- `fitToCanvas` used to clamp every off-canvas unit to the bottom margin —
+  the same y — so a stack that did not fit became a PILE, and the verify
+  pass (overlap COUNT only) accepted the pile because it has fewer measured
+  pairs than the spread. Both are closed: the pile guard chains a unit under
+  what it would land on; `IDP.unitFaults` (a button part outside its plate,
+  two plates sharing a third) reverts a repair that tears a unit.
+- The packer's row gate (`rows.length <= 12`) switched the whole pass — and
+  every rung in it — off on the slides with the most rows. It is 24 now; a
+  set (two abreast, a column of rows) is one unit whatever its row count.
+- The group-scale rung scaled button plates with no floor (deck 322's menus
+  went to 40px rows). Plates stop at 56; a circle/square target stops at its
+  content (icon + label frame + gap + pads).
+- A sub-beat named "<Chapter> - <Word>" is part of `<Chapter>` when a slide
+  with that stem exists (`parentStemOf`); only ` - <number>` was stripped
+  before, and each such beat became a chapter the main menus offered.
+- `text({ maxH })` walks a line down its band until its block fits; the
+  one-line grow re-fit discarded it until it was re-applied after the grow.
