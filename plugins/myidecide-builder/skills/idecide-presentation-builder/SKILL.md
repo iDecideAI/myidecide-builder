@@ -406,6 +406,14 @@ built and play broken.
   before they go under the floor (a side photo gives width, then gives way).
   A terminal CTA sizes its targets first and its headline from what is left;
   a circle target is never smaller than the icon and label inside it.
+- **Imagery is chosen once** (Bren 2026-10-21): rank the candidates and pick
+  the best on the first pass; what it lands on stays, however the review feels
+  about the match — only brand safety (political, extremist, violent,
+  religious, death, adult, drugs, gambling, graphic) replaces a clip.
+- **Polish is geometry** (Bren 2026-10-21): the review pass centres labels in
+  their buttons, fixes unintended line breaks, spacing and padding, and brings
+  lines back on the canvas — it repairs in place and never re-plans a slide,
+  swaps its variation or rewrites its copy (an eyebrow removal aside).
 - **A sub-beat is its chapter's.** Name every beat of a sub-fork after the
   chapter — "Shop the Range - 2" or "Shop the Range - Hard Coolers" — and
   reach it only through the chapter's own menu; it is never a main-menu

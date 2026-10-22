@@ -2492,3 +2492,16 @@ Recipe H ("there is no `videos.upload*`") was stale and is corrected.
   before, and each such beat became a chapter the main menus offered.
 - `text({ maxH })` walks a line down its band until its block fits; the
   one-line grow re-fit discarded it until it was re-applied after the grow.
+- `api.currentSlide.images.insertUploadedImage` / `uploadAndInsertImage` can
+  fail to answer at all (deck 324: one of five inserts on a page that had
+  already timed out its thumbnail calls; 6½ minutes of silence until the tab
+  was reloaded). Every insert in `materializeOwnImages` has a 45 s ceiling
+  (`T_INSERT`); a call that does not answer is a failed image, logged by name.
+- A re-hint from the review used to re-source the clip ("a new hint is a new
+  clip", 2.2.2) — retired 2026-10-21: the first pick stands; only the brand-
+  safety block list re-sources. The review's `media: "replace"` is honoured for
+  safety only (the reviewer's own sentence must name the reason, or the
+  mechanical audit raised it).
+- The build card paints `P.msg` — `log()` cuts it at 180 characters and the
+  `footage picks:` line is `note()` (record-only); the panel clips the line and
+  offers "more".
