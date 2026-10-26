@@ -2493,7 +2493,7 @@ Recipe H ("there is no `videos.upload*`") was stale and is corrected.
 - `text({ maxH })` walks a line down its band until its block fits; the
   one-line grow re-fit discarded it until it was re-applied after the grow.
 - `api.currentSlide.images.insertUploadedImage` / `uploadAndInsertImage` can
-  fail to answer at all (deck 324: one of five inserts on a page that had
+  fail to answer at all (deck 323, Patagonia: one of five inserts on a page that had
   already timed out its thumbnail calls; 6½ minutes of silence until the tab
   was reloaded). Every insert in `materializeOwnImages` has a 45 s ceiling
   (`T_INSERT`); a call that does not answer is a failed image, logged by name.
@@ -2505,3 +2505,166 @@ Recipe H ("there is no `videos.upload*`") was stale and is corrected.
 - The build card paints `P.msg` — `log()` cuts it at 180 characters and the
   `footage picks:` line is `note()` (record-only); the panel clips the line and
   offers "more".
+
+## 2026-10-21 (later) — `insertUploadedImage` for a lottie can HANG with no engine call; never chain the next insert on the raw promise (deck 324, the Stripe build, extension → 2.3.2)
+
+Read from the record and the API trace of deck 324 (52 slides, 24m33s on
+2.3.1 Quick Build) — `updates-findings/2026-10-21-stripe-324-lottie-hang-findings.md`
+is the diagnosis; what follows is what it proved and what the code now does.
+
+- **The hang.** At 16:31:21.180 the platform took
+  `api.currentSlide.images.insertUploadedImage(lottie-white-calendar …)` on
+  "Finish Up - 4" and made NO engine call after it — a good insert shows
+  `setMuted → setScopeEnabled → setLooping → setSize…` within ~0.3 s — and the
+  promise never settled, not even when the tab came forward three minutes
+  later. The same asset id had inserted fine three times earlier in the
+  build; the platform's inserter wedged, not the asset.
+- **The poison.** `SH.placeUploadedImage` serialised every animated insert
+  through one promise chain and the chain waited on the platform's RAW
+  promise. After the hang, no later `insertUploadedImage` was ever issued:
+  eight more animated icons (clock, envelope, key, dashboard, rocket,
+  calendar, mail, compass) each got their placeholder and marks, sat out the
+  caller's 45 s `T_INSERT`, and were reported "did not answer" WITHOUT THEIR
+  CALL BEING MADE. Six slides × 45 s and nine icons dropped. The static path
+  (`uploadAndInsertImage`, a separate chain) kept working the whole time.
+- **The rule.** The chain advances on a RACE (`Promise.race([raw, 20 s])`),
+  never on the raw promise (media.js, SH `2026-10-21-r14`): a hung call costs
+  its own slot one ceiling and nothing behind it. A call that answers late is
+  an orphan — its block is destroyed and counted (`SH.insertStats.orphans`).
+  The outcome ({ok, ms, timeout, reason}) reaches the caller through
+  `opts.onOutcome` / `SH.insertStats.last`, so a refusal (0 at once) and a
+  hang (0 after the ceiling) read differently.
+- **The ladder** (`IDP.materializeOwnImages`): a visibility pre-check (the
+  page sets `IDP.wantVisible`, the panel's poll brings the tab forward at
+  once, the insert waits up to 6 s for it) → one animated attempt at
+  `T_LOTTIE` 20 s → one retry → the static SVG already uploaded for every
+  icon (`iconUris[tone:name]`) through `uploadAndInsertImage`, its icon marks
+  kept, `idecide/lottie` cleared (the block IS static) and
+  `idecide/lottieWanted` naming the animation. Two animated timeouts IN A ROW
+  mark the page wedged: the rest of its icons go static at once, ONE probe
+  insert runs on the next slide, and if the probe times out too the page
+  stays static until it is reloaded (a reload re-injects the file, so the
+  state starts clean). One record-only line per animated insert; the tally
+  rides in `status().anim`.
+- **Only an ISSUED call is the platform's failure.** The placeholder still
+  goes (an empty transparent box never ships), but every slot the build could
+  not fill keeps a record — geometry, name, marks, timing, opacity, radius,
+  its place in the stack — in `IDP.missingOwn[slide]`, and
+  `IDP.replaceMissingOwn(pageId, slide)` re-places it on a later visit:
+  `verifyRepair` calls it before measuring (a slide whose only change is a
+  restored icon is still saved), the panel routes every such slide into the
+  in-place polish pass whatever the reviewer said, and the reviewer is told
+  ("MISSING ICON(S) … put back mechanically — do NOT re-plan"). A rebuild
+  re-materialises on its own.
+- **The script call hit the 32 k cap, three builds running** (YETI 322,
+  Patagonia 323, Stripe 324): the CSV arrived whole, the outline half came
+  cut and unparseable, was thrown away, and the map was planned in the
+  fallback call anyway — after a 32 k reply had been paid for. The proxy
+  caps `max_tokens` at 32 000, thinking included, so the cap cannot be
+  raised; the split is the rule (`PLANNING_SPLIT` in config.js): the script
+  call writes the CSV and a `===NOTES===` JSON (scriptEvidence,
+  logoCandidates, brandEvidence), the map call plans from the finished CSV
+  with the notes carried into `theme` — and `claudeJson`'s own continuation
+  answers a cut outline instead of a discard. The combined path survives
+  behind the switch.
+- **A backstop headline is not a design.** The crash-reload at 16:23:06
+  re-normalised the plan before the design pass; `restoreDroppedCopy` took
+  the sub-fork slides' Back button (outline wiring in `copy.items`) for a
+  design, restored each one's first On Screen line as its headline, and
+  `slideNeedsDetail` then read the headline and SKIPPED their design pass —
+  "What Stripe Handles - 2…5" shipped as a headline and a Back pill, their
+  REQUIRED `step.numbered` / `listrow.icon` sets never written. Now only a
+  DISPLAY item counts as a design, restored copy is marked
+  (`_copyBackstop`) and never stands in for the pass, and the restore
+  carries the cell's sub-points (display items when the template wants a
+  set, else a support line).
+- **"iconify unreachable" after a reload is the reload, not Iconify.** The
+  base-set count ran on the freshly reloaded page (an empty icon map); the
+  panel now sends the base set once more before settling for the built-in
+  drawings.
+- The replay (`scripts/replay-template.mjs`) of deck 324 is clean: 52 slides,
+  0 faults — the hang and the cut outline were the whole story.
+
+## 2026-10-26 — five facts read live on deck 234 (Harbor & Hearth Realty, the first build on 2.3.2) — extension → 2.3.3
+
+- **A dirty mark + `changeSlide` committed a label re-fit and did NOT commit
+  the position moves on the same slide; the slide PUT did.** On the ?aiagent
+  route, the first repair of "Main Menu - First" (font size + width on three
+  labels through `engine.block`, marked with `api.currentSlide.blocks
+  .updateTiming`, committed by `api.slides.changeSlide`) survived a reload.
+  The second and third repairs (the headline's `setPositionX` / `setWidth` and
+  eight rows' `setPositionY`, marked and committed the SAME way — the second
+  time with the dirty mark on all nine text blocks) were gone when the slide
+  was read back after a `changeSlide` away and back: `headline@772,59`, the
+  rows at their old pitch, both times. What persisted:
+  `engine.block.saveToString([pageId])` + `PUT /api/builder/builderSession/
+  <sid>/slides/<slideId>` with the full slide record and the app's
+  `X-Session-UUID` header (read off the app's own PUT in the network log;
+  without it the PUT is a 400 "Required request header 'X-Session-UUID'").
+  That is the call `SH.exportAndPutSlide` makes and the call the polish pass
+  already saves with. Not explained — AIAGENT_API.md's "pair any raw engine
+  write with a documented api.* call" held for the sizes and not for the
+  positions, and nothing in the trace said why. RULE: a hand repair through
+  the engine saves with the PUT (`SH.exportAndPutSlide(slideId)`), then
+  verifies after a reload; a dirty mark is not a save.
+
+- **`getTextVisibleLineCount` is one layout stale.** It reports the count of
+  the last layout the engine PERFORMED; a width or font-size write does not
+  perform one, a frame read does. Measured on a 43px Manrope SemiBold label:
+  at 411px wide → `lines 1, fh 59`; `setWidth(348)` then `getTextVisibleLineCount`
+  → **1** (the old layout) while `getFrameHeight` → 113; read the frame first
+  and the count says 2. Step the size to 41 and read the count first → 1
+  again (stale), the frame 108. The button step-down read the count straight
+  after narrowing the box, saw 1, never stepped "Selling Your Home" / "Moving
+  to the Coast" / "Neighborhood Guide" down, and centred their fresh 113px
+  frames on 70px plates — the overflow the reviewer named on both main menus.
+  RULE: `composer.linesOf(e, id)` — a frame read, then the count — is the only
+  way a line count is read; the mock engine (`scene-sandbox.mjs`) is stale the
+  same way now, so a pass that reads the count raw fails the replay (the old
+  composer tears "Selling Your Home" out of its plate in the mock; the new one
+  steps it to 39px). Applied live on deck 234's two menus: 39 / 36 / 34px, one
+  line each, centred on their plates.
+- **The timeline cannot be kept collapsed under a build — measured, not
+  tried.** `[data-cy="expand-timeline"]` (inside `#root-shadow`): a click after
+  a 1.5 s delay collapses the timeline (56px) and it HOLDS with no runtime
+  errors — as long as nothing happens. Then: every in-app `changeSlide`
+  re-expands it to the new slide's track height (230 / 266 / 374 / 488px);
+  every NEW TRACK re-expands it — three blocks added to a collapsed timeline
+  → 338px, nine → 488px — which is what a compose does dozens of times a
+  slide; and after a page reload the tracks that keep loading for ~5 s after
+  `window.aiagent` is live flip it back to the full height with the button's
+  label caught in between ("Collapse Timeline" at 56px, then 489px). A
+  collapse after each slide's work would hold for the ~0 s before the next
+  `changeSlide`. Not re-introduced (Bren 2026-10-26: "if img.ly still
+  overrides it … let's not"); a sanctioned engine/UI call is still the only
+  door.
+- **`status().waveDone` belongs to `IDP.preResolve`, and the uploader never
+  sets it.** The review's re-source (`footage.resource`) waited on it for its
+  full 3-minute ceiling on every build that re-sourced a clip — Patagonia 323
+  (04:54:01 → 04:57:02), Stripe 324 (16:36:55 → 16:39:56), Harbor & Hearth
+  (17:18:59 → 17:21:58) — with the uploader idle two seconds in. Bren's
+  reload on the third "fixed" it at the moment the ceiling expired. RULE: a
+  re-source is waited on through `status().footSettled` (the uploader's own
+  queue empty, nothing running, the last drain done); `waveDone` is only for
+  a wait that follows `IDP.preResolve`.
+- **Kevin's stock filters are live (Builder deploy of 2026-10-26), verified
+  on deck 234.** `searchStockVideos(q, page, filters)` /
+  `searchStockImages(q, page, filters)` and the same fields in the endpoint
+  body (`POST /api/builder/stock/videos/search` …): video `videoType` (all /
+  film / animation), `minWidth`, `minHeight`, `order`; image `orientation`
+  (all / horizontal / vertical), `imageType` (all / photo / illustration /
+  vector), `minWidth`, `minHeight`, `order`. The bridge posts exactly
+  `{"query","page","perPage","videoType":"film","minWidth":1280,"minHeight":720,"order":"popular"}`.
+  Measured: "dentist patient" unfiltered → 202 results, the first three 3D
+  `animation`s; `videoType: film` + 1280×720 → 154 results, 40 of 40 film,
+  none under 1280. Pixabay's video search has NO orientation parameter — the
+  first filtered results were 2160×3840 portrait; the ranker's portrait
+  penalty stays. Every result now carries `type` (film / animation; photo /
+  illustration / vector) and `views`, `downloads`, `likes`. `sh/media.js`
+  r15 sends the filters on every search (STOCK_FILTERS; a filtered search
+  that answers nothing is sent once more relaxed), pushes a wrong `type`
+  below every real result (+250, never dropped) and breaks ties by
+  downloads / likes (≤ 30 points, under the 200-a-point tag coverage);
+  `stockInfo` records type and the counts, `stockBrief` hands them to the
+  re-rank. A Builder without the deploy ignores the fields and answers as
+  before.

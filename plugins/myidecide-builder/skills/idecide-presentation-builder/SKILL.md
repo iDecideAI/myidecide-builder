@@ -510,6 +510,13 @@ built and play broken.
   `location.reload()` discards anything uncommitted. A whole hand-composed
   slide (engine-created shapes, api media, api text) commits with one
   documented call + `changeSlide` — verified across a 21-slide build and a
+  reload. **The pairing is not proven for position moves** (2026-10-26, deck
+  234): a label re-fit (size + width) paired with `updateTiming` persisted;
+  a headline's `setPositionX` and eight rows' `setPositionY` on the same
+  slide, paired the same way, were gone after a `changeSlide` away and back,
+  twice. A hand repair that MOVES blocks saves with
+  `engine.block.saveToString([page])` + the slide PUT with the app's
+  `X-Session-UUID` header (`SH.exportAndPutSlide`), then verifies after a
   reload.
 - **Buttons are multi-layer.** The click action goes on the **background**
   layer (it covers the whole clickable area); the text and icon layers must
@@ -875,7 +882,16 @@ earlier ones resolve.
    waits for a click, `true` with its named target on every content beat.
 6. **Resolve assets before composing.** Search stock with the provider-neutral
    calls (`api.assets.searchStockVideos` / `searchStockImages` — Pixabay; every
-   result carries `tags`) and **rank before you import** (2026-10-20): Pixabay
+   result carries `tags`) — and since 2026-10-26 pass the FILTERS as the third
+   argument: footage `{ videoType: 'film', minWidth: 1280, minHeight: 720 }`,
+   stills `{ orientation: 'horizontal', imageType: 'photo', minWidth: 1280,
+   minHeight: 720 }` (Pixabay's video search has no orientation — still skip
+   portrait clips yourself); every result now carries `type` (film / animation;
+   photo / illustration / vector) and `views` / `downloads` / `likes` — an
+   animation, illustration or vector goes below every real one, and downloads
+   break a tie between equally-tagged results; a filtered search that answers
+   nothing may be sent once more without the type and size fields. Then
+   **rank before you import** (2026-10-20): Pixabay
    answers in popularity order and broadens a query it cannot satisfy
    (`totalResults: 500` is the tell), so take the result whose tags best cover
    the hint — the hint's first word is the subject and weighs most, a hit among
@@ -948,7 +964,15 @@ earlier ones resolve.
    TIME:** `insertUploadedImage` keeps a single pending apply, and three
    concurrent calls left only the last one resolving (the others came back
    as black colour-fill blocks) — `await` each placement, never
-   `Promise.all` them, and reload the page if one ever hangs. Check a placed
+   `Promise.all` them. **And never wait on the raw promise** (the Stripe
+   build, 2026-10-21): one `insertUploadedImage` for a lottie made no engine
+   call after it and never settled, and everything queued behind it waited
+   for ever. Race every animated insert against 20 s
+   (`Promise.race([insert, timeout])`); on a timeout try it once more, then
+   place the static SVG of the same icon (uploaded alongside) with the same
+   `idecide/icon*` marks; after two timeouts in a row place the rest of the
+   slide's icons static and probe animated once on the next slide; destroy
+   a block that arrives late. Check a placed
    animation by grabbing two preview frames at different times —
    `engine.block.generateVideoThumbnailSequence(block, 128, t, t, 1, cb)`, never
    `block.export` (metered by img.ly) — before you promise it animates. If the user's animations are Lordicon files, know their shape:
@@ -1118,6 +1142,13 @@ failure this system has hit repeatedly.
 
 - Space a stack by real frame heights (`engine.block.getFrameHeight`), never by
   estimates — a wrap you didn't predict makes every later block land wrong.
+- **Read the frame before the line count** (2026-10-26, verified live):
+  `engine.block.getTextVisibleLineCount` reports the engine's LAST layout, and
+  a width or font-size write does not perform one — a `getFrameHeight` read
+  does. Narrow a label and ask for its lines straight away and you get the old
+  count; call `getFrameHeight(id)` first and the count is right. A label
+  stepped down on a stale count ran over its plate on both main menus of a
+  58-slide deck.
 - A button is spaced by its **plate**, not its label: the plate runs past the
   label at both ends.
 - Anything that moves or disappears together is ONE unit. Move units by their
