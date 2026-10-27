@@ -70,7 +70,7 @@ returns:
 
 ```js
 const r = await fetch('/create/aiagent/new', {
-  method: 'POST', credentials: 'same-origin',
+  method: 'POST',
   headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
   body: JSON.stringify({ name, slideCount: 1 }),
 });
@@ -424,6 +424,15 @@ built and play broken.
   plus a fifth), and when a line breaks anyway, widen the box or take the size
   down one step — never leave a two-word label broken in two. A break you
   WANT is a "\n" you wrote.
+- **No word breaks in two, and a set shares one label size** (2.3.4, the
+  Lemonade and Orangetheory builds). The platform cannot wrap inside a word:
+  a box narrower than its longest word draws "Corpor / ation". Every text box
+  is at least as wide as its longest word at its size — measure the word
+  (Auto width on a throwaway block in the same face), widen toward the
+  column edge, and step the size down to 28px for what the room cannot give.
+  A menu or answer set whose long labels stepped down takes ONE size, the
+  smallest, for every label. A rule sits on its heading's axis, a quote mark
+  on its quote's, an icon with its label — never on the canvas's centre.
 - **A hollow shape says so.** A ring is `fill:"none"` with a stroke; without
   it the platform draws a solid disc (deck 307's three "contour rings" came
   out as one cream disc with the figure lost inside it).
@@ -515,9 +524,10 @@ built and play broken.
   a headline's `setPositionX` and eight rows' `setPositionY` on the same
   slide, paired the same way, were gone after a `changeSlide` away and back,
   twice. A hand repair that MOVES blocks saves with
-  `engine.block.saveToString([page])` + the slide PUT with the app's
-  `X-Session-UUID` header (`SH.exportAndPutSlide`), then verifies after a
-  reload.
+  `engine.block.saveToString([page])` + the Builder's own slide PUT
+  (`PUT /api/builder/builderSession/<sid>/slides/<id>`, the full slide record,
+  with the `X-Session-UUID` header set to the deck's `sessionUuid` from
+  `GET /api/builder/builderSession/<sid>`), then verifies after a reload.
 - **Buttons are multi-layer.** The click action goes on the **background**
   layer (it covers the whole clickable area); the text and icon layers must
   carry no action. **A text-style button — a label with no background — gets
@@ -865,8 +875,8 @@ earlier ones resolve.
 
    **Any OTHER stock slide should be deleted, not cleared.** `aiagent` has no
    slide delete, but the platform does over REST:
-   `DELETE /api/builder/builderSession/<sid>/slides/<slideId>` with
-   `credentials: 'include'`, retried once after ~600ms. Delete every slide the
+   `DELETE /api/builder/builderSession/<sid>/slides/<slideId>` (a plain
+   same-origin fetch from the Builder tab), retried once after ~600ms. Delete every slide the
    platform shipped that is not in your plan. Slide 1 is the exception — a
    deck must open on something, so it is cleared and recomposed instead.
 
@@ -1177,7 +1187,7 @@ Load these as needed — do not read them all up front.
 | `references/deck-outline.md` | Planning a deck — the per-slide field contract and the layout intents |
 | `references/script-craft.md` | Writing narration and on-screen copy |
 | `references/platform-facts.md` | Something behaves unexpectedly — the verified footgun list; also the Rub Your Screen anatomy and the upload recipes |
-| `references/test-brands.md` | Someone asked to build with test data — nine prefilled brands |
+| `references/test-brands.md` | Someone asked to build with test data — ten prefilled brands |
 | `references/troubleshooting.md` | The user reports an error message or asks "what does that mean?" — the plain-English KB, one entry per situation, coded `KEY-`/`TAB-`/`BUILD-`/`PANEL-`/`HELP-` |
 
 ## When something fails

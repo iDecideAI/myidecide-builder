@@ -5,307 +5,431 @@
 > these companies publish; `visual` is deliberately empty so the build has to
 > learn the palette and typefaces from the live site.
 
-9 brands: Patagonia (outdoor apparel) · charity: water (nonprofit) · Toast (restaurant tech B2B) · sweetgreen (fast casual) · Stripe (developer fintech) · Warby Parker (DTC eyewear) · Duolingo (education app) · YETI (premium gear) · Mr. Handyman (local home services)
+10 brands: Lemonade (insurance) · Hipcamp (outdoor stays marketplace) · Drive with Uber (gig recruiting) · One Medical (membership primary care) · Lovevery (play-kit subscription) · Flexport (B2B logistics) · Orangetheory Fitness (studio franchise) · LegalZoom (online legal services) · Georgia Tech OMSCS (higher education) · Chewy (pet e-commerce)
 
 
 ---
 
-## Patagonia (outdoor apparel)
+## Lemonade (insurance)
 
-**brand_name** — Patagonia
+**brand_name** — Lemonade
 
-**one_sentence** — Patagonia makes durable outdoor clothing and gear, and runs repair, resale and recycling programs so the things it sells stay in use instead of going to landfill.
+**one_sentence** — Lemonade sells renters, homeowners, car, pet and life insurance through an app, takes a flat fee, and gives unused premiums to nonprofits its customers choose through the Giveback.
 
-**website** — https://www.patagonia.com
+**website** — https://www.lemonade.com
 
-**tagline** — We're in business to save our home planet.
+**tagline** — Forget everything you know about insurance.
 
-**reveal_timing** — Reveal it right away
+**reveal_timing** — Let the AI decide
 
-**primary_goal** — Educate & build trust (soft sell)
+**primary_goal** — Sell a product or service
 
-**secondary_goals** — Sell a product or service · Promote an event, speaker, or cause
+**secondary_goals** — Educate & build trust (soft sell)
 
-**one_action** — Explore Worn Wear — buy used, trade in your old gear, or get a repair.
+**one_action** — Get a renters or pet quote in the app.
 
-**audience** — Hikers, climbers, skiers and everyday outdoor people who buy less but buy better, and who care where their clothing comes from.
+**audience** — Renters, first-time homeowners and pet parents in their twenties and thirties who have never bought insurance on their own and expect the process to be miserable.
 
-**groups** — Climbers and alpinists; skiers and snowboarders; trail runners; fly fishers; parents buying kids' outdoor gear; sustainability-minded shoppers new to the brand.
+**groups** — Renters; new homeowners; pet parents; drivers; people adding term life cover; people switching from an old carrier.
 
-**hook** — Most outdoor gear is designed to be replaced. Ours is designed to be repaired — and we'll fix it for you.
+**hook** — Insurance is the one product you pay for and hope never to use. Lemonade changed what happens to the money you don't use.
 
-**stats** — Mission: 'We're in business to save our home planet.' Worn Wear runs a repair, trade-in and resale program with 100+ free repair and care guides, and Repair Hubs that fix zippers, rips, tears and snaps.
+**stats** — Lemonade is a Public Benefit Corporation and a certified B Corp. Through the Giveback, part of unused premiums goes to nonprofits customers pick — the company reports over $12 million donated since 2017.
 
-**story** — Founded by climber Yvon Chouinard, who started by making better climbing hardware and refused to sell gear that damaged the rock. The same instinct now drives the company's environmental commitments and its repair-first approach to clothing.
+**story** — Built on the idea that a traditional insurer profits from the claims it denies, so the incentive is backwards. Lemonade takes a flat fee, pays claims from the rest, and gives what is left over to causes its customers choose.
 
-**differentiators** — Ironclad Guarantee on everything sold; free repairs through Worn Wear; trade-in and resale of used gear; published environmental commitments rather than marketing claims.
+**differentiators** — Sign up and claim in the app in minutes; one app for renters, homeowners, car, pet and life; the Giveback; a certified B Corp and Public Benefit Corporation.
 
-**proof** — Worn Wear's repair and resale program is public and long-running; the company's mission statement and environmental positions are published on its own site rather than in press releases.
-
-**topics**
-
-> Why We Repair Instead of Replace
->
-> Worn Wear: Used Gear, Trade-Ins and Repairs
->
-> How Our Gear Is Made
->
-> The Ironclad Guarantee
-
-**products** — Outdoor clothing and gear across climbing, skiing, surfing, fishing and everyday wear; Worn Wear used gear; repair services; care and repair guides.
-
-**cta_actions** — Visit a website · Buy now
-
-**cta_links** — Explore Worn Wear → https://wornwear.patagonia.com · Shop Patagonia → https://www.patagonia.com
-
-**contact** — Patagonia · https://www.patagonia.com
-
-**voice** — Darian - Warm Grounded Storyteller
-
-**anything** — Let the site's own photography style and earthy palette drive the design — do NOT invent a palette. Open on the repair-first idea, not on a product pitch.
-
-
----
-
-## charity: water (nonprofit)
-
-**brand_name** — charity: water
-
-**one_sentence** — charity: water is a nonprofit that funds clean and safe drinking water projects in developing countries, and sends 100% of public donations straight to the field.
-
-**website** — https://www.charitywater.org
-
-**tagline** — Clean water changes everything.
-
-**reveal_timing** — Build intrigue first, then rub-to-reveal the logo
-
-**primary_goal** — Promote an event, speaker, or cause
-
-**secondary_goals** — Drive a specific signup / claim / action · Educate & build trust (soft sell)
-
-**one_action** — Give monthly to The Spring and fund clean water every month.
-
-**audience** — First-time and recurring donors who want proof their money did something — skeptical of overhead, moved by transparency and by seeing the exact project they funded.
-
-**groups** — Monthly givers; birthday and campaign fundraisers; corporate partners; churches and community groups; lapsed donors returning after seeing proof.
-
-**hook** — Every charity says your donation matters. This one shows you the GPS coordinates and photos of the well you paid for.
-
-**stats** — 100% of public donations fund water projects — operating costs are covered separately by a group of private donors called The Well, and credit-card fees are reimbursed so a $100 gift sends $100. As of 2025 the organization has raised over $1 billion and funded projects reaching more than 20 million people, with over 171,000 water projects funded since 2006. Every funded project is proved with photos and GPS coordinates.
-
-**story** — Founded in 2006 by Scott Harrison, a former New York City nightclub promoter, after volunteering on a hospital ship in West Africa. The 100% model was built specifically to answer the question donors always ask: how much of my money actually gets there?
-
-**differentiators** — 100% of public donations reach the field; separate bank accounts for operations and projects; every project proved with photos and GPS coordinates; credit-card fees covered so the full gift travels.
-
-**proof** — Over $1 billion raised and 20+ million people reached as of 2025; 171,000+ water projects funded since 2006; each project publicly documented with location data and photography.
+**proof** — Certified B Corp and Public Benefit Corporation; $12M+ donated through the Giveback since 2017 (as published).
 
 **topics**
 
-> Where Your Money Actually Goes
+> What Happens to Your Premium
 >
-> The 100% Model
+> Renters and Homeowners
 >
-> Proof: Photos and GPS for Every Project
+> Pet and Car
 >
-> Join The Spring (Monthly Giving)
+> The Giveback
+>
+> Get a Quote
 
-**products** — One-time donations; The Spring monthly giving; birthday and personal fundraising campaigns; corporate and community partnerships.
+**products** — Renters, homeowners, car, pet and term life insurance, bought and managed in the Lemonade app.
 
 **cta_actions** — Sign up / get started · Visit a website
 
-**cta_links** — Join The Spring → https://www.charitywater.org/donate · Start a fundraiser → https://www.charitywater.org
+**cta_links** — Get a quote → https://www.lemonade.com
 
-**contact** — charity: water · https://www.charitywater.org
+**contact** — Lemonade · https://www.lemonade.com
 
-**voice** — Talia - Warm Soft Guide
+**voice** — Elowen - Upbeat Modern Narrator
 
-**anything** — This is a cause deck: lead with the donor's doubt ('where does my money go?'), answer it with the 100% model, and close on monthly giving. Never overstate the numbers — use only the published figures given here.
+**anything** — A playful pink brand with a serious product: keep the tone light and the facts exact. Never quote a premium — prices depend on the person. Availability varies by state; say 'where available'.
 
 
 ---
 
-## Toast (restaurant tech B2B)
+## Hipcamp (outdoor stays marketplace)
 
-**brand_name** — Toast
+**brand_name** — Hipcamp
 
-**one_sentence** — Toast is a restaurant platform combining point of sale, payments, online ordering, payroll and guest marketing on hardware built for kitchens and patios.
+**one_sentence** — Hipcamp is an app for finding and booking campsites, cabins, RV sites and glamping on private land and in parks — and a way for landowners to earn income by hosting campers.
 
-**website** — https://pos.toasttab.com
+**website** — https://www.hipcamp.com
 
-**tagline** — The all-in-one platform built for restaurants.
+**tagline** — Everywhere you want to camp.
+
+**reveal_timing** — Reveal it right away
+
+**primary_goal** — Drive a specific signup / claim / action
+
+**secondary_goals** — Sign people up / recruit to an opportunity · Educate & build trust (soft sell)
+
+**one_action** — Book your next night outside — or list your land and host.
+
+**audience** — Campers tired of state parks that are fully booked by Tuesday and want somewhere quieter, and landowners with acreage sitting unused.
+
+**groups** — Weekend tent campers; RV and van travelers; glamping and cabin seekers; families with kids; landowners, farmers and ranchers considering hosting.
+
+**hook** — The public campgrounds are full by Tuesday. The private land next door is empty.
+
+**stats** — Hosts have earned over $300M on Hipcamp; every booking includes $1M liability insurance, $10k property protection and 24/7 support; Hipcamp charges a commission only on confirmed bookings (all as published).
+
+**story** — Founder Alyssa Ravasio built the first version in 2013 after a frustrating hunt for somewhere to camp; co-founder Eric Bach joined later that year. The mission is to get more people outside — 'humans in nature bring out the best of human nature.'
+
+**differentiators** — Stays on private land no other site lists; tents, RVs, cabins and glamping in one app; hosts keep land undeveloped and recreation helps fund its conservation; coverage included with every booking.
+
+**proof** — $300M+ earned by hosts; $1M liability insurance and $10k property protection on every booking (as published).
+
+**topics**
+
+> Why Campgrounds Are Always Full
+>
+> What You Can Book
+>
+> Hosting: Earn From Your Land
+>
+> How Bookings Are Protected
+>
+> Book or Host
+
+**products** — Tent sites; RV sites; cabins and treehouses; glamping; host listings for landowners.
+
+**income** — Landowners earn by hosting campers. Hipcamp takes a commission only on confirmed bookings; the rate depends on property type and is shown when the listing is created.
+
+**cta_actions** — Visit a website · Sign up / get started
+
+**cta_links** — Find a campsite → https://www.hipcamp.com · Become a host → https://www.hipcamp.com/en-US/host
+
+**contact** — Hipcamp · https://www.hipcamp.com
+
+**voice** — Florence - Atmospheric Storyteller
+
+**anything** — Two audiences in one deck — campers first, then a chapter for hosts. Photography is the brand: match the site's warm outdoor imagery. No invented occupancy or per-host earnings figures.
+
+
+---
+
+## Drive with Uber (gig recruiting)
+
+**brand_name** — Uber
+
+**one_sentence** — Driving with Uber lets people earn on their own schedule in their own car or a rental, with earnings paid out weekly and Instant Pay for cashing out between.
+
+**website** — https://www.uber.com/us/en/drive/
+
+**tagline** — Drive when you want, make what you need.
+
+**reveal_timing** — Reveal it right away
+
+**primary_goal** — Sign people up / recruit to an opportunity
+
+**secondary_goals** — Educate & build trust (soft sell)
+
+**one_action** — Sign up to drive and submit your documents.
+
+**audience** — People who need flexible income around another job, school or family — and want to know what it actually takes to start before they commit an afternoon to it.
+
+**groups** — Full-time drivers; part-time and weekend drivers; people without a car who would rent one; people who would rather deliver than carry passengers; students.
+
+**hook** — Most jobs tell you when to show up. This one asks when you'd like to.
+
+**stats** — Earnings transfer to your bank account every week; with Instant Pay you can cash out up to 6 times a day; weekly vehicle rentals through Uber's partners start as low as $260/week in some cities and include insurance and basic maintenance (all as published).
+
+**differentiators** — Set your own hours; drive your own car or rent one through a vehicle partner; get paid weekly or cash out with Instant Pay; deliver instead of drive if you prefer.
+
+**topics**
+
+> How Flexible It Really Is
+>
+> What You Earn and When You're Paid
+>
+> What You Need to Start
+>
+> Don't Have a Car?
+>
+> Drive or Deliver
+>
+> Sign Up
+
+**products** — Rides; Uber Eats delivery by car or bike; vehicle rentals through partners.
+
+**income** — Earnings vary by city, hours and trips — never quote a figure. Paid weekly; Instant Pay cashes out up to 6 times a day.
+
+**cta_actions** — Sign up / get started · Visit a website
+
+**cta_links** — Sign up to drive → https://www.uber.com/us/en/drive/
+
+**contact** — Uber · https://www.uber.com/us/en/drive/
+
+**voice** — Finley - Articulate Anchor
+
+**anything** — A recruiting deck, not a consumer ad — the viewer is a prospective driver. The requirements are published: the minimum driving age for the city, one year of driving experience, a valid driver's license, a background check, proof of residency, and an insured eligible vehicle or a rental. State them plainly and never promise an income.
+
+
+---
+
+## One Medical (membership primary care)
+
+**brand_name** — One Medical
+
+**one_sentence** — One Medical is a membership-based primary care practice with offices in many US cities, same/next-day appointments in person or by video, and 24/7 on-demand video care through its app.
+
+**website** — https://www.onemedical.com
+
+**tagline** — Comprehensive healthcare just got less painful.
 
 **reveal_timing** — Reveal it right away
 
 **primary_goal** — Get leads / book calls or appointments
 
-**secondary_goals** — Educate & build trust (soft sell) · Sell a product or service
+**secondary_goals** — Sell a product or service · Educate & build trust (soft sell)
 
-**one_action** — Book a demo with a restaurant specialist.
+**one_action** — Join for $99/year and book your first appointment.
 
-**audience** — Independent restaurant owners and small multi-location operators who are running on an aging POS, juggling four vendors, and losing hours a week to reconciliation.
+**audience** — Busy adults who put off the doctor because booking is a hassle, the wait is long and the visit starts late — and who already pay for Prime or get the membership through work.
 
-**groups** — Full-service restaurants; quick-service and fast casual; cafes and coffee shops; bars and breweries; pizza; multi-location groups.
+**groups** — Amazon Prime members; employees at companies that offer it as a benefit; families; frequent travelers who want care in more than one city; people without a primary care doctor.
 
-**hook** — Most restaurants don't have a technology problem — they have a five-systems-that-don't-talk problem.
+**hook** — Most people don't skip the doctor because they feel fine. They skip it because booking one is a chore.
 
-**stats** — Toast is used in roughly 180,000 restaurant locations as of 2026, up about 22% year over year. Published entry pricing starts around $69/month for core point-of-sale software, with a $0/month starter bundle that shifts cost into processing rates; typical all-in cost for a mid-size restaurant runs a few hundred dollars a month before processing.
+**stats** — Membership is $99/year; Amazon Prime members can purchase membership for $99/year (purchase terms apply); 24/7 on-demand video chat for quick concerns at no extra cost for members; same/next-day appointments that start on time; an employee benefit at 11,600+ companies (all as published).
 
-**story** — Built specifically for restaurants rather than adapted from retail software — the hardware is spill-resistant and the workflows follow how a kitchen actually runs during a rush.
+**differentiators** — Same/next-day appointments in person or over video; 24/7 video care nationwide in the app; offices in many US cities; accepts most major health insurance plans; the membership is separate from insurance.
 
-**differentiators** — Restaurant-specific hardware and software rather than general retail POS; POS, online ordering, payroll and marketing in one system; pricing published openly; scales from one location to a group.
-
-**proof** — ~180,000 locations running on the platform as of 2026, growing about 22% year over year.
+**proof** — An employee benefit at 11,600+ companies (as published).
 
 **topics**
 
-> The Five-Systems Problem
+> Why Booking a Doctor Is So Hard
 >
-> What's Actually Included
+> What Membership Includes
 >
-> What It Costs
+> Same-Day, In Person or Video
 >
-> Switching Without Closing
+> 24/7 Care in the App
 >
-> Book a Demo
+> Join and Book
 
-**products** — Point of sale hardware and software; payment processing; online ordering and delivery; payroll and team management; guest marketing and loyalty.
+**products** — Annual membership; in-office and video primary care; 24/7 on-demand video care; company-sponsored memberships.
 
-**company** — Restaurant technology platform serving roughly 180,000 locations as of 2026.
+**offer** — Membership $99/year (as published; purchase terms apply to the Prime offer).
 
-**cta_actions** — Schedule a call · Fill out a contact form
+**cta_actions** — Sign up / get started · Schedule a call
 
-**cta_links** — Book a demo → https://pos.toasttab.com/request-a-demo
+**cta_links** — Join → https://www.onemedical.com
 
-**contact** — Toast · https://pos.toasttab.com
+**contact** — One Medical · https://www.onemedical.com
 
-**voice** — Lawrence - Bright and Informative
+**voice** — Jade - Neutral and Natural
 
-**anything** — B2B lead-gen deck. Speak operator-to-operator about labor, tickets and reconciliation — not about 'digital transformation'. Be exact about pricing: quote it as published starting prices, never as a final quote.
+**anything** — Healthcare: calm, exact, no fear. Membership does not replace insurance — say so. Prices are as published and can change; quote them that way. Services are only available in the U.S.
 
 
 ---
 
-## sweetgreen (fast casual)
+## Lovevery (play-kit subscription)
 
-**brand_name** — sweetgreen
+**brand_name** — Lovevery
 
-**one_sentence** — sweetgreen is a fast-casual restaurant chain building salads, warm bowls and plates from ingredients sourced directly from local farms.
+**one_sentence** — Lovevery sells stage-based Play Kits for children from birth to age four — playthings, books and a Play Guide delivered every 2–3 months — plus an app with week-by-week developmental tips.
 
-**website** — https://www.sweetgreen.com
+**website** — https://lovevery.com
 
-**tagline** — Connecting people to real food.
+**tagline** — Stage-based play for your child's developing brain.
 
-**reveal_timing** — Reveal it right away
+**reveal_timing** — Build intrigue first, then rub-to-reveal the logo
 
 **primary_goal** — Educate & build trust (soft sell)
 
 **secondary_goals** — Sell a product or service · Drive a specific signup / claim / action
 
-**one_action** — Order a bowl and see where the ingredients came from.
+**one_action** — Subscribe to the Play Kit for your child's stage.
 
-**audience** — People eating lunch near work or home who want food that is genuinely fresh, fast enough for a lunch break, and traceable to somewhere real.
+**audience** — New and expecting parents who want to do right by their baby's development and are overwhelmed by toy aisles and conflicting advice.
 
-**groups** — Weekday lunch regulars; people with dietary preferences (vegan, gluten-free, high-protein); teams ordering group catering; customers new to the brand.
+**groups** — Expecting parents; parents of 0–12 month olds; parents of toddlers; parents of three- and four-year-olds; grandparents and gift-givers.
 
-**hook** — Fast food told you speed and real ingredients were a trade-off. They aren't.
+**hook** — Ninety percent of a child's physical brain growth happens by age five — and most toys are designed for the shelf, not the stage.
 
-**stats** — Mission: source better ingredients from local farmers and growers, and connect more people to real food. More than 250 locations nationwide as of 2025, with partnerships spanning over 200 domestic farms — on a given day the restaurants serve food from roughly 100 different farms. The Faces of the Farm content series profiles the growers behind the menu.
+**stats** — Ninety percent of your child's physical brain growth occurs by age 5 (as published). Play Kits arrive every 2–3 months by stage: 0–12 months, 1-year-old, 2-year-old, 3-year-old, 4-year-old.
 
-**story** — Started by three college friends who couldn't find food near campus that was both fast and actually good for them, and decided to build the supply chain first.
+**differentiators** — Stage-based rather than age-vague; a Play Guide in every kit explaining how to play; built for safety and tested through hundreds of hours of play studies; an app with week-by-week developmental tips.
 
-**differentiators** — Direct relationships with named farms rather than anonymous distributors; menu that changes with the growing season; sourcing published rather than implied.
-
-**proof** — 250+ locations; 200+ domestic farm partners; roughly 100 farms represented on the menu on any given day; growers profiled publicly in the Faces of the Farm series.
+**proof** — Award-winning Play Kits; tested through hundreds of hours of play studies (as published).
 
 **topics**
 
-> Where the Food Comes From
+> Why Stage Matters More Than Age
 >
-> Meet the Farms
+> What's in a Play Kit
 >
-> How the Menu Changes with the Seasons
+> The Play Guide and the App
 >
-> Order Ahead
+> From Newborn to Four
+>
+> Subscribe
 
-**products** — Salads, warm bowls and plates; seasonal menus; catering and group ordering; mobile app ordering and rewards.
+**products** — Play Kits by stage (0–12 months through 4-year-old); the Lovevery App; Course Packs.
 
 **cta_actions** — Buy now · Visit a website
 
-**cta_links** — Order now → https://order.sweetgreen.com · Find a location → https://www.sweetgreen.com/locations
+**cta_links** — Shop Play Kits → https://lovevery.com
 
-**contact** — sweetgreen · https://www.sweetgreen.com
+**contact** — Lovevery · https://lovevery.com
 
-**voice** — Elowen - Upbeat Modern Narrator
+**voice** — Talia - Warm Soft Guide
 
-**anything** — Appetite first: the food and the farms carry this deck. Match the site's bright, produce-forward look rather than a corporate palette.
+**anything** — Warm and unhurried — parents, not a pitch. Do not quote kit prices; they change. A pastel, natural-wood brand: match the site's soft palette rather than a saturated one.
 
 
 ---
 
-## Stripe (developer fintech)
+## Flexport (B2B logistics)
 
-**brand_name** — Stripe
+**brand_name** — Flexport
 
-**one_sentence** — Stripe provides payments and financial infrastructure — APIs and tools businesses use to accept money online, run subscriptions and marketplaces, and handle billing and tax.
+**one_sentence** — Flexport is a tech-enabled freight forwarder and customs broker that lets companies quote, book and track ocean, air and ground freight in one platform, with fulfillment, trade finance and cargo insurance alongside.
 
-**website** — https://stripe.com
+**website** — https://www.flexport.com
 
-**tagline** — Financial infrastructure for the internet.
+**tagline** — AI-powered logistics for the real world.
 
 **reveal_timing** — Reveal it right away
 
 **primary_goal** — Get leads / book calls or appointments
 
-**secondary_goals** — Educate & build trust (soft sell) · Drive a specific signup / claim / action
+**secondary_goals** — Educate & build trust (soft sell)
 
-**one_action** — Start building with a test-mode account, or talk to sales about scale.
+**one_action** — Talk to a logistics expert about your lanes.
 
-**audience** — Founders, engineers and finance leads choosing how their company will take money — technical enough to read docs, and wary of switching costs.
+**audience** — Supply-chain and operations leads at brands that import — juggling a forwarder, a customs broker and a spreadsheet, and finding out about delays after the fact.
 
-**groups** — Startups taking their first payment; SaaS companies running subscriptions; marketplaces paying out sellers; global businesses handling multiple currencies; finance teams dealing with billing and tax.
+**groups** — Startups and growing brands importing for the first time; marketplace sellers; wholesale distributors; enterprise and multinational shippers; nonprofits moving goods.
 
-**hook** — Every company eventually becomes a payments company. The question is how much of it you want to build yourself.
+**hook** — Most shippers find out a container is late from the customer who ordered what's in it.
 
-**story** — Built by engineers frustrated that accepting money online meant weeks of paperwork and integration; the original product was a few lines of code that replaced that entire process.
+**stats** — More than 13,000 companies use Flexport; a network reaching 135 countries; 60 locations across 24 time zones; 99.8% data accuracy for customs filing (all as published on flexport.com).
 
-**differentiators** — Developer-first APIs and documentation; one platform spanning payments, billing, marketplaces and tax; test mode for building before going live.
+**differentiators** — Ocean, air, trucking, customs and fulfillment in one platform with one view of every shipment; customs brokerage that captures duty savings; trade finance and cargo insurance built in; APIs and EDI for integration.
+
+**proof** — 13,000+ companies; 135 countries; customer results published on the site — Gerber saved 10% on landed costs, Bombas cut logistics emails by 90% (as published).
 
 **topics**
 
-> Why Payments Get Complicated
+> Why Freight Goes Dark
 >
-> What Stripe Handles for You
+> One Platform: Ocean, Air, Ground
 >
-> Billing and Subscriptions
+> Customs Without Surprises
 >
-> Going Global
+> Fulfillment and Capital
 >
-> Start Building
+> Talk to an Expert
 
-**products** — Payments; Billing and subscriptions; Connect for marketplaces and platforms; Tax; Terminal for in-person payments; developer APIs and dashboards.
+**products** — Freight forwarding (ocean, air, trucking); customs brokerage; fulfillment and warehousing; Flexport Capital trade finance; cargo insurance; the Flexport Platform and APIs.
 
-**cta_actions** — Sign up / get started · Schedule a call
+**cta_actions** — Schedule a call · Fill out a contact form
 
-**cta_links** — Start now → https://dashboard.stripe.com/register · Contact sales → https://stripe.com/contact/sales
+**cta_links** — Talk to an expert → https://www.flexport.com
 
-**contact** — Stripe · https://stripe.com
+**contact** — Flexport · https://www.flexport.com
 
-**voice** — Elara - Crisp Pro Narrator
+**voice** — Eldrin - Crisp British Baritone
 
-**anything** — A precise, technical audience — clarity beats enthusiasm. Note: the site is a strong typography and gradient test; match what the hero actually uses. Leave the stats and proof sections empty rather than inventing figures.
+**anything** — Enterprise B2B: measured and specific, no hype. Use only the figures given here and mark them as published. The site is a dense corporate layout — a test of whether brand research finds the actual hero palette and type rather than the footer's.
 
 
 ---
 
-## Warby Parker (DTC eyewear)
+## Orangetheory Fitness (studio franchise)
 
-**brand_name** — Warby Parker
+**brand_name** — Orangetheory Fitness
 
-**one_sentence** — Warby Parker sells prescription glasses, sunglasses and contacts directly to customers online and in its own stores, and offers eye exams and a free at-home try-on program.
+**one_sentence** — Orangetheory is a coach-led group fitness class combining full-body strength training with heart-rate-based cardio, with 1,500 studios worldwide and a free first class for new visitors.
 
-**website** — https://www.warbyparker.com
+**website** — https://www.orangetheory.com
 
-**tagline** — Eyewear with a purpose.
+**tagline** — The workout that works out well.
+
+**reveal_timing** — Build intrigue first, then rub-to-reveal the logo
+
+**primary_goal** — Drive a specific signup / claim / action
+
+**secondary_goals** — Sell a product or service
+
+**one_action** — Book your free first class at a studio near you.
+
+**audience** — People who want results without designing their own workout — they would go more often if someone told them what to do and tracked it for them.
+
+**groups** — Complete beginners; former athletes getting back in; runners adding strength; busy parents with exactly one hour; people who joined a gym and never went.
+
+**hook** — A gym gives you equipment. It doesn't give you a plan, a coach, or a reason to come back on Thursday.
+
+**stats** — Millions of members across 1,500 studios worldwide; the first class is free for first-time visitors and local residents 18+; not your thing after 30 days and they refund your money (all as published).
+
+**differentiators** — Expert coaching in every class; every workout adjusts to your fitness level and your goals; the OTconnect performance monitor tracks effort live; strength and cardio in one session.
+
+**proof** — 1,500 studios worldwide; a 30-day refund offer (as published).
+
+**topics**
+
+> Why Gyms Don't Work for Most People
+>
+> What a Class Is Like
+>
+> Tracking Your Effort
+>
+> Memberships
+>
+> Book Your Free Class
+
+**products** — Group fitness classes; memberships (options vary by studio); casual visits.
+
+**offer** — First class free for first-time visitors and local residents 18+ (as published).
+
+**cta_actions** — Sign up / get started · Visit a website
+
+**cta_links** — Book a free class → https://www.orangetheory.com
+
+**contact** — Orangetheory Fitness · https://www.orangetheory.com
+
+**voice** — Kaelen - Amateur Warrior
+
+**anything** — High energy but honest — not a bootcamp shout. Membership prices vary by studio: never quote one. Orange is the brand; let the site's orange-on-dark drive the palette.
+
+
+---
+
+## LegalZoom (online legal services)
+
+**brand_name** — LegalZoom
+
+**one_sentence** — LegalZoom provides online legal services for small businesses and individuals — LLC and corporation formation, trademarks, wills and trusts, registered agents and attorney plans — with the full price shown before you begin.
+
+**website** — https://www.legalzoom.com
+
+**tagline** — Legal solutions trusted by millions, designed for you.
 
 **reveal_timing** — Reveal it right away
 
@@ -313,210 +437,161 @@
 
 **secondary_goals** — Drive a specific signup / claim / action · Educate & build trust (soft sell)
 
-**one_action** — Order Home Try-On — five frames, five days, free both ways.
+**one_action** — Start your LLC.
 
-**audience** — People who need new glasses, hate the traditional optical-shop experience, and would rather choose frames on their own couch than under fluorescent lights.
+**audience** — First-time founders and side-hustlers who know they should form a company and protect the name, and keep putting it off because lawyers feel expensive and the paperwork opaque.
 
-**groups** — First-time glasses buyers; contact lens wearers; people due for an eye exam; parents buying kids' frames; customers replacing a broken pair fast.
+**groups** — Solo founders forming an LLC; freelancers going legit; established small businesses needing a trademark; people writing a first will; landlords needing leases.
 
-**hook** — Choosing glasses in a shop means deciding in five minutes with a stranger watching. Home Try-On gives you five days and an honest mirror.
+**hook** — Half the people who say 'I should set up an LLC' never do. The form isn't the hard part — not knowing what comes after it is.
 
-**stats** — Home Try-On sends five frames to your home for five days with free shipping both ways. Buy a Pair, Give a Pair distributes a pair to someone in need for every pair sold.
+**differentiators** — Step-by-step tools with attorney guidance available; you always know the full price before you begin; a 100% Accurate Filing Guarantee; attorneys with an average of 17 years of experience practicing law (as published).
 
-**story** — Started by four classmates after one of them lost his glasses and couldn't face the price of replacing them — the company was built to sell glasses directly and skip the licensing markup.
-
-**differentiators** — Free five-frame Home Try-On; own stores plus online; eye exams and contacts in one place; Buy a Pair, Give a Pair program.
-
-**proof** — Home Try-On and the Buy a Pair, Give a Pair program are both long-standing published programs.
+**proof** — Trusted by millions; specialists reachable in under two minutes; 100% Accurate Filing Guarantee (as published).
 
 **topics**
 
-> How Home Try-On Works
+> LLC, Corporation or Sole Prop?
 >
-> Finding Your Frame Shape
+> Protecting Your Name: Trademarks
 >
-> Eye Exams and Contacts
+> What Comes After Filing
 >
-> Buy a Pair, Give a Pair
+> Wills, Trusts and Personal Documents
 >
-> Start Your Try-On
-
-**products** — Prescription eyeglasses; sunglasses; contact lenses; eye exams; Home Try-On program.
-
-**offer** — Home Try-On: five frames for five days, free shipping both ways.
-
-**cta_actions** — Sign up / get started · Buy now
-
-**cta_links** — Start Home Try-On → https://www.warbyparker.com/home-try-on · Find a store → https://www.warbyparker.com/retail
-
-**contact** — Warby Parker · https://www.warbyparker.com
-
-**voice** — Maisie - Friendly Casual Neighbor
-
-**anything** — Do not quote frame prices — they change. Keep the offer to Home Try-On. The site's clean serif/sans pairing is the thing to match.
-
-
----
-
-## Duolingo (education app)
-
-**brand_name** — Duolingo
-
-**one_sentence** — Duolingo is a language-learning app that teaches through short daily lessons and streaks, free to use with an ad-free paid tier.
-
-**website** — https://www.duolingo.com
-
-**tagline** — The free, fun, and effective way to learn a language!
-
-**reveal_timing** — Build intrigue first, then rub-to-reveal the logo
-
-**primary_goal** — Drive a specific signup / claim / action
-
-**secondary_goals** — Educate & build trust (soft sell) · Sell a product or service
-
-**one_action** — Start your first lesson — pick a language and go.
-
-**audience** — People who have tried and quit language learning before — they don't need convincing that it's worthwhile, they need it to survive contact with a normal week.
-
-**groups** — Travelers with a trip booked; heritage learners reconnecting with a family language; students supplementing class; professionals needing a work language; people learning for fun.
-
-**hook** — You don't quit languages because they're hard. You quit because week three has no time in it.
-
-**story** — Built on the idea that language education should be free — the company was founded by a computer scientist who had already given away one of his inventions to the public web.
-
-**differentiators** — Free core product rather than a trial; lessons short enough to finish on a commute; streaks and reminders designed around the habit rather than the curriculum.
-
-**topics**
-
-> Why Most Language Apps Get Abandoned
+> Attorney Plans
 >
-> How a Lesson Works
->
-> Streaks and Staying Consistent
->
-> What You Get with Super
->
-> Start Learning Free
+> Start Now
 
-**products** — Free language courses; Super Duolingo (ad-free with extra practice); Duolingo Max; Duolingo English Test.
+**products** — Business formation (LLC, C corp, S corp, nonprofit, DBA); registered agent, EIN, licenses and annual reports; trademarks, copyrights and provisional patents; wills, trusts and powers of attorney; business and personal attorney plans.
 
 **cta_actions** — Sign up / get started · Visit a website
 
-**cta_links** — Start free → https://www.duolingo.com
+**cta_links** — Start an LLC → https://www.legalzoom.com
 
-**contact** — Duolingo · https://www.duolingo.com
+**contact** — LegalZoom · https://www.legalzoom.com
 
-**voice** — Warren - Effortless and Cool
+**voice** — Wyatt - Seasoned Mentor
 
-**anything** — Playful brand — the deck can be light, but the honesty about quitting is what makes it land. Leave stats/proof empty; do not invent user numbers.
+**anything** — LegalZoom is not a law firm and does not provide legal advice except through its subsidiary — keep every line informational, never advisory. Do not quote package prices; say the price is shown before you begin.
 
 
 ---
 
-## YETI (premium gear)
+## Georgia Tech OMSCS (higher education)
 
-**brand_name** — YETI
+**brand_name** — Georgia Tech OMSCS
 
-**one_sentence** — YETI makes premium coolers, drinkware and outdoor equipment engineered to survive hard use rather than to hit a price point.
+**one_sentence** — OMSCS is Georgia Tech's Online Master of Science in Computer Science: an asynchronous, top-ranked degree that working professionals take one course per semester, with up to six years to finish, without the high cost of an on-campus program.
 
-**website** — https://www.yeti.com
+**website** — https://omscs.gatech.edu
 
-**tagline** — Built for the Wild.
+**tagline** — “The greatest degree program ever.” — Forbes
 
 **reveal_timing** — Reveal it right away
+
+**primary_goal** — Sign people up / recruit to an opportunity
+
+**secondary_goals** — Educate & build trust (soft sell)
+
+**one_action** — Check the deadlines and start your application.
+
+**audience** — Working software engineers and career-changers with a bachelor's degree who want a real master's without quitting their job or moving.
+
+**groups** — Engineers after a formal CS credential; career-changers from adjacent fields; international applicants; people weighing a bootcamp against a degree; managers sponsoring an employee.
+
+**hook** — A master's in computer science used to cost two years and a relocation. This one asks for one course a semester.
+
+**stats** — 10,000 alumni graduated in the program's first 10 years; all required courses and activities are supplied asynchronously; take one course per semester and up to six years to finish (as published).
+
+**differentiators** — A Georgia Tech degree delivered online; asynchronous, so it fits around a job; one course per semester, up to six years; a fraction of the cost of an on-campus degree; specializations to choose from.
+
+**proof** — 10,000 alumni in the first 10 years; Forbes called it 'the greatest degree program ever' (as quoted on the program site).
+
+**topics**
+
+> Who OMSCS Is For
+>
+> How It Fits Around a Job
+>
+> Specializations
+>
+> What It Costs
+>
+> Admissions and Deadlines
+>
+> Apply
+
+**products** — The Online Master of Science in Computer Science; its specializations; individual courses taken toward the degree.
+
+**company** — Georgia Institute of Technology, College of Computing.
+
+**cta_actions** — Visit a website · Sign up / get started
+
+**cta_links** — Admissions → https://omscs.gatech.edu · Program home → https://omscs.gatech.edu
+
+**contact** — Georgia Tech OMSCS · https://omscs.gatech.edu
+
+**voice** — Alicia - Polished Global Anchor
+
+**anything** — A university site — institutional gold and navy, plain typography: a test of whether brand research respects a .edu identity instead of inventing a startup look. Do not quote tuition; point to the site. Never invent rankings.
+
+
+---
+
+## Chewy (pet e-commerce)
+
+**brand_name** — Chewy
+
+**one_sentence** — Chewy is an online pet retailer delivering food, supplies and pharmacy to the door, with Autoship for recurring orders, 24/7 customer care and vet care services.
+
+**website** — https://www.chewy.com
+
+**tagline** — For life with pets.
+
+**reveal_timing** — Let the AI decide
 
 **primary_goal** — Sell a product or service
 
-**secondary_goals** — Educate & build trust (soft sell)
+**secondary_goals** — Drive a specific signup / claim / action
 
-**one_action** — Find the right cooler or tumbler for how you actually use it.
+**one_action** — Set up Autoship for the things your pet runs out of.
 
-**audience** — Hunters, anglers, boaters, tailgaters and job-site crews who have already replaced three cheap coolers and are done doing it.
+**audience** — Pet parents who buy the same 30-pound bag every month, carry it in from the car, and forget the flea treatment until the dog is scratching.
 
-**groups** — Hunting and fishing; boating and beach; overlanding and camping; tailgating and backyard; trades and job sites; gift buyers.
+**groups** — Dog owners; cat owners; small-animal, bird and reptile owners; multi-pet households; owners with prescription needs; first-time pet parents.
 
-**hook** — A cooler is cheap until you've bought four of them.
+**hook** — You have never once enjoyed carrying a 30-pound bag of kibble across a parking lot.
 
-**story** — Founded by two brothers who fished constantly and kept destroying their gear — they built the cooler they couldn't buy, and priced it for durability instead of the discount aisle.
+**stats** — Save 5% off eligible items with every Autoship order; change, cancel or reschedule anytime; help from Chewy's experts 24/7; licensed pharmacists review every prescription (all as published).
 
-**differentiators** — Over-engineered construction with certified performance claims; a family of products that work as a system; a warranty and repair path rather than disposability.
+**differentiators** — Autoship on your own schedule with 5% off eligible items; always-on 24/7 customer care; a pharmacy where licensed pharmacists review every prescription; Chewy Vet Care practices for routine and urgent care.
 
-**topics**
-
-> Why Cheap Coolers Fail
->
-> How to Choose Your Size
->
-> Drinkware That Actually Holds Temperature
->
-> Care, Warranty and Repairs
->
-> Shop the Range
-
-**products** — Hard and soft coolers; tumblers, mugs and bottles; bags and cargo; outdoor furniture and accessories.
-
-**cta_actions** — Buy now · Visit a website
-
-**cta_links** — Shop YETI → https://www.yeti.com
-
-**contact** — YETI · https://www.yeti.com
-
-**voice** — Vane - Rugged and gravelly
-
-**anything** — Rugged, no-nonsense tone. The site is dark and photographic — match that rather than defaulting to a light deck. No invented performance numbers.
-
-
----
-
-## Mr. Handyman (local home services)
-
-**brand_name** — Mr. Handyman
-
-**one_sentence** — Mr. Handyman is a franchised home repair and maintenance service whose insured technicians handle the long list of small jobs most contractors won't take.
-
-**website** — https://www.mrhandyman.com
-
-**tagline** — Done right. Done on time.
-
-**reveal_timing** — Reveal it right away
-
-**primary_goal** — Get leads / book calls or appointments
-
-**secondary_goals** — Educate & build trust (soft sell)
-
-**one_action** — Book a service appointment for your list of jobs.
-
-**audience** — Homeowners with a growing to-do list — a door that sticks, a fan that needs mounting, trim that never got finished — who can't get a contractor to call back for small work.
-
-**groups** — Busy families; older homeowners who no longer want to be on a ladder; landlords and property managers; new homeowners with a punch list; people preparing a house for sale.
-
-**hook** — The jobs that are too small for a contractor are exactly the ones that make a house feel unfinished.
-
-**story** — A franchise network built around the gap every homeowner runs into: real tradespeople want big projects, and the small stuff sits on the list for years.
-
-**differentiators** — Insured, background-checked technicians; one visit can cover many unrelated small jobs; scheduled appointment windows instead of open-ended waits; work guaranteed.
+**proof** — Mission: 'to be the most trusted and convenient destination for pet parents and partners, everywhere' (as published).
 
 **topics**
 
-> The Jobs Nobody Will Come Out For
+> Why Autoship
 >
-> What We Handle in One Visit
+> Food, Fun and Pharmacy
 >
-> How Scheduling Works
+> Vet Care Around the Clock
 >
-> Our Guarantee
+> Setting Up Your First Order
 >
-> Book an Appointment
+> Shop Now
 
-**products** — Home repairs; drywall and painting; carpentry and trim; door and window repair; mounting and installation; seasonal maintenance; light plumbing and electrical fixes.
+**products** — Pet food and treats; supplies and toys; pharmacy; Chewy Vet Care; Autoship subscriptions.
 
-**cta_actions** — Schedule a call · Fill out a contact form
+**offer** — 5% off eligible items on every Autoship order (as published).
 
-**cta_links** — Request service → https://www.mrhandyman.com/request-service
+**cta_actions** — Buy now · Sign up / get started
 
-**contact** — Mr. Handyman · https://www.mrhandyman.com
+**cta_links** — Shop → https://www.chewy.com · Autoship → https://www.chewy.com/b/autoship-save-15682
 
-**voice** — Caleb - Trusted Guide
+**contact** — Chewy · https://www.chewy.com
 
-**anything** — Local-service deck: the emotional beat is relief, not craftsmanship. NOTE — this is a franchise site built on a corporate CMS with many unused theme variables, which makes it a good test of whether brand research reads the ACTUAL rendered styles instead of the variable list.
+**voice** — Eddie - Natural and Helpful
+
+**anything** — Friendly and practical — the pet is the hero. Do not quote product prices or promotions beyond Autoship's 5%; promos change weekly. Chewy blue is the brand; the site is a dense storefront, so brand research must read the header, not the product tiles.
 

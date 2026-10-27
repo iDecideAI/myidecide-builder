@@ -298,50 +298,6 @@ for the record only.
 
 ---
 
-## 2.3.0 — every AI call goes through the myiDecide backend (lead developer, 2026-10-15; verified on his walkthrough + Bren's charity: water build 2026-10-16)
-
-The Builder's backend proxies the Anthropic Messages API for the extension at
-`<builder>/api/extension` (`config.js`: `IDP_API_URL = IDP_BUILDER_URL +
-"/api/extension"`; production `https://my.idecide.com`, dev
-`http://localhost:8099`). It authenticates with the person's **myiDecide
-sign-in cookie** — the panel is an extension page with `host_permissions` for
-the origin, so `fetch(…, { credentials: "include" })` sends the cookie and CORS
-does not apply — runs the call on iDecide's own Anthropic account, logs tokens
-and real cost per user, and meters each user against a **daily allowance**.
-
-- `GET /user` → `{ firstName, lastName, email, profileImageUrl }` for the
-  signed-in person; `401` when there is no session. The panel calls it on
-  open, on visibility, before a build, and every 4 s while the sign-in bar is
-  open.
-- `GET /usage` → `{ usedUsd, limitUsd, remainingUsd, percentUsed, resetsAt, … }`
-  (and `tokensUsed`). The panel shows the percentage only (the footer meter
-  and the Settings card); refreshed when every Messages stream ends, on
-  sign-in, on visibility, when Settings opens, and just after `resetsAt`.
-- `POST /v1/messages` — the Messages API, proxied unchanged, with these
-  rules the proxy enforces (a violation is a `400`): `stream: true` on every
-  call; only the four models in `API_MODELS`
-  (`claude-fable-5-1`, `claude-opus-5-5`, `claude-sonnet-5-5`,
-  `claude-haiku-5-5`); `max_tokens ≤ 32000`; tools are `custom` ones plus
-  the two server tools **`web_search` and `web_fetch`** (the lead developer
-  let them through on 2026-10-16, evening — his patch restores
-  `RESEARCH_TOOLS` and drops the `anthropic-beta: web-fetch-2025-09-10`
-  header, web fetch being GA; the proxy also accepts the `web_*_20260209`
-  variants); only the server-side-fallback beta header. Web research is
-  therefore ON again in the script stage — the planner reads the client's
-  site and searches for the figures the script needs; `theme.scriptEvidence`
-  records every one. (Earlier the same day the proxy refused every non-
-  `custom` tool and the prompts said "no web access"; emptying
-  `RESEARCH_TOOLS` turns that back on.)
-- `GET /v1/models` — the model list, through the same proxy (the picker's
-  catalogue when it is switched on).
-- `401` on any call = signed out: the panel opens `<builder>/login` once per
-  15 s burst, shows the sign-in bar, and re-checks `/user` when a myiDecide
-  tab finishes loading a non-login page (`chrome.tabs.onUpdated`, no extra
-  permission). `429` with `x-should-retry: false` = the daily allowance is
-  spent: fatal for the run (no retry loop until midnight), `ACCT-02`.
-- Every request carries `anthropic-version` and `x-client-version` (the
-  manifest's version) so the backend can tell builds apart.
-
 
 ### The person never sees the AI vendor's name (Bren 2026-10-16)
 
@@ -723,14 +679,6 @@ with a plausible SVG**, so a status check proves nothing.
    inconsistency being removed, not a regression — but if the new size reads
    small, the fix is to raise the icon sizes ~1.2×, not to drop `box=1`.
 
-## Mutating REST calls set their own `X-Session-UUID`
-
-The header is required (wrong or absent → 400/409). It used to be supplied ONLY
-by capture.js's network hook — which is absent on any page that was open when
-the extension was last updated, i.e. **every page, every time a new build is
-installed**. `sh/rest.js` `_sessionHeaders()` and `media.js` `uploadAsset` now
-set it themselves from `IDP._sessionRec.sessionUuid` / `window.__IDECIDE_SESSION_UUID`,
-both published by `IDP.init`. The hook remains, for the trace only.
 
 ## `slideData` (UBQ1) is UTF-8 — `btoa` is not
 
@@ -1449,9 +1397,12 @@ aiagent surface — not `api.slides` (`changeSlide`, `changeSlideByIndex`,
 and the extension has done so since well before this note:
 
 ```js
-await fetch(`/api/builder/builderSession/${sid}/slides/${slideId}`,
-            { method: 'DELETE', credentials: 'include' });
+await fetch(`/api/builder/builderSession/${sid}/slides/${slideId}`, { method: 'DELETE' });
 ```
+
+(A same-origin call from the Builder page — nothing to add to it; the
+request option the snippet used to carry was the browser's default for its
+own origin and is gone since 2026-10-26.)
 
 Retry once after ~600ms on a non-ok response; the builder occasionally refuses
 the first attempt.
@@ -1652,7 +1603,7 @@ Two hard-won details:
 ```js
 async function confirmName(sid, want, tries = 10) {
   for (let i = 0; i < tries; i++) {
-    const r = await fetch('/api/builder/builderSession/' + sid, { credentials: 'include' }).then(x => x.json());
+    const r = await fetch('/api/builder/builderSession/' + sid).then(x => x.json());
     if (r.presentationName === want) return true;
     await new Promise(res => setTimeout(res, 1000));
   }
@@ -1704,55 +1655,6 @@ no serialization, no size ceiling. Programmatic upload was proven end to end
 in this session (`duo:bolt`, `duo:tap` uploaded with zero user involvement);
 the bulk transfer is slow only because of the agent bridge in the middle.
 
-## Loading the inject bundle into an ALREADY-OPEN page (2026-08-25)
-
-The side panel injects `sh/*`, `charts`, `composer` and `pipeline` with
-`chrome.scripting.executeScript`. That covers a BUILD, but there was no way to
-get the same code into a page that is already open — repairing, retrofitting or
-re-balancing an existing deck meant pushing ~320KB through an agent bridge in
-4KB chunks, and that bridge corrupts oversized payloads while preserving
-length, so only a checksum catches it.
-
-Two manifest changes replace all of that with one `fetch`:
-
-```jsonc
-"web_accessible_resources": [{
-  "resources": ["assets/js/inject/*.js", "assets/js/inject/sh/*.js"],
-  "matches": ["https://my.idecide.com/*"]        // never <all_urls>
-}]
-```
-
-plus `assets/js/inject/resolve.js`, a second content script that must run in
-the **ISOLATED** world — `capture.js` is MAIN world, where `chrome.*` does not
-exist, so the page cannot otherwise learn the extension's own id. The id also
-differs between an unpacked load and a Store build, so a hard-coded literal
-works locally and breaks on publish.
-
-```js
-const base = document.documentElement.dataset.idpBase;   // set by resolve.js
-(0, eval)(await fetch(base + 'assets/js/inject/composer.js').then(r => r.text()));
-```
-
-Verified: 320,722 bytes in one call, `window.__GEOM` / `__BALANCE` / `__COMPOSE`
-all live afterwards. **A manifest change needs an extension reload AND a reload
-of the target tab** — content scripts only inject at page load, so an extension
-reload alone leaves `data-idp-base` absent on tabs that are already open.
-
-**Dev and TESTER only — the STORE build strips all three parts.** `package.mjs`
-deletes `web_accessible_resources` from the staged manifest, filters the
-resolve.js entry out of `content_scripts`, and removes
-`assets/js/inject/resolve.js` from the stage. `assets/` is copied wholesale, so
-removing the file matters as much as unwiring it — otherwise it ships as inert
-dead code. 0.9.182's store-review sweep removed WAR deliberately: it publishes
-the extension id to the host pages, a fingerprinting surface. That reason still
-stands. Its other reason — "nothing loads the inject files by URL" — is what
-resolve.js makes obsolete, and only for the agent path: a client building a deck
-never needs it, because `executeScript` covers a build.
-
-**Do not reach for `"use_dynamic_url": true`** to keep WAR in the store build.
-`chrome.runtime.getURL()` returns the static URL while dynamic-URL resources are
-only reachable through the rotating token, so the handshake may not survive that
-flag unchanged. That needs a live test in Chrome, not a code read.
 
 ## 2026-09-04 — create endpoint, image batch, lottie batch (verified)
 
@@ -1767,8 +1669,8 @@ page as `window.aiagent.instructions`.
 
 `POST /create/aiagent/new` — same origin (`https://my.idecide.com`), JSON body
 `{name: "Q4 Sales Deck", slideCount: 5}`, `Content-Type: application/json`;
-the browser session cookie authenticates, so it works from any page on the
-site. Response `200` JSON:
+a same-origin call from a signed-in Builder tab, so it works from any page on
+the site and needs nothing added to it. Response `200` JSON:
 
 ```json
 { "editUrl": "/builder/create/201?aiagent&slide=40717",
@@ -2599,8 +2501,10 @@ is the diagnosis; what follows is what it proved and what the code now does.
   rows at their old pitch, both times. What persisted:
   `engine.block.saveToString([pageId])` + `PUT /api/builder/builderSession/
   <sid>/slides/<slideId>` with the full slide record and the app's
-  `X-Session-UUID` header (read off the app's own PUT in the network log;
-  without it the PUT is a 400 "Required request header 'X-Session-UUID'").
+  `X-Session-UUID` header (its value is the deck's own `sessionUuid`, which
+  `GET /api/builder/builderSession/<sid>` returns — the Builder sends the same
+  header on its own PUTs; without it the PUT is a 400 "Required request header
+  'X-Session-UUID'").
   That is the call `SH.exportAndPutSlide` makes and the call the polish pass
   already saves with. Not explained — AIAGENT_API.md's "pair any raw engine
   write with a documented api.* call" held for the sizes and not for the
@@ -2668,3 +2572,40 @@ is the diagnosis; what follows is what it proved and what the code now does.
   `stockInfo` records type and the counts, `stockBrief` hands them to the
   re-rank. A Builder without the deploy ignores the fields and answers as
   before.
+
+## 2026-10-26 (evening) — four text-engine facts read live on deck 326 (Orangetheory Fitness, the second build on 2.3.3) — extension → 2.3.4
+
+All four measured through `window.aiagent.engine` on an open Builder page
+(Archivo display face), with a throwaway text block that was destroyed
+afterwards — nothing on the deck was changed.
+
+- **The engine breaks a word that is wider than its box.** `lineCount()`
+  (the composer's wrap prediction) wraps at spaces, so a single word wider
+  than the box still predicts one line. The engine cannot wrap inside a word
+  and breaks it: "Corporation splits" at 60px in a 250px box →
+  `getTextVisibleLineCount` 3 (frame 162px); in a 900px box → 1 (65px).
+  This is the "Corpor / ation", "coach- / led", "Quot / e" family of flags
+  on both 2026-10-26 test decks. The mock engine breaks a too-wide word the
+  same way since 2.3.4 (it never had, which is why the replay called those
+  slides clean), and `unbreakWords()` closes it in the composer.
+- **A word is measured on a throwaway block in the block's own face.**
+  `block.getString(k, 'text/fontFileUri')` and `block.getTypeface(k)` read a
+  live block's face; `block.setFont(t, uri, typeface)` puts it on a new
+  block; `setWidthMode('Auto')` + `getFrameWidth` reads the word's drawn
+  width ("Corporation" at 60px Archivo: 343px — the composer's estimator says
+  396, the mock's ruler 377). The measured value is what `inkOfWord()` uses;
+  never the block's own text (`setString` on a block with colour runs
+  flattens them — the `updateText` footgun, engine-side).
+- **An Absolute-height text frame reads as its set height.** With
+  `setHeightMode(t, 'Absolute')` + `setHeight(t, 77)`, `getFrameHeight(t)` is
+  77 whatever the text would need (the same “ at 137px / lineHeight 0.74 in
+  Auto mode measures 149); `text/clipLinesOutsideOfFrame` false keeps the
+  glyph visible past the frame. The quote mark (renderer J, 2.3.4) is cut to
+  its glyph this way so the packer spaces the quote off the ink, not off a
+  137px line; the mock reads an Absolute text frame as its height since
+  2.3.4.
+- **`getHeight` of an Auto-height text block is 0.** The frame
+  (`getFrameHeight`) is the only honest height of a text block; a pass that
+  reads `getHeight` on text is reading nothing. (Every composer pass already
+  reads the frame; recorded because the first read of the live headline
+  came back `h: 0`.)

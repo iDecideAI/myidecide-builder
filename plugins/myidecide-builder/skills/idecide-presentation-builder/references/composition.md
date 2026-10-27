@@ -276,6 +276,49 @@ says what moved. The measurement is the same one the old rule used — ink off
 the frame via the `Auto` width trick, position restored — it just no longer
 throws the number away.
 
+## A set shares one label size; no word breaks in two (binding, 2.3.4 — 2026-10-26)
+
+Two things the first 2.3.3 builds (Lemonade, Orangetheory Fitness) shipped on
+slide after slide, and the reviewer flagged more often than anything else.
+
+**A set of buttons reads at ONE label size.** A label that cannot hold on one
+line walks down its band (2.3.3) — but a set whose long labels stepped to 30px
+beside short ones still at 44px does not read as a set ("Real Members",
+"Memberships" and "Finish Up" visibly larger than the other four, both main
+menus; "Book My Free Class" smaller than its two siblings). After every button
+is laid, the builder sets each set — the set mark when there is one, else
+every plate of one size on the page — to its smallest label and re-lays each
+pair. A solo pill is never touched. Hand-drawn tiles and bands join their set
+the same way.
+
+**A text box is at least as wide as its longest word, or the size steps.** The
+wrap prediction counts words, so a single word wider than its box still
+predicts one line — and the engine, which cannot wrap inside a word, BREAKS it
+("Corpor / ation", "coach- / led", "Quot / e", "Uplift Communitie / s", "Take /
+Another Loo / k"). The longest word is measured in the block's own face (a
+throwaway block, Auto width — never the block's own text, which would flatten
+its colour runs), after the fonts settle. A box narrower than that word is
+widened toward its column edge on its own alignment — the room between it and
+the nearest block beside it on the same rows, bounded by a side panel and the
+canvas margin — and whatever the room cannot give, the size steps down to the
+28px floor until the word holds. A button label never widens (its plate gave
+what it had): it steps and re-centres on its plate. A word still too wide at
+the floor is the plan's, and the log names it. On an answer-tile set whose
+label room beside the icon cannot hold a word even at the floor, every tile
+stacks its icon above the words, or — in a tile too short for that — drops the
+icons: decor is the first rung of every template's fit order.
+
+**A rule, a quote mark, an icon belong to the unit they introduce.** An accent
+underline sits on its heading's AXIS (the left edge of a left-aligned line,
+the right edge of a right-aligned one, centred under a centred one) — never
+centred under a left-aligned headline, where a 140px rule reads as adrift
+mid-canvas. A quote mark is drawn after its quote, on the quote's axis, its
+frame cut to the glyph so it ends 6px above the first line, and packs with
+the quote as one unit. An icon in a row, chip or card sits with its label on
+the arrangement's axis: beside the words as one pair on a centred or
+right-aligned column, over a centred card label, on the words' measured
+centre line in a row.
+
 ## No answer key (binding, 2026-09-04)
 
 A button is drawn in the contrast (featured) colour ONLY when its label is a

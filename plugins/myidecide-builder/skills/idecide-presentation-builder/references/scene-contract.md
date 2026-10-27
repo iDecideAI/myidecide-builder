@@ -204,7 +204,13 @@ TEXT  {"el":"text", "text":"...", "role":"eyebrow"|"hero"|"headline"|"longline"|
     because the builder measures the drawn frame after the fonts settle and,
     if it broke in two, widens it to its own ink or brings the size down to
     hold one line. Neither is as good as a box you drew wide enough. A line
-    you WANT broken carries its own "\n".
+    you WANT broken carries its own "\n". And NO WORD BREAKS IN TWO (2.3.4):
+    the platform cannot wrap inside a word, so a box narrower than its
+    longest word draws "Corpor / ation" — give every box at least its longest
+    word's width at its size; the builder measures the word in the real face
+    after the fonts settle, widens toward the column edge and steps the size
+    down for what the room cannot give, and sets a button set to one label
+    size.
   - FACE and WEIGHT: hero / headline / longline / numeral / stat take the
     DISPLAY face; everything else the body face (a wordmark in the display
     face is a `subhead` with `font:"display"`). The body face has weights —
