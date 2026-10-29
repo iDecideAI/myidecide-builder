@@ -382,6 +382,25 @@ they are read aloud or dropped — either way the line breaks. Keep spoken
 greetings generic ("Hi there", "Great to have you here") and let On Screen
 carry the personalized token.
 
+## 8c. Written for the voice (binding, 2.3.5 — 2026-10-29)
+
+The Script column is read by a voice, not a person. Four rules, from the
+narration engine Mike's team sent and the builder's own measurements:
+
+- **One tone tag, at the very start of the row, if any** — `[warmly]`,
+  `[curious]`, `[confident]` … The platform voice honours a leading tag (it is
+  not read aloud — measured 2026-10-29); the builder keeps the leading tag and
+  drops any later one, so a mid-row tag is a cue that never plays.
+- **A brand name whose spelling misleads the ear is written the way it is
+  SAID — in the Script column only** ("Origin" for ORYGN, "Ignite" for IGNYT).
+  The On Screen column and every on-screen string keep the real spelling.
+- **No markup in the Script column.** No SSML (`<break time="1s"/>`), no HTML,
+  no placeholder tokens (8b), no "(NO VOICEOVER)" markers (§9) — the voice
+  reads every one of them aloud. Pauses are punctuation: … — and full stops.
+- **Numbers cost time.** "769,220 meals" is nine spoken words. A row dense
+  with figures runs long for its word count — round where the fact allows
+  ("over 750,000 meals"), and keep such a row nearer 20 words than 30.
+
 ## 9. Pacing
 
 - ~20–25 words per VO row (~8 seconds), hard ceiling ~30 (≈10s) — split
@@ -466,6 +485,8 @@ carry the personalized token.
 7. EVERY row has its Slide Name (answer rows and branch rows included — a blank one is a slide that is
    never built), and every silent beat has an EMPTY Script cell, not a "(NO VOICE OVER)" marker.
 8. The column header row is line 1 of the CSV. Not a word before it.
+9. Script cells carry at most ONE tone tag, at the start; no markup; a brand
+   name that misleads the ear is spelled as it sounds (Script column only).
 
 ## Repetition is the tell of a generated script (Bren's tester, 2026-08-24)
 

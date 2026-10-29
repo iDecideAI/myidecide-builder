@@ -539,6 +539,10 @@ built and play broken.
   for Back, a check on finish / yes / agree labels. Never an arrow beside a
   concept icon, never a typographic glyph (→ ← ✓ ›) standing in for one.
 - **Narration audio belongs at z0** — `engine.block.insertChild(page, audio, 0)`.
+  And it plays to its LAST syllable: `addAudio` inserts a clip 50-80 ms short,
+  so set `playback/trimOffset` 0 and `playback/trimLength` to the file's total
+  duration (`engine.block.getAVResourceTotalDuration(audio)`, once it reads
+  above 0.1 s), and the audio block's duration to the same.
 - **No two elements overlap.** Measure after composing; if two units collide,
   push them apart. See "Placement" below.
 - **The column you chose decides the axis.** A slide composed left-aligned /
@@ -936,11 +940,21 @@ earlier ones resolve.
    own clip, so resolve one hint per background AND one per panel. Upload the
    logo drawings (3d) once here. Do the same for narration with
    `api.narration.generateBatch`, giving every narration the house delivery
-   — `voiceSettingsOrStability: { stability: 0.1, similarity: 0.9, style:
-   0.9 }` (the same three numbers the per-slide
-   `api.currentSlide.narration.generateAndInsert(voiceId, text, 0, 0.1, 0.9,
-   0.9)` takes; the platform fixes the model and speaker boost). If a voice
-   over-performs, raise stability first. The video and narration batches
+   — `voiceSettingsOrStability: { stability: 0.5, similarity: 0.75, style:
+   0.15 }` (the same three numbers the per-slide
+   `api.currentSlide.narration.generateAndInsert(voiceId, text, 0, 0.5, 0.75,
+   0.15)` takes; the platform fixes the model and speaker boost; stability
+   never under 0.35). Batch only FINAL lines — after the slide's narration
+   is written — and key each clip by its text. Find the voice by its EXACT
+   catalog name from `api.narration.getVoices()`; if it is not there, say so
+   to the person and name the voice you used instead — never narrate in a
+   substitute silently. Send each line with at most ONE tone tag, at the
+   start (the platform does not read a leading tag aloud; a later one is
+   dropped), and with no SSML or markup. Then check the pace: predict each
+   clip's length from its spoken words (a number is several words: 769,220
+   is eight) and its pauses (… — . ! ? ; :), fit the rate on the deck's
+   clips, and regenerate ONCE any clip more than 25% off its prediction,
+   keeping the closer take. The video and narration batches
    stream results through an `onCompleted` callback; consume them as they
    land.
 

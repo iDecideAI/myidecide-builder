@@ -89,13 +89,21 @@ belong to other brands and are not this deck's to reuse (see COMPOSING).
   "kind": "...", "autoAdvance": ..., "sectionIntro": ...,   // as given
   "field": "light"|"dark",           // the field the copy sits on (the scene may state it too)
   "narration": "...",               // the beat's full voiceover, ENHANCED:
-                                    // 1-3 tags at tone shifts from [excited]
-                                    // [excitedly] [curious] [curiously] [confident]
-                                    // [impressed] [delighted] [amazed] [warmly]
-                                    // [reassuring] [friendly] [serious] [thoughtfully]
-                                    // [sighs] [exhales] [whispers] [dramatically];
+                                    // ONE tone tag, at the very START of the
+                                    // line, from [excited] [excitedly] [curious]
+                                    // [curiously] [confident] [impressed]
+                                    // [delighted] [amazed] [warmly] [reassuring]
+                                    // [friendly] [serious] [thoughtfully] [sighs]
+                                    // [exhales] [whispers] [dramatically] —
+                                    // never mid-line (the builder keeps the
+                                    // leading tag and drops any later one);
                                     // CAPS stress 1-3 words/sentence; … pauses;
-                                    // — snappy beats. "" when the script row
+                                    // — snappy beats. A brand name whose
+                                    // spelling misleads the ear is written the
+                                    // way it is SAID here only ("Origin" for
+                                    // ORYGN) — the copy keeps the real spelling.
+                                    // No SSML or markup (<break …/>) — it is
+                                    // read aloud. "" when the script row
                                     // is silent — an empty Script cell, or a
                                     // legacy "(NO VOICEOVER)" marker: NEVER
                                     // copy a marker into narration, it would

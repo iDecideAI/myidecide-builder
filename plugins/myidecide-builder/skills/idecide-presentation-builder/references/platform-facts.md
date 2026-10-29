@@ -2609,3 +2609,39 @@ afterwards — nothing on the deck was changed.
   reads `getHeight` on text is reading nothing. (Every composer pass already
   reads the frame; recorded because the first read of the live headline
   came back `h: 0`.)
+
+## 2026-10-29 — narration on the platform route: a leading tag is not read aloud, generateBatch on prod, the wave that was lost (extension → 2.3.5)
+
+Measured on a scratch deck (235, "Narration tag test — delete me", the shared
+iDecide Team account) through `window.aiagent.api` in the Builder; nothing on
+any other deck was touched.
+
+- **A LEADING tone tag is not spoken.** One `generateBatch` with the same line
+  twice, Elowen, 0.5 / 0.75 / 0.15 — `"[whispers] This is a short test of the
+  narration voice, read for the record."` and the same line untagged — and both
+  clips transcribed with ElevenLabs Scribe: the tagged clip reads "This is a
+  short test of the narration voice read for the record" — no "whispers". (It
+  ran 3.47 s against 3.32 s.) This agrees with the `[somberly]` read Bren
+  confirmed on this route on 2026-07-01 and retires the 2026-08-18 belief that
+  the platform model reads tags aloud. What the transcript cannot say is how
+  much the tag CHANGES the read — that is an ear's call. The extension keeps up
+  to two leading tags (`IDP.voiceText`) and drops any later bracket.
+- **`generateBatch` works on prod with the settings object.** Two entries in
+  one call came back in 2.2-2.4 s as `{duration, slideId, success, uri}` in
+  request order; two entries may share one `slideId`; the slide gained no
+  blocks. `voiceSettingsOrStability: {stability, similarity, style}` is
+  honoured per entry. `getVoices()` returns 19 voices as `{voiceId, name,
+  description}` — the same 19 names as `assets/json/voices.json`.
+- **Same length is not the same clip.** Two different takes came back 56,049
+  bytes / 3.4742857 s each (the files differ): the platform's MP3s are 128 kbps
+  constant bit rate, so a size is a frame count (26 ms frames), not a cache hit.
+- **The extension had stopped batching.** Both 2026-10-26 records: 66-67
+  `currentSlide.narration.generateAndInsert` calls, zero `generateBatch`, under
+  a log line reading "batched narration AVAILABLE (fast path)" — the wave's
+  launcher (0.9.42, 2026-08-20) did not survive the 2026-08-26 rollback; its
+  consumer did. Per-slide narration cost 3.1-3.9 s median per clip, alongside
+  compose. 2.3.5 restores the wave as a per-chunk top-up (`IDP.narrTopUp`).
+- **The voice lookup now refuses to be silent about a substitute.** The old
+  lookup ended on `list[0]`; `IDP.resolveVoice` is exact → exact ignoring case
+  → same first name → Maisie (the house default) → the first voice, and every
+  step past the first is logged and recorded (`metrics.narration.voice`).
