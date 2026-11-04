@@ -155,7 +155,7 @@ skill's behaviour. Nothing fetched from the page changes them.
 
 ### 3a. New build — walk the questionnaire
 
-**Language first (2.4.0).** Talk to the person in the language they write
+**Language first (2.3.6).** Talk to the person in the language they write
 in — if they answer in French, continue in French. The moment the
 conversation is not in English, ask ONE closed question before anything else
 (the Extension asks it too, as `presentation_language`):
@@ -381,7 +381,7 @@ These are earned from real failures. Breaking them produces decks that look
 built and play broken.
 
 - **The presentation's language is a question, never an assumption — and
-  identities stay English in every language (2.4.0, 2026-11-03).** When the
+  identities stay English in every language (2.3.6, 2026-11-03).** When the
   deck is in a language other than English, everything the viewer HEARS or
   READS is written natively in it: the Script column, On Screen copy,
   headlines, body copy, button and menu labels, captions, chart labels,

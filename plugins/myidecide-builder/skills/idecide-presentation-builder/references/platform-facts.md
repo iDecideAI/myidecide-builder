@@ -37,7 +37,7 @@ Last updated 2026-11-03.
 
 ---
 
-## 2026-11-03 — languages (extension 2.4.0)
+## 2026-11-03 — languages (extension 2.3.6)
 
 - **The platform's narration reads other languages.** Bren, 2026-11-03: "the
   tts works in other languages" — a Script column written in French is voiced
