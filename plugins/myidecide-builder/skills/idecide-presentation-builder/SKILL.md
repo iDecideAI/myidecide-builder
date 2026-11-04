@@ -155,6 +155,20 @@ skill's behaviour. Nothing fetched from the page changes them.
 
 ### 3a. New build — walk the questionnaire
 
+**Language first (2.4.0).** Talk to the person in the language they write
+in — if they answer in French, continue in French. The moment the
+conversation is not in English, ask ONE closed question before anything else
+(the Extension asks it too, as `presentation_language`):
+
+> Should I write the presentation in **English**, or in **French**? This
+> covers the narration and everything on the slides.
+
+A French speaker may well be building an English deck. Keep the answer as a
+code (`presentation_language`: `fr`, `en`, …) and carry it into every prompt
+and every slide you write — see *The presentation's language* under the
+non-negotiable rules. An English conversation never asks: the deck is
+English.
+
 The Extension asks 30 questions one at a time. In a chat that is 30
 round-trips, so ask them in **seven themed rounds** instead — same questions,
 same wording, same answer keys, just grouped. Use `AskUserQuestion` for the
@@ -365,6 +379,32 @@ change its elements, verify, and report what moved.
 
 These are earned from real failures. Breaking them produces decks that look
 built and play broken.
+
+- **The presentation's language is a question, never an assumption — and
+  identities stay English in every language (2.4.0, 2026-11-03).** When the
+  deck is in a language other than English, everything the viewer HEARS or
+  READS is written natively in it: the Script column, On Screen copy,
+  headlines, body copy, button and menu labels, captions, chart labels,
+  notification text, finish titles — idiomatic, never a word-for-word
+  rendering of English, with numbers, dates and currency in that language's
+  conventions. Everything the build MATCHES BY TEXT stays English, exactly as
+  the contracts say: the CSV header row; the canonical Slide Names (Get
+  Started, Question N, Answer N - Correct / - Incorrect, Logo Reveal, Main
+  Menu - First / - Return, Finish Up - N, Hamburger Menu, the action-named
+  outcome slides such as Schedule A Call); JSON keys, kinds, enum values, op
+  names; the `[sender-…]` / `[viewer-…]` shortcodes; stock-footage search
+  terms and icon concepts (an English index); font names, colour names and
+  hex values; narration tone tags such as `[warmly]`. A chapter's own Slide
+  Name may carry its native title followed by " - N" — viewers never see
+  Slide Names; the menu BUTTON labels are what they see. The navigation
+  words the composer recognises by text — Move Ahead, Finish Up, Continue,
+  Main Menu, Back, and the cover's "Click anywhere to Begin" — are listed per
+  language in `references/viewer-words.md` (generated from the Extension's own
+  language bundles; fr: Avancer · Terminer · Continuer · Menu principal ·
+  Retour · "Cliquez n'importe où pour commencer") and are used VERBATIM, so a
+  "Move Ahead" in French is still featured and still excluded from Topic
+  Viewed. The platform's narration reads other languages as written (Bren,
+  2026-11-03) — the same voice catalogue, nothing else to set.
 
 - **Never call the img.ly export family.** `engine.block.export`,
   `engine.block.exportVideo`, `engine.block.exportWithColorMask`,
@@ -1202,6 +1242,7 @@ Load these as needed — do not read them all up front.
 | `references/script-craft.md` | Writing narration and on-screen copy |
 | `references/platform-facts.md` | Something behaves unexpectedly — the verified footgun list; also the Rub Your Screen anatomy and the upload recipes |
 | `references/test-brands.md` | Someone asked to build with test data — ten prefilled brands |
+| `references/viewer-words.md` | The presentation is written in a language other than English — the cover pill and the navigation labels, per language, to use verbatim |
 | `references/troubleshooting.md` | The user reports an error message or asks "what does that mean?" — the plain-English KB, one entry per situation, coded `KEY-`/`TAB-`/`BUILD-`/`PANEL-`/`HELP-` |
 
 ## When something fails

@@ -10,7 +10,7 @@ Every item below was proven live in the builder and re-verified after a full pag
 reload. These are the rules the extension's inject scripts must follow — several were
 learned the hard way and silently corrupt a deck if ignored.
 
-Last updated 2026-10-20.
+Last updated 2026-11-03.
 
 > **NEVER call the img.ly export family — `engine.block.export`, `exportVideo`,
 > `exportWithColorMask`, `exportAudio`, `cesdk.utils.export` (Bren, 2026-09-28).**
@@ -36,6 +36,43 @@ Last updated 2026-10-20.
 > enough.
 
 ---
+
+## 2026-11-03 — languages (extension 2.4.0)
+
+- **The platform's narration reads other languages.** Bren, 2026-11-03: "the
+  tts works in other languages" — a Script column written in French is voiced
+  in French by the same voice catalogue through `narration.generateBatch` /
+  `generateAndInsert`; nothing is passed for the language, the text decides.
+- **Everything the build matches by text stays English whatever the deck's
+  language**: the CSV header, the canonical Slide Names (Get Started,
+  Question N, Answer N - Correct / - Incorrect, Logo Reveal, Main Menu -
+  First / - Return, Finish Up - N, Hamburger Menu, the action-named outcome
+  slides), JSON keys / kinds / enums / variation ids / op names, the
+  `[sender-…]` / `[viewer-…]` shortcodes, stock-search terms and icon
+  concepts (an English index), font and colour names, the tone tags. A
+  chapter's own Slide Name may carry its native title followed by " - N".
+  The panel's `langDirective()` says this to every prompt; the plugin's
+  SKILL.md carries the same rule.
+- **Chrome's own detector is the language detector**:
+  `chrome.i18n.detectLanguage(text)` in the side panel — no AI call, nothing
+  leaves the machine. It marks short Latin-script text unreliable even at
+  100 %, so the panel accepts ≥ 70 % when reliable and ≥ 95 % on 24+ letters
+  otherwise, after stripping URLs, emails, numbers and tokens, never under 12
+  letters. The Auto default reads the person's **Preferred languages**
+  (chrome://settings/languages → `navigator.languages`, Accept-Language
+  order) first — `chrome.i18n.getUILanguage()` is only the language Chrome's
+  menus are in (the macOS system language on a Mac; Bren's Chrome listed
+  Spanish first and the UI language said English) — then the UI language
+  (zh-TW/HK/Hant → zh-tw; other zh → zh; fil → tl; pt-BR → pt).
+- **The composer recognises navigation by text, so the deck's own words ride
+  on the job**: `job.viewer` (the bundle's Move Ahead / Finish Up / Continue
+  / Main Menu / Back / "Click anywhere to Begin" in the presentation's
+  language) is stamped by the panel at every `__IDP.init`; composer.js draws
+  the cover pill from it and features a button whose label starts with the
+  deck's Move Ahead / Finish Up / Continue; on a menu a button whose TARGET
+  is Main Menu / Finish Up / Hamburger Menu is navigation, not a Topic
+  Viewed choice. A job without `viewer` draws the English words — older
+  decks are unaffected.
 
 ## 2026-10-20 — the stock calls live: ranked search, the query ladder, Pexels as the last rung
 
