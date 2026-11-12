@@ -1174,6 +1174,27 @@ The same surface, one slide at a time. Read before you write:
   `api.currentSlide.blockActions.getAll()` and do not re-point a block whose
   action is `toggleSelection`.
 
+- **Check your own work; never ask the person to (2026-11-12).** After you
+  redraw a slide or add one, read the result back yourself — `api.slides.get()`
+  for the list and where each slide goes next, the page's blocks for
+  positions, a preview frame for the look — correct what is off, and report
+  what you found as fact. "Ask me to check slide 25" and "please confirm it
+  was created" are not answers: you can read it, so read it.
+- **A new slide does not join the chain by itself (2026-11-12).** The slide
+  before it keeps the target it had. After adding a slide: point the slide
+  before at it (`slides.setAutoAdvance(prevId, true, newId)`), and give the
+  new slide the target the old one had — the last slide of a chapter goes
+  back to the menu, so a slide added after it must be the one that does. Read
+  the list back: each row carries `autoAdvanceAfterNarration` and
+  `autoAdvanceSlideId`, a STRING (an id, `"next-slide"`, or `"undefined"`).
+- **The same plan draws the same slide (2026-11-12).** If a slide's layout is
+  what is wrong — a line on top of an icon row, parts stepping down the page —
+  composing it again from the same template reproduces it. Pick another
+  variation of the same category that holds the same parts, or move the
+  blocks in place. In a photo-band layout, a support line goes UNDER the
+  headline and the icon row UNDER the support line; cut the photo (to 30% of
+  the canvas at most) before the text is squeezed or pushed over it.
+
 - **A slide you did not design is not yours to redraw.** Change its elements —
   text, colour, position, timing, images, video, buttons. Never clear the page
   and recompose from a plan that never described it. A slide you DID design

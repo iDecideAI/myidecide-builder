@@ -2798,3 +2798,33 @@ it is known.
   slides are added (which is when the whole deck is re-wired). Since 2.3.8 a
   block whose action record reads `toggleSelection` is left alone; any other
   hand-changed action is still re-set from the name.
+
+## 2026-11-12 (later) — what the slide list says about "next", and three things a redraw cannot do for itself (deck 330 — extension → 2.3.9)
+
+Read live on deck 330 in the Builder (42 slides) and from its build record.
+
+- **`api.slides.get()` rows: `id`, `name`, `introSlide`, `slideIndex`,
+  `isMenuSlide`, `muteBackgroundMusic`, `autoAdvanceAfterNarration`,
+  `autoAdvanceSlideId`.** There is no `autoAdvance` key.
+  `autoAdvanceSlideId` is a STRING: a slide id (`"61662"`), `"next-slide"`
+  (a slide made by hand in the Builder), or `"undefined"` on a slide that
+  waits. Test for digits before treating it as an id. `IDP.advanceState`
+  reads it; `IDP.setAdvance` writes it.
+- **Inserting a slide does not re-point the slide before it.** A slide with
+  an explicit target keeps that target; the new slide is skipped until
+  someone calls `setAutoAdvance`. The plan must change too (`advanceTo`), or
+  the next wire pass puts the old target back.
+- **A redraw of the same plan is the same slide.** The composer is
+  deterministic; a fault a template produces for a piece of content is
+  reproduced exactly by rebuilding it. Change the template (another
+  variation), or correct the blocks in place.
+- **A directive that runs in the loop cannot name a slide the tail will
+  create.** `slides` are applied after the model's last answer; `advance`,
+  `edits` and the rest run at once. Anything that depends on a new slide is
+  held until `addSlides` has run.
+- **Archetype C (photo band + content band) budgets its stack before the
+  band is cut.** Headline (one line of its size) + support line + a 62px
+  icon row + pads; the photo yields to 30% of the canvas, which is the
+  floor the templates state ("media.band yields height to 30%").
+- **The overlap pass moves rows, not cells, and never over a photo band.**
+
