@@ -2682,3 +2682,119 @@ any other deck was touched.
   lookup ended on `list[0]`; `IDP.resolveVoice` is exact → exact ignoring case
   → same first name → Maisie (the house default) → the first voice, and every
   step past the first is logged and recorded (`metrics.narration.voice`).
+
+## 2026-11-12 — a voiceover is an edit; a new slide's name; what YouTube answers; an empty probe (extension → 2.3.8)
+
+Read from one client's build record (62 slides, edited
+for a week on 2.3.7) and from live calls made the same day. Each line says how
+it is known.
+
+- **A voiceover can be recorded on a slide that already has content, without
+  redrawing it.** `api.currentSlide.narration.generateAndInsert(voiceId, text,
+  startTime, stability, similarity, style)` ADDS an audio block to the open
+  slide; it does not need an empty page. The Logo Reveal has relied on this
+  since 2026-08-24 (two tracks on one composed slide). The edit step's
+  `setNarration` op uses it: record at the old track's start, destroy the old
+  audio block once the new one is on the page (some inserts replace in place —
+  then the returned id IS the old id), stretch every non-audio layer to
+  `lastAudioEnd + tail` keeping its start, `updateTiming` on the new block as
+  the documented dirty, REST-save the page, write the line to the slide's
+  `description`. *Known from:* the build's own two-track slides; the op is
+  proven in the mock engine (scripts/smoke-edit.mjs) and has NOT yet been run
+  on a live deck — the first live run is the proof.
+- **`api.slides.get()` is the app's own list, and a REST write does not reach
+  it.** A slide made with `slides.create()` and named only with a REST PUT
+  (`putSlideField`) reads back from `slides.get()` with an empty name until
+  the page reloads. *Known from:* the record, 2026-11-10 23:01:36-37 — three
+  shells created and named by PUT, the inventory read one second later listed
+  three "(unnamed)" slides. Pair every REST name with
+  `api.slides.setName(id, name)` (the build's shells always did).
+- **Where a slide goes next is one call, not a redraw:**
+  `api.slides.setAutoAdvance(id, true, targetSlideId)` /
+  `(id, false, 0)`. Slide 1 refuses it. *Known from:* enforceMeta has made
+  this call on every build since August.
+- **`chrome.scripting.executeScript` resolves with NO result when the frame
+  navigates while an async injected function is still waiting.** The entry is
+  missing or its `result` is null; nothing rejects. *Known from:* the record's
+  seven "Cannot read properties of null (reading 'ok')" failures, all on a
+  connect that had just sent the tab to `?aiagent`. Treat an empty answer as
+  "the page changed under me": wait for the tools, ask once more.
+- **YouTube captions (read live 2026-11-12 from a residential connection):**
+  - the watch page's `captionTracks[].baseUrl` answers **200 with an empty
+    body** outside the web player (it wants a proof-of-origin token);
+  - `POST https://www.youtube.com/youtubei/v1/player` with
+    `{context:{client:{clientName:"ANDROID",clientVersion:"20.10.38"}},videoId}`
+    — no key — returns the same track list with links that DO answer;
+    `IOS 20.10.4` also answered; `ANDROID 19.44.38` answered 400 (versions age
+    out), `MWEB` UNPLAYABLE, the embedded clients ERROR;
+  - that POST answers **403 when it carries `Origin: chrome-extension://…`**
+    and 200 with no Origin, `Origin: null` or YouTube's own;
+  - a manual track has no `kind`; an auto-generated one has `kind: "asr"`; a
+    video with no speech returns `playabilityStatus OK` and no tracks; a bad id
+    returns `ERROR`;
+  - the caption file is XML in one of two shapes — `<timedtext format="3">`
+    with `<p t d>` (word-level `<s>` children on auto captions) or
+    `<transcript>` with `<text start dur>`, whose entities are escaped twice.
+- **A session `declarativeNetRequest` rule can drop the Origin header from an
+  extension's own POST** — `modifyHeaders` / `remove` / `origin`, condition
+  `initiatorDomains: [chrome.runtime.id]`, `requestMethods: ["post"]`,
+  `resourceTypes: ["xmlhttprequest"]`, with `declarativeNetRequestWithHostAccess`
+  and the host granted. A GET from an extension page to a granted host carries
+  no Origin at all. *Known from:* a real Chromium run against a mock server
+  that refuses the extension Origin (403 without the rule, 200 with it, the
+  rule gone afterwards). NOT yet run inside the packaged extension against
+  YouTube itself.
+
+### Carried in from the 2026-11-12 hand build (deck 237) — verified live there, promoted here
+
+- **`POST /create/aiagent/new` refuses `slideCount` above 50** — 400
+  `{"code":"INVALID_SLIDE_COUNT","message":"slideCount must be between 0 and
+  50"}`, nothing minted. Mint with 50 at most and add the rest in the Builder
+  with `api.slides.createMultiple(n, null, 'end')`. (The Extension mints with
+  1 and is unaffected.)
+- **`text/lineHeight` multiplies the FACE's natural line box, not the em** —
+  Poppins' box is 1.5 em, Manrope's about 1.37: "1.02" on a 124px Poppins
+  headline gave 188px line to line. Multiply the leading you want by about
+  0.69 (Poppins), 0.77 (Manrope), 0.8 (Source Code Pro), then MEASURE the
+  stack; a single-line frame is always the natural box.
+- **The canvas's top-right corner belongs to the player's menu icon** — a
+  corner mark placed there sits under it. And a mark created before the
+  layout's scrim is buried by the scrim: create marks last.
+- **`https://lh3.googleusercontent.com/d/<driveFileId>=w1280` is readable from
+  the Builder's page** and, for a public Drive VIDEO, returns its poster JPEG
+  (`fetch → blob → File → uploadAndInsertImage`). `drive.google.com/uc?export=
+  download` and `drive.usercontent.google.com/download` are not readable from
+  the page, so a Drive video itself cannot be pulled in this way.
+- **Iconify is readable from the page too:**
+  `https://api.iconify.design/<set>/<name>.svg?color=%23hex&width=96&height=96`
+  → SVG text → `uploadAndInsertImage(new File([svg], …, {type:'image/svg+xml'}))`;
+  re-place the same upload on other slides with `insertUploadedImage({id,
+  label, meta:{uri, thumbUri, width, height, sourceSet:[]}})`. Stroke icons
+  render; only `<text>` does not.
+- **`generateVideoThumbnailSequence(page, 370, t, t, 1, cb)` can return a
+  letterboxed, horizontally stretched frame** (the page in the middle 64% of
+  the height) — crop that band and redraw at 1558:720. After a reload it timed
+  out on every slide with a background video.
+
+### 2026-11-12 (later) — a button that points at its own slide REOPENS the slide; `toggleSelection` is the platform's selected state
+
+- **`goToSlide` to the slide a button is on restarts that slide**: the tap's
+  Track Choice is recorded, then the slide opens again and every layer replays
+  its entrance — to a viewer the whole canvas animates and no button shows as
+  chosen. This is how the builder wires every answer of a "tap all that apply"
+  question (`btn:<own slide>`). *Known from:* a client's record (the answers
+  recorded, "no visual feedback when clicked") and their screen recording as
+  described by Bren; not reproduced live by us.
+- **The platform's action list includes `toggleSelection`** —
+  `blockActions.set(blockId, 'toggleSelection', …)`; in the Builder's action
+  menu it reads "Toggle Selection — turns object into a selectable option;
+  viewers can click to select/deselect, useful for multi-choice interactions".
+  The builder has never written it. *Known from:* the surface map's enum and
+  the menu text a client quoted. NOT yet exercised by us: whether Track Choice
+  still records under it, what the selected state looks like, and what a
+  following Move Ahead can read are open.
+- **A deck-wide re-wire re-sets every `btn:`-named block from its NAME**, so an
+  action someone changed by hand in the Builder is overwritten the next time
+  slides are added (which is when the whole deck is re-wired). Since 2.3.8 a
+  block whose action record reads `toggleSelection` is left alone; any other
+  hand-changed action is still re-set from the name.
