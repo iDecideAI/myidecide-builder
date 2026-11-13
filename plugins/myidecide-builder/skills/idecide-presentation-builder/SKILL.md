@@ -1101,6 +1101,23 @@ earlier ones resolve.
    session never commits — the reload count check is the only thing that
    catches it.
 
+### Transitions — the last step of a build
+
+When every slide is built, narrated and wired, add the wipes: an INTRO on every slide — except that
+about half of the slides an outro leads into open with no intro at all: give those the outro's colour as
+their canvas and fade their background and first-frame layers in over it; an OUTRO on every
+slide that auto-advances (none on a menu, a question, a CTA or the cover); an outro in the colour of the
+next slide's intro — so every slide that flows into the menu leaves in the menu's colour; colours are the
+presentation's theme colour, white and black; both wipes on ONE track at the top; the voice starts halfway
+into the intro; after a voiceover longer than 5 s the slide ends 0.3 s after the voice with the outro ending on that last
+frame, and after a line of 5 s or less the outro starts when the voice ends and every layer runs to the end
+of the wipe. The
+files, the platform facts that make it work (looping off, the hold baked into the file, offsets asserted
+last, verify from a reload) and how to get the files into the Builder are in
+`references/platform-facts.md` § Transitions, in the order to do them. When the person asks to change them — faster, slower, another colour, a
+different one, none on this slide, more time before it animates out — change the wipes and the timing in
+place; never rebuild the slide. Skip the step only if they asked for no transitions.
+
 ## Editing a deck
 
 The same surface, one slide at a time. Read before you write:

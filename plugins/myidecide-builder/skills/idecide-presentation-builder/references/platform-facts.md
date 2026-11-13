@@ -2828,3 +2828,71 @@ Read live on deck 330 in the Builder (42 slides) and from its build record.
   floor the templates state ("media.band yields height to 30%").
 - **The overlap pass moves rows, not cells, and never over a photo band.**
 
+## Transitions — full-screen wipes between slides (2.3.10; proved by hand on deck 332, 2026-11-13)
+
+**Bren's rules.** A slide that WAITS for a tap (menu, question, CTA, the cover) gets an INTRO wipe and
+no outro. A slide that AUTO-ADVANCES gets an intro and an OUTRO. An outro's colour is the intro colour
+of the slide it leads into — so every slide that flows into one slide leaves in THAT slide's colour.
+Default colours are the presentation's: the theme colour, white, black. The wipe is scaled to fill and
+cropped to the canvas. Intro and outro sit on ONE layer at the top. After a voiceover LONGER than 5 s the
+slide ends 0.3 s after the voice and the outro ENDS on that frame (it starts early); after a line of 5 s or
+less that felt rushed, so there the outro STARTS when the voice ends and every layer runs to the end of the
+wipe. The voiceover starts HALFWAY
+into the intro. The client may change any of it in the edit chat (colour, speed, shape, more time before
+or after, on/off, one slide or all).
+
+**Not every slide wipes in (Bren, fifth note, 2026-11-13).** "To avoid overusing the transitions … allow
+some slides to, instead of starting with an intro transition, start with the same canvas color as the
+previous outro transition and fade/animate the graphics or background images/videos/overlays in … A 50/50
+split between the 2 approaches would be a good start." In the chain: among the slides that an outro IN
+THE SAME COLOUR leads into, every other one opens `fade` instead of `wipe` — no intro clip; the pass sets
+the page's canvas to that colour (`api.currentSlide.setBackgroundColor`), gives every first-frame layer
+that has no entrance a 1.2 s fade (`setInAnimation(k, 'fade', …)`, marked `idecide/transition-fade` so it
+can be taken off again), and starts the voice 0.4 s in. The slide's own canvas colour is remembered in
+`job.transitions.bg` and put back if the slide is later told to wipe in. THE CANVAS IS USED ONLY WHEN SOMETHING COVERS IT: a slide with no full-bleed
+first-frame layer (a solid-field slide — its canvas IS the design) or a gradient canvas gets the same
+opening from above instead — a full-bleed field of the outro's colour on the Transitions track, 1.2 s, with
+a fade OUT — and its canvas is not touched. A slide nothing flows into always wipes in:
+there is no colour to start from. `open: "wipe" | "fade"` (slide or deck) overrides the split.
+
+**Where they come from.** `https://idecide.com/lottie-library/transitions/` — `catalog.json` (its OWN
+catalogue: `kind` intro / outro / middle, `mono`, `colours`, `frames`, `fr`, `seconds`, `cover`) and
+`<name>.json`. NEVER merged into the icon `catalog.json`: `lottieFor` would hand a slide that says
+"fire" or "liquid" a full-screen wipe. The files are already normalised (an empty end is one blank frame;
+a covered end holds past the out point). The build uses the one-colour outros that fully cover and run
+0.45–1.4 s; an intro is an outro reversed.
+
+**Platform facts (each one read back after a reload).**
+- `api.assets.importLottieBatch` + `images.insertUploadedImage(up, 0, 0, W, H, start, dur)` places a wipe
+  as a video fill, fill mode Crop, already scaled to cover (16:9 into 1558×720: crop scale 1.217). The
+  upload's `meta` is wrong for these (300×300, duration null) — the length is frames ÷ fr.
+- **The platform sets looping ON.** A block longer than its file restarts it, and frame 0 of an outro is
+  empty: the "blank last frame". `E.block.setLooping(E.block.getFill(id), false)` — it persists.
+- **With looping off, a block that outlasts its file shows NOTHING** — the last frame is not held. So the
+  hold is baked INTO THE FILE before upload: an outro gets `op += 0.5 s` spare and its block runs the wipe
+  + 0.2 s; an intro is the reverse of that, so it opens with 0.2 s of full cover.
+- **Speed is the file's frame rate** (`fr × speed`), set before the hold is baked. No playback property.
+- **One layer:** `E.block.create('track')`, appended to the page LAST, `track/automaticallyManageBlockOffsets`
+  false, both clips appended to it. **A track re-lays its clips end to end on every add or remove** even
+  with that flag false (deck 332: every two-clip slide came back with both clips after the page end and
+  the page stretched) — assert each clip's time offset, then the page duration, LAST, and verify from a
+  reload.
+- Timing: voice offset = intro ÷ 2 (+ `delay`); everything that starts after frame 0 moves with it; with an
+  outro, page = last audio end + `gap` + (0.3 s when the voice runs longer than 5 s, else the outro's own
+  length); without one, last audio end + the tail; outro offset = page − outro length.
+- Marks: the track carries `idecide/transition-track` and `idecide/transition-shift` (the seconds the
+  voice was moved, so a second pass moves nothing); each clip carries `idecide/transition` =
+  `{dir, shape, color, speed}`.
+- A review frame of a slide with an outro is taken BEFORE the outro starts — the last frame is one flat
+  colour.
+- Getting the JSON into a page that cannot fetch idecide.com (no CORS header — the Extension's panel can,
+  it has the host permission; a hand build cannot): prepare the files on `idecide.com/lottie-library/`
+  (same site, and the page already loads `LLReverse`), park them in `window.name`, navigate the SAME tab
+  to the Builder and read them back.
+
+**In the Extension.** `runTransitions(job, opts)` (panel): the library, `transitionFile` (paint, speed,
+reverse, hold), the uploads, then `IDP.transitionPlan` → `IDP.transitionChain` (pure — who gets which wipe
+in which colour) → `IDP.transitions` (the pass). It is the LAST step of a build (after every audit and the
+review) and runs again after an edit turn's retime; `job.transitions` holds the client's settings and what
+is applied, so only slides whose wipes changed are visited. The edit chat's `transitions` directive writes
+those settings. Gate: `scripts/smoke-transitions.mjs`.
