@@ -323,15 +323,6 @@ fills blank names from the outline order, keeps plan slides that are
 referenced as targets, and drops unresolvable targets so the fallback
 re-points them.
 
-### Anthropic API — RETIRED 2026-10-16 (the extension no longer calls it)
-
-Until 2.2.6 the extension called `api.anthropic.com` from the browser with a
-key the person pasted, and an identity-linked key made with no workspace
-chosen needed an `anthropic-workspace-id` header on every call (second tester
-run, 2026-09-03; `KEY-05` / `KEY-06`). Since 2.3.0 no call leaves the
-extension for Anthropic — see the next section — so the header, the key UI,
-the Test-key diagnostic and the `KEY-*` codes are gone. The finding stays here
-for the record only.
 
 ---
 
@@ -854,7 +845,7 @@ E.block.setDouble(a, 'playback/trimLength', full);    // setDouble, NOT setFloat
 E.block.setMetadata(a, 'idecide/playback/trimLength', String(full));
 A.currentSlide.blocks.updateTiming(a, 0, full);
 ```
-Then extend the page to `max(pageDur, full + 0.3)` and push every visual layer to the new
+Then extend the page to `max(pageDur, full + 0.5)` and push every visual layer to the new
 last frame. Audio always sits at z0.
 
 ## 6. Blocks can nest inside `/track` blocks
@@ -1916,8 +1907,7 @@ the panel on live decks 304–309.
   md5 of the file name) and the Commons API with `origin=*`,
   `cdn.worldvectorlogo.com/logos/<slug>.svg`, and `cdn.brandfetch.io/<domain>`
   are CORS-open to a my.idecide.com page; `api.brandfetch.io/v2/brands/<domain>`
-  answers 401 without a key (so the panel calls it with the packaged key, host
-  permission `https://api.brandfetch.io/*`); clearbit, Google favicons, the
+  is not open to a page (it answers 401 — use the open CDN above); clearbit, Google favicons, the
   client's own site and vectorlogo.zone are not fetchable in-page. An SVG's
   fills recoloured in text (`#231f20` → `#FFFFFF`) upload through
   `uploadAndInsertImage` and place as Contain on every slide; the container's
@@ -2719,31 +2709,6 @@ it is known.
   seven "Cannot read properties of null (reading 'ok')" failures, all on a
   connect that had just sent the tab to `?aiagent`. Treat an empty answer as
   "the page changed under me": wait for the tools, ask once more.
-- **YouTube captions (read live 2026-11-12 from a residential connection):**
-  - the watch page's `captionTracks[].baseUrl` answers **200 with an empty
-    body** outside the web player (it wants a proof-of-origin token);
-  - `POST https://www.youtube.com/youtubei/v1/player` with
-    `{context:{client:{clientName:"ANDROID",clientVersion:"20.10.38"}},videoId}`
-    — no key — returns the same track list with links that DO answer;
-    `IOS 20.10.4` also answered; `ANDROID 19.44.38` answered 400 (versions age
-    out), `MWEB` UNPLAYABLE, the embedded clients ERROR;
-  - that POST answers **403 when it carries `Origin: chrome-extension://…`**
-    and 200 with no Origin, `Origin: null` or YouTube's own;
-  - a manual track has no `kind`; an auto-generated one has `kind: "asr"`; a
-    video with no speech returns `playabilityStatus OK` and no tracks; a bad id
-    returns `ERROR`;
-  - the caption file is XML in one of two shapes — `<timedtext format="3">`
-    with `<p t d>` (word-level `<s>` children on auto captions) or
-    `<transcript>` with `<text start dur>`, whose entities are escaped twice.
-- **A session `declarativeNetRequest` rule can drop the Origin header from an
-  extension's own POST** — `modifyHeaders` / `remove` / `origin`, condition
-  `initiatorDomains: [chrome.runtime.id]`, `requestMethods: ["post"]`,
-  `resourceTypes: ["xmlhttprequest"]`, with `declarativeNetRequestWithHostAccess`
-  and the host granted. A GET from an extension page to a granted host carries
-  no Origin at all. *Known from:* a real Chromium run against a mock server
-  that refuses the extension Origin (403 without the rule, 200 with it, the
-  rule gone afterwards). NOT yet run inside the packaged extension against
-  YouTube itself.
 
 ### Carried in from the 2026-11-12 hand build (deck 237) — verified live there, promoted here
 
@@ -2830,12 +2795,25 @@ Read live on deck 330 in the Builder (42 slides) and from its build record.
 
 ## Transitions — full-screen wipes between slides (2.3.10; proved by hand on deck 332, 2026-11-13)
 
+A TRANSITION IS THE PAIR (2.3.11, enforced in IDP.transitionChain): an outro is not placed when the slide it leads
+into has no intro (its transitions were removed, or it is a rub slide) - a full cover must never cut straight to an
+open slide. Asking for an outro on that very slide (`which: "outro", off: false`) keeps it. The plan row carries
+`unpaired: "<that slide>"` and the result line says why.
+
+WHEN THE WIPES ARE RE-SET (2.3.11): at the end of a build (every slide); after an edit's rebuild + retime; after an
+edit that rebuilt nothing (in-place timing or voice, a removed / moved / copied slide, a changed "next") — one plan
+call when nothing differs; and on a `transitions` request. A presentation with NO transitions recorded
+(job.transitions.applied empty — built before 2.3.10, or by 2.3.10, which skipped them) never grows them from an
+unrelated edit: only a build or a `transitions` request adds them; asked for on named slides only, the rest stay bare.
+The panel's transitions code is module-level: it must not call busy() / connect() / checkpoint(), which exist only
+inside an edit turn (2.3.10 shipped that way and built without a single wipe — smoke-transitions pins it).
+
 **Bren's rules.** A slide that WAITS for a tap (menu, question, CTA, the cover) gets an INTRO wipe and
 no outro. A slide that AUTO-ADVANCES gets an intro and an OUTRO. An outro's colour is the intro colour
 of the slide it leads into — so every slide that flows into one slide leaves in THAT slide's colour.
 Default colours are the presentation's: the theme colour, white, black. The wipe is scaled to fill and
 cropped to the canvas. Intro and outro sit on ONE layer at the top. After a voiceover LONGER than 5 s the
-slide ends 0.3 s after the voice and the outro ENDS on that frame (it starts early); after a line of 5 s or
+slide ends the builder's usual tail (SH.TAIL_BUFFER, 0.5 s — the same as a slide with no outro) after the voice and the outro ENDS on that frame (it starts early); after a line of 5 s or
 less that felt rushed, so there the outro STARTS when the voice ends and every layer runs to the end of the
 wipe. The voiceover starts HALFWAY
 into the intro. The client may change any of it in the edit chat (colour, speed, shape, more time before
@@ -2878,7 +2856,7 @@ a covered end holds past the out point). The build uses the one-colour outros th
   the page stretched) — assert each clip's time offset, then the page duration, LAST, and verify from a
   reload.
 - Timing: voice offset = intro ÷ 2 (+ `delay`); everything that starts after frame 0 moves with it; with an
-  outro, page = last audio end + `gap` + (0.3 s when the voice runs longer than 5 s, else the outro's own
+  outro, page = last audio end + `gap` + (SH.TAIL_BUFFER, 0.5 s, when the voice runs longer than 5 s, else the outro's own
   length); without one, last audio end + the tail; outro offset = page − outro length.
 - Marks: the track carries `idecide/transition-track` and `idecide/transition-shift` (the seconds the
   voice was moved, so a second pass moves nothing); each clip carries `idecide/transition` =

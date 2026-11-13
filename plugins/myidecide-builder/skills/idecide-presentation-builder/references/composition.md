@@ -381,12 +381,9 @@ native blocks, each grouped with its labels.
   `layers` loop, repainted to the library's colour language) and hosted at
   `https://idecide.com/lottie-library/` (`LOTTIE_REMOTE` in the panel; the
   catalogue is probed through `version.json`, cached in `chrome.storage`,
-  files fetched per build). History, so old logs make sense: 2026-09-04 a
-  548-file bundled library; 2026-09-05 a live `api.lordicon.com` search with a
-  packaged key in front of it; 2026-09-06 both removed — "after we have the
-  new library build, we can remove our original self hosted lotties, and the
-  lordicon api approach and just use our new self hosted lordicon files".
-  No key, no attribution (PRO), no Settings step.
+  files fetched per build). The earlier sources (a bundled library, then a live
+  search service) were removed on 2026-09-06: the self-hosted library is the only
+  one. Nothing to configure, no attribution (PRO), no Settings step.
 - **Which drawing where — the 2-tone wired outline, everywhere (binding,
   Bren 2026-09-09).** Every icon has up to four drawings: the WIRED family's
   **outline** (2-tone, recoloured to the brand — every one of the library's
@@ -567,7 +564,7 @@ unit are verified against the real frame above them after placement.
 
 Slots enter in stack order, ~0.18s apart, 1–1.5s each, EaseOutQuint (never bare `EaseOut` — the builder shows it as a raw i18n key). Parts inside one
 slot enter 0.08s behind their own background — one object arriving, not four.
-Stage media gets 2–4s. Every layer runs to the last frame plus a 0.3s tail.
+Stage media gets 2–4s. Every layer runs to the last frame plus a 0.5s tail.
 
 ## The background plate is ALWAYS the backmost layer of its group (binding)
 

@@ -47,7 +47,7 @@ commit or it is lost.
 
 > **Not on `api`, but part of the surface an agent needs (verified 2026-09-04):**
 > `POST /create/aiagent/new` — same origin, JSON body `{name, slideCount}`,
-> cookie-authenticated, works from any page on the site. Returns
+> made as the signed-in person (an ordinary same-origin request), works from any page on the site. Returns
 > `{editUrl, userSessionId, name, introSlideId, slideIds[]}`; `slideCount` N
 > makes the intro slide PLUS N blanks; `editUrl` already carries `?aiagent`
 > and skips the Settings modal. A signed-out session is redirected to the
@@ -56,7 +56,7 @@ commit or it is lost.
 > actually starting.
 >
 > ```js
-> const r = await fetch('/create/aiagent/new', { method: 'POST', credentials: 'include',
+> const r = await fetch('/create/aiagent/new', { method: 'POST',
 >   headers: { 'Content-Type': 'application/json' },
 >   body: JSON.stringify({ name: 'Q4 Sales Deck', slideCount: 1 }) });
 > if (!r.ok || r.redirected) throw new Error('sign in first');

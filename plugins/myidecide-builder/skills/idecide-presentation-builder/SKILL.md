@@ -335,7 +335,7 @@ vector or a large PNG in this order, and stop at the first hit:
    not returned by a summarising fetch; look for a linked `.svg`);
 2. Brandfetch — the brand page above says which formats exist;
    `https://cdn.brandfetch.io/<domain>` (and `/w/512/h/512`) answers the brand
-   icon with no key;
+   icon openly;
 3. Wikimedia Commons — search "<brand> logo svg wikimedia commons"; the FILE
    page is cache-only for a fetch, so compute the original's URL instead:
    `https://upload.wikimedia.org/wikipedia/commons/<h0>/<h0h1>/<File_Name>`
@@ -1042,7 +1042,8 @@ earlier ones resolve.
    and trim its duration to the slide; the platform loops it. Use it for
    Lottie files the USER supplies (their own animated logo or icon set) and
    for drawings from our own animated-icon library at
-   `https://idecide.com/lottie-library/` (a plain static folder — `catalog.json`
+   `https://idecide.com/lottie-library/` (animation DATA only — JSON read as
+   text and handed to the Builder's own importer, never code to run; a plain static folder — `catalog.json`
    lists 3,687 Lordicon icons with tags and aliases; each has a wired
    `outline` file (2-tone, painted black + red so black → ink and red →
    accent — THE DEFAULT for every icon, buttons included), most a designed
@@ -1109,14 +1110,20 @@ their canvas and fade their background and first-frame layers in over it; an OUT
 slide that auto-advances (none on a menu, a question, a CTA or the cover); an outro in the colour of the
 next slide's intro — so every slide that flows into the menu leaves in the menu's colour; colours are the
 presentation's theme colour, white and black; both wipes on ONE track at the top; the voice starts halfway
-into the intro; after a voiceover longer than 5 s the slide ends 0.3 s after the voice with the outro ending on that last
+into the intro; after a voiceover longer than 5 s the slide ends the usual tail (0.5 s) after the voice with the outro ending on that last
 frame, and after a line of 5 s or less the outro starts when the voice ends and every layer runs to the end
 of the wipe. The
 files, the platform facts that make it work (looping off, the hold baked into the file, offsets asserted
 last, verify from a reload) and how to get the files into the Builder are in
 `references/platform-facts.md` § Transitions, in the order to do them. When the person asks to change them — faster, slower, another colour, a
 different one, none on this slide, more time before it animates out — change the wipes and the timing in
-place; never rebuild the slide. Skip the step only if they asked for no transitions.
+place; never rebuild the slide. Skip the step only if they asked for no transitions. A transition is the pair: when a
+slide has no intro (its transitions were removed), leave the outro off the slide that leads into it — a full
+cover never cuts straight to an open slide. On a presentation that
+has no transitions (it was built before they existed), an unrelated edit never adds them: add them only
+when the person asks — everywhere for "add transitions", on that slide only for "add a transition here".
+After any edit that changes a slide's length, its voiceover, the slide order or where a slide goes next,
+re-set the wipes on the slides it touched (an outro must still end on the right frame, in the right colour).
 
 ## Editing a deck
 
