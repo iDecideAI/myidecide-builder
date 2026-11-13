@@ -1117,7 +1117,8 @@ files, the platform facts that make it work (looping off, the hold baked into th
 last, verify from a reload) and how to get the files into the Builder are in
 `references/platform-facts.md` § Transitions, in the order to do them. When the person asks to change them — faster, slower, another colour, a
 different one, none on this slide, more time before it animates out — change the wipes and the timing in
-place; never rebuild the slide. Skip the step only if they asked for no transitions. A transition is the pair: when a
+place; never rebuild the slide. Skip the step only if they asked for no transitions. A rub slide (Logo Reveal) never carries a
+transition — its rub element loads as an iframe over the presentation — and nothing wipes into it. A transition is the pair: when a
 slide has no intro (its transitions were removed), leave the outro off the slide that leads into it — a full
 cover never cuts straight to an open slide. On a presentation that
 has no transitions (it was built before they existed), an unrelated edit never adds them: add them only

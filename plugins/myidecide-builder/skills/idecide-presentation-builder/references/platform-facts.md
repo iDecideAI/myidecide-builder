@@ -2800,6 +2800,35 @@ into has no intro (its transitions were removed, or it is a rub slide) - a full 
 open slide. Asking for an outro on that very slide (`which: "outro", off: false`) keeps it. The plan row carries
 `unpaired: "<that slide>"` and the result line says why.
 
+THE FIRST LIVE BUILD WITH TRANSITIONS (deck 243, "Uber", 2.3.11, 2026-11-13): 38 of 39 slides set, 55 files, 3 min 54 s
+for the pass (about 6 s a slide — the dearest single step after footage). What it taught, fixed in 2.3.12: (1) a RUB
+slide must be known at PLAN time - Logo Reveal's kind is "content"; the chain planned wipes for it and outros into it,
+the apply step (which sees the rub block) placed none, and four slides wiped to a cover that cut to an open slide. The
+plan row's `skip` is now the name `Logo Reveal` or the plan's `rubText` / `rubCoverHint`, as well as the kind. (2) a
+slide marked unopenable by an earlier pass gets one more try here. (3) the record must say what was placed: one log
+line per slide, and the trace drained before the record is saved. NOT verified from that record: clip offsets and page
+lengths on the canvas (its trace ended before the pass) - read the next record's trace, or the deck.
+READ ON THE CANVAS the same night: all 55 files placed, every voice at half its intro (0.40 s on a canvas / cover
+opening), every outro ending on the last frame 0.50 s after the voice, no blank last frame. One more fault: the voice
+shift lived only on the Transitions track, and a slide that opens on the canvas colour with no outro has no track -
+the mark is now written on the PAGE as well (`idecide/transition-shift`).
+THE LOGO HAS TWO DRAWINGS AND EVERY RESTORE MUST CARRY BOTH (deck 243): `IDP.logoUris = { onDark, onLight, aspect }`
+is page memory. Brandfetch's `theme/dark` file is the DARK drawing (for light fields), `theme/light` the light one -
+read from the files, not assumed. A restore that passes `logoUri` alone leaves one drawing for every field: 22 white
+logos, seven on light slides, after one mid-build reload. Whatever restores the page's maps passes `logoUris` too.
+A CLIP'S OWN FRAME CAN BE READ IN THE PAGE (verified 2026-11-13, deck 243): the storage host (`r2-dev.myidecide.net`)
+serves uploads with CORS, so `<video crossOrigin="anonymous">` → seek → `drawImage` → `getImageData` works without a
+tainted canvas - a way to MEASURE what is under a block (the logo's tone) with no thumbnail call and no export.
+A VIDEO FILL HAS A PLAYBACK SPEED (verified 2026-11-13, deck 243): `engine.block.setPlaybackSpeed(FILL, s)` (the fill,
+not the block - the block throws "doesn't support playback control"). 0.7 turned a 6.97 s file into a 9.95 s trim.
+SETTING IT RESETS THE BLOCK'S DURATION to the new trim length - assert offset and duration again. It persists through
+a commit and a reload. A stock clip does not loop and one shorter than its block holds its last frame in the Builder.
+THE PLAYER'S ☰ sits at about x 1480-1534, y 30-84 of the 1558x720 canvas: nothing of ours goes there.
+WHY A RUB SLIDE HAS NO TRANSITION (Bren 2026-11-13): the "rub your screen" element loads as an IFRAME over the
+presentation, so a wipe on that slide would play under it or fight it. No intro, no outro, and nothing wipes into it.
+A NO-BREAK SPACE CAN CUT A WORD: two words bound with U+00A0 are one unbreakable unit; wider than the box, the engine
+cuts it mid-word ("upkeep include / d") without adding a line. Anything that binds words must read the drawn lines after.
+
 WHEN THE WIPES ARE RE-SET (2.3.11): at the end of a build (every slide); after an edit's rebuild + retime; after an
 edit that rebuilt nothing (in-place timing or voice, a removed / moved / copied slide, a changed "next") — one plan
 call when nothing differs; and on a `transitions` request. A presentation with NO transitions recorded

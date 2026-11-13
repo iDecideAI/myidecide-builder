@@ -117,7 +117,7 @@ belong to other brands and are not this deck's to reuse (see COMPOSING).
                                     // hold ≥15s and may breathe.
   "copy": {                         // the words — every string the scene shows lives here too
     "eyebrow": "...",               // ≤24 chars — a label, not a sentence
-    "headline": "...",              // ≤70 chars; ≤28 may go hero-size
+    "headline": "...",              // the KEY PHRASE: 2–7 words (nine at most), ≤70 chars; ≤28 may go hero-size — never a sentence from the voiceover
     "support": "...",               // ≤70 chars — one clean line on a phone
     "body": "...",                  // ≤160 chars — cut to the load-bearing idea
     "statValue": "...", "statLabel": "...",
